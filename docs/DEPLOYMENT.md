@@ -119,6 +119,44 @@ npm run deploy:github
 # Upload web-build folder to your server
 ```
 
+**Option D: Replit**
+
+Replit is a cloud-based development environment that allows you to run, build, and deploy your GameForge app directly from your browser.
+
+1. **Import the Repository**
+   - Go to [replit.com](https://replit.com)
+   - Click "Create Repl" → "Import from GitHub"
+   - Paste the repository URL: `https://github.com/ismaelloveexcel/gameforge-mobile`
+   - The `.replit` and `replit.nix` configuration files will automatically set up the environment
+
+2. **Install Dependencies**
+   ```bash
+   npm install
+   ```
+
+3. **Run the App**
+   - Click the "Run" button or use the command:
+   ```bash
+   npm run web
+   ```
+
+4. **Deploy to Production**
+   - Click the "Deploy" button in the Replit interface
+   - Replit will automatically build and deploy your app
+   - Your app will be available at `https://your-repl-name.your-username.repl.co`
+
+5. **Custom Domain (Optional)**
+   - Go to your Repl settings → "Domain"
+   - Add your custom domain
+   - Update DNS settings as instructed
+
+**Replit Environment Features:**
+- Node.js 20 LTS pre-configured
+- TypeScript language server for IDE support
+- Automatic HTTPS
+- Built-in environment variable management
+- Integrated deployment pipeline
+
 ### Web Optimization
 - Enable PWA features
 - Configure caching
