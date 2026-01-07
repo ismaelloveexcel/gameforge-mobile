@@ -222,6 +222,16 @@ npm run build:ios
 npm run build:android
 ```
 
+## 🚀 Deploy on GitHub Spark
+
+This project supports deployment on GitHub Spark. The `spark.yaml` configuration file is included in the repository root.
+
+1. Navigate to your repository on GitHub
+2. Access the Spark interface
+3. GitHub Spark will automatically detect the configuration and deploy your app
+
+See the [Deployment Guide](docs/DEPLOYMENT.md) for detailed instructions.
+
 ## 🤝 Contributing
 
 We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
