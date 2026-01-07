@@ -1,0 +1,52 @@
+# GitHub Spark Configuration for GameForge Mobile
+# This file enables deployment of the app on GitHub Spark
+
+name: gameforge-mobile
+description: AI-powered game creation platform - Create professional mobile games, VR experiences, and educational content with zero coding required.
+version: 1.0.0
+
+# Build configuration
+build:
+  command: npm install && npm run build:web
+  output_directory: web-build
+
+# Runtime configuration
+runtime:
+  type: static
+  node_version: "20"
+
+# Environment configuration
+environment:
+  variables:
+    EXPO_USE_METRO_WORKSPACE_ROOT: "true"
+    CI: "false"
+    NODE_OPTIONS: "--max-old-space-size=4096"
+
+# App metadata
+metadata:
+  author: GameForge Team
+  license: MIT
+  homepage: https://github.com/ismaelloveexcel/gameforge-mobile
+  repository: https://github.com/ismaelloveexcel/gameforge-mobile
+  keywords:
+    - game
+    - engine
+    - ai
+    - mobile
+    - vr
+    - ar
+    - gamedev
+    - no-code
+    - react-native
+    - expo
+
+# Features and capabilities
+features:
+  - web
+  - pwa
+
+# Assets configuration
+assets:
+  icon: ./assets/icon.png
+  favicon: ./assets/favicon.png
+  splash: ./assets/splash.png

@@ -157,6 +157,48 @@ Replit is a cloud-based development environment that allows you to run, build, a
 - Built-in environment variable management
 - Integrated deployment pipeline
 
+**Option E: GitHub Spark**
+
+GitHub Spark is a GitHub-native platform for building and deploying micro web applications directly from your repository.
+
+1. **Prerequisites**
+   - A GitHub account with Spark access enabled
+   - The repository must include a `spark.yaml` configuration file (already included in this project)
+
+2. **Deploy from GitHub**
+   - Navigate to your repository on GitHub
+   - Click on the "Spark" tab or access via GitHub's Spark interface
+   - Select the repository `ismaelloveexcel/gameforge-mobile`
+   - GitHub Spark will automatically detect the `spark.yaml` configuration
+
+3. **Build and Deploy**
+   - Spark will run the build command: `npm install && npm run build:web`
+   - The `web-build` directory will be served as a static site
+   - Your app will be available at a GitHub Spark URL
+
+4. **Configuration**
+   The `spark.yaml` file in the repository root defines:
+   ```yaml
+   name: gameforge-mobile
+   build:
+     command: npm install && npm run build:web
+     output_directory: web-build
+   runtime:
+     type: static
+     node_version: "20"
+   ```
+
+5. **Environment Variables**
+   - Configure environment variables through the Spark dashboard
+   - Or define them in the `spark.yaml` under `environment.variables`
+
+**GitHub Spark Features:**
+- Native GitHub integration
+- Automatic deployments on push
+- Built-in HTTPS
+- Environment variable management
+- Zero configuration required with `spark.yaml`
+
 ### Web Optimization
 - Enable PWA features
 - Configure caching
