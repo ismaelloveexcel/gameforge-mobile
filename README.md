@@ -89,6 +89,7 @@ npm run web
 
 ## 📖 Documentation
 
+### Getting Started
 - [Getting Started Guide](docs/GETTING_STARTED.md)
 - [Template Documentation](docs/TEMPLATES.md)
 - [Genie AI Guide](docs/GENIE_AI.md)
@@ -96,7 +97,13 @@ npm run web
 - [Marketing Automation](docs/MARKETING.md)
 - [VR Development](docs/VR_GUIDE.md)
 - [API Reference](docs/API.md)
-- [Deployment Guide](docs/DEPLOYMENT.md)
+
+### Deployment Guides 🚀
+- [**Deployment Summary**](docs/DEPLOYMENT_SUMMARY.md) - Quick overview ⭐ **START HERE**
+- [**Free Deployment Recommendation**](docs/FREE_DEPLOYMENT_RECOMMENDATION.md) - Complete guide
+- [**Quick Deploy Guide**](docs/QUICK_DEPLOY_GUIDE.md) - Deploy in 10 minutes
+- [**Platform Comparison**](docs/DEPLOYMENT_COMPARISON.md) - 8 platforms analyzed
+- [Full Deployment Guide](docs/DEPLOYMENT.md) - All deployment options
 
 ## 🎯 Project Structure
 

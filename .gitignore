@@ -36,6 +36,12 @@ coverage/
 .env.local
 .env.*.local
 
+# Secrets and credentials
+secrets/
+*.pem
+*.cer
+google-service-account.json
+
 # Build artifacts
 build/
 *.tgz
