@@ -12,8 +12,14 @@
     "test:watch": "jest --watch",
     "lint": "eslint .",
     "build:web": "expo build:web",
-    "build:ios": "expo build:ios",
-    "build:android": "expo build:android"
+    "build:ios": "echo 'Deprecated: Use EAS Build instead - npm run eas:build:ios'",
+    "build:android": "echo 'Deprecated: Use EAS Build instead - npm run eas:build:android'",
+    "deploy:vercel": "npm run build:web && vercel --prod",
+    "deploy:netlify": "npm run build:web && netlify deploy --prod --dir=web-build",
+    "deploy:firebase": "npm run build:web && firebase deploy",
+    "eas:build:android": "eas build --platform android --profile production",
+    "eas:build:ios": "eas build --platform ios --profile production",
+    "eas:preview": "eas build --platform android --profile preview"
   },
   "keywords": [
     "game",

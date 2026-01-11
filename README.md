@@ -89,6 +89,7 @@ npm run web
 
 ## 📖 Documentation
 
+### Getting Started
 - [Getting Started Guide](docs/GETTING_STARTED.md)
 - [Template Documentation](docs/TEMPLATES.md)
 - [Genie AI Guide](docs/GENIE_AI.md)
@@ -96,7 +97,13 @@ npm run web
 - [Marketing Automation](docs/MARKETING.md)
 - [VR Development](docs/VR_GUIDE.md)
 - [API Reference](docs/API.md)
-- [Deployment Guide](docs/DEPLOYMENT.md)
+
+### Deployment Guides 🚀
+- [**Deployment Summary**](docs/DEPLOYMENT_SUMMARY.md) - Quick overview ⭐ **START HERE**
+- [**Free Deployment Recommendation**](docs/FREE_DEPLOYMENT_RECOMMENDATION.md) - Complete guide
+- [**Quick Deploy Guide**](docs/QUICK_DEPLOY_GUIDE.md) - Deploy in 10 minutes
+- [**Platform Comparison**](docs/DEPLOYMENT_COMPARISON.md) - 8 platforms analyzed
+- [Full Deployment Guide](docs/DEPLOYMENT.md) - All deployment options
 
 ## 🎯 Project Structure
 
@@ -222,15 +229,40 @@ npm run build:ios
 npm run build:android
 ```
 
-## 🚀 Deploy on GitHub Spark
+## 🚀 Deployment
 
-This project supports deployment on GitHub Spark. The `spark.yaml` configuration file is included in the repository root.
+### Recommended: Free Deployment with Expo EAS + Vercel
+
+The best free deployment solution for GameForge Mobile is **Expo EAS** (for mobile) + **Vercel** (for web).
+
+**Quick Deploy:**
+```bash
+# Web version (Free)
+npm run build:web && vercel --prod
+
+# Android APK (Free)
+eas build --platform android --profile production
+```
+
+**Why this combination?**
+- ✅ 100% Free tier available
+- ✅ Native mobile app support (iOS & Android)
+- ✅ Web deployment with global CDN
+- ✅ Automatic CI/CD from GitHub
+- ✅ Zero configuration needed
+
+**See detailed guides:**
+- 📘 [Free Deployment Recommendation](docs/FREE_DEPLOYMENT_RECOMMENDATION.md) - Complete platform comparison
+- ⚡ [Quick Deploy Guide](docs/QUICK_DEPLOY_GUIDE.md) - Deploy in 10 minutes
+- 📖 [Full Deployment Guide](docs/DEPLOYMENT.md) - All deployment options
+
+### Alternative: GitHub Spark
+
+This project also supports deployment on GitHub Spark. The `spark.yaml` configuration file is included in the repository root.
 
 1. Navigate to your repository on GitHub
 2. Access the Spark interface
 3. GitHub Spark will automatically detect the configuration and deploy your app
-
-See the [Deployment Guide](docs/DEPLOYMENT.md) for detailed instructions.
 
 ## 🤝 Contributing
 
