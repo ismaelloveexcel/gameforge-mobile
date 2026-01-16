@@ -5,6 +5,9 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![React Native](https://img.shields.io/badge/React%20Native-0.72-61DAFB.svg)](https://reactnative.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.1-blue.svg)](https://www.typescriptlang.org/)
+[![Deploy Web](https://github.com/ismaelloveexcel/gameforge-mobile/actions/workflows/deploy-web.yml/badge.svg)](https://github.com/ismaelloveexcel/gameforge-mobile/actions/workflows/deploy-web.yml)
+[![Build Mobile](https://github.com/ismaelloveexcel/gameforge-mobile/actions/workflows/build-mobile.yml/badge.svg)](https://github.com/ismaelloveexcel/gameforge-mobile/actions/workflows/build-mobile.yml)
+[![CI](https://github.com/ismaelloveexcel/gameforge-mobile/actions/workflows/ci.yml/badge.svg)](https://github.com/ismaelloveexcel/gameforge-mobile/actions/workflows/ci.yml)
 
 ## 🌟 Features
 
@@ -99,7 +102,8 @@ npm run web
 - [API Reference](docs/API.md)
 
 ### Deployment Guides 🚀
-- [**Deployment Summary**](docs/DEPLOYMENT_SUMMARY.md) - Quick overview ⭐ **START HERE**
+- [**GitHub Actions Automated Deployment**](docs/GITHUB_ACTIONS_DEPLOYMENT.md) - CI/CD with GitHub Actions ⭐ **NEW!**
+- [**Deployment Summary**](docs/DEPLOYMENT_SUMMARY.md) - Quick overview
 - [**Free Deployment Recommendation**](docs/FREE_DEPLOYMENT_RECOMMENDATION.md) - Complete guide
 - [**Quick Deploy Guide**](docs/QUICK_DEPLOY_GUIDE.md) - Deploy in 10 minutes
 - [**Platform Comparison**](docs/DEPLOYMENT_COMPARISON.md) - 8 platforms analyzed
@@ -231,9 +235,29 @@ npm run build:android
 
 ## 🚀 Deployment
 
-### Recommended: Free Deployment with Expo EAS + Vercel
+### ⭐ NEW: Automated Deployment with GitHub Actions
 
-The best free deployment solution for GameForge Mobile is **Expo EAS** (for mobile) + **Vercel** (for web).
+GameForge Mobile now includes **automated CI/CD pipelines** using GitHub Actions - the free portal within GitHub!
+
+**What you get:**
+- ✅ **Automatic web deployment** to Vercel on every push to `main`
+- ✅ **Automated mobile builds** with Expo EAS
+- ✅ **Continuous integration** with linting and testing
+- ✅ **Pull request previews** for testing before merge
+- ✅ **100% FREE** for public repositories
+
+**Quick Setup:**
+1. Configure secrets in GitHub (VERCEL_TOKEN, EXPO_TOKEN)
+2. Push to `main` branch
+3. Watch automated deployments at `https://github.com/ismaelloveexcel/gameforge-mobile/actions`
+
+📖 **[Complete GitHub Actions Setup Guide](docs/GITHUB_ACTIONS_DEPLOYMENT.md)**
+
+---
+
+### Manual Deployment: Expo EAS + Vercel
+
+For manual deployments or local testing:
 
 **Quick Deploy:**
 ```bash
@@ -252,6 +276,7 @@ eas build --platform android --profile production
 - ✅ Zero configuration needed
 
 **See detailed guides:**
+- 🤖 [GitHub Actions Deployment](docs/GITHUB_ACTIONS_DEPLOYMENT.md) - Automated CI/CD setup
 - 📘 [Free Deployment Recommendation](docs/FREE_DEPLOYMENT_RECOMMENDATION.md) - Complete platform comparison
 - ⚡ [Quick Deploy Guide](docs/QUICK_DEPLOY_GUIDE.md) - Deploy in 10 minutes
 - 📖 [Full Deployment Guide](docs/DEPLOYMENT.md) - All deployment options
