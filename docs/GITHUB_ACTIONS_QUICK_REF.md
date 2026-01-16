@@ -2,6 +2,8 @@
 
 Quick command reference for working with GitHub Actions deployment.
 
+> **Note:** Commands use `ismaelloveexcel/gameforge-mobile` as the repository. Replace with your repository name if needed.
+
 ---
 
 ## 🚀 Getting Started

@@ -29,12 +29,9 @@ jobs:
 
       - name: Run ESLint
         run: npm run lint
-        continue-on-error: true
 
       - name: Run Tests
         run: npm test
-        continue-on-error: true
 
       - name: Check TypeScript
         run: npx tsc --noEmit
-        continue-on-error: true

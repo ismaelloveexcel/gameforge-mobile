@@ -2,6 +2,8 @@
 
 This guide walks you through configuring the necessary secrets for automated deployment with GitHub Actions.
 
+> **Note:** This guide uses `ismaelloveexcel/gameforge-mobile` as the repository name. Replace with your repository name if using this guide for a different project.
+
 ---
 
 ## 📋 Prerequisites
