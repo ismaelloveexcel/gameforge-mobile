@@ -46,8 +46,8 @@ This is the same technology used by companies like:
 
 **How it works:**
 ```bash
-npm run build:web  # Builds web version using Expo Web
-vercel --prod      # Deploys to Vercel hosting
+npm run build:web        # Builds web version using Expo Web
+npx vercel --prod        # Deploys to Vercel hosting (CLI installed via npx)
 ```
 
 **Result:**
@@ -114,6 +114,8 @@ eas build --platform android   # Builds native Android app (.apk)
 ---
 
 ## Cost Breakdown (All FREE!)
+
+> **Note:** Pricing information current as of January 2026. Check provider websites for latest details.
 
 | Platform | Service | Free Tier | Cost |
 |----------|---------|-----------|------|
