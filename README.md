@@ -9,6 +9,36 @@
 [![Build Mobile](https://github.com/ismaelloveexcel/gameforge-mobile/actions/workflows/build-mobile.yml/badge.svg)](https://github.com/ismaelloveexcel/gameforge-mobile/actions/workflows/build-mobile.yml)
 [![CI](https://github.com/ismaelloveexcel/gameforge-mobile/actions/workflows/ci.yml/badge.svg)](https://github.com/ismaelloveexcel/gameforge-mobile/actions/workflows/ci.yml)
 
+---
+
+## 🚀 Deployment Options
+
+**Quick Question:** _"Why iOS/Android? Isn't this just a webpage?"_
+
+**Answer:** GameForge Mobile is a **cross-platform app** that can be deployed in three ways:
+
+| Platform | Status | Access Method | Deploy To |
+|----------|--------|---------------|-----------|
+| 🌐 **Web** | ✅ Ready | Browser URL | Vercel (FREE) |
+| 📱 **iOS** | ✅ Ready | App Store / TestFlight | Expo EAS (FREE) |
+| 🤖 **Android** | ✅ Ready | Play Store / Direct APK | Expo EAS (FREE) |
+
+**All deployment options are FREE!** Use web-only, mobile-only, or both. [Read the full explanation →](docs/DEPLOYMENT_EXPLAINED.md)
+
+### Web Deployment (Fastest & Easiest)
+```bash
+# Auto-deploys on push to main
+git push origin main
+# Access at: https://yourapp.vercel.app
+```
+
+### Mobile Deployment (Optional)
+Build native iOS/Android apps when you need app store distribution or advanced mobile features.
+
+📖 **See [DEPLOYMENT_EXPLAINED.md](docs/DEPLOYMENT_EXPLAINED.md)** for a complete breakdown of deployment options.
+
+---
+
 ## 🌟 Features
 
 ### Core Capabilities
