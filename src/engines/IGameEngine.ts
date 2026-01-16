@@ -55,15 +55,18 @@ export interface IGameEngine {
 export class EngineFactory {
   static async createEngine(type: 'pixi' | 'babylon' | 'aframe'): Promise<IGameEngine> {
     switch (type) {
-      case 'pixi':
+      case 'pixi': {
         const { PixiEngine } = await import('./PixiEngine');
         return new PixiEngine();
-      case 'babylon':
+      }
+      case 'babylon': {
         const { BabylonEngine } = await import('./BabylonEngine');
         return new BabylonEngine();
-      case 'aframe':
+      }
+      case 'aframe': {
         const { AFrameEngine } = await import('./AFrameEngine');
         return new AFrameEngine();
+      }
       default:
         throw new Error(`Unknown engine type: ${type}`);
     }

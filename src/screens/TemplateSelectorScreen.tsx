@@ -11,15 +11,18 @@ import {
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useTheme } from '../contexts/ThemeContext';
 import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
 import { templateLibrary } from '../services/TemplateLibrary';
-import { GameTemplate } from '../types';
+import { GameTemplate, RootStackParamList } from '../types';
+
+type NavigationProp = StackNavigationProp<RootStackParamList>;
 
 const { width } = Dimensions.get('window');
 const CARD_WIDTH = width - 32;
 
 export default function TemplateSelectorScreen() {
   const { theme } = useTheme();
-  const navigation = useNavigation();
+  const navigation = useNavigation<NavigationProp>();
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
 
   const templates = templateLibrary.getAllTemplates();

@@ -1,10 +1,14 @@
 // Navigation types
 export type RootStackParamList = {
+  MainTabs: undefined;
   Home: undefined;
+  Projects: undefined;
   ProjectList: undefined;
   ProjectEditor: { projectId: string };
+  Templates: undefined;
   TemplateSelector: undefined;
   TemplatePreview: { templateId: string };
+  Genie: undefined;
   GenieAssistant: { projectId?: string };
   AssetLibrary: { projectId?: string };
   MarketingDashboard: { projectId: string };

@@ -3,11 +3,14 @@ import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useTheme } from '../contexts/ThemeContext';
 import { useNavigation } from '@react-navigation/native';
-import { Project } from '../types';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { Project, RootStackParamList } from '../types';
+
+type NavigationProp = StackNavigationProp<RootStackParamList>;
 
 export default function ProjectListScreen() {
   const { theme } = useTheme();
-  const navigation = useNavigation();
+  const navigation = useNavigation<NavigationProp>();
   const [projects] = useState<Project[]>([]);
 
   return (
