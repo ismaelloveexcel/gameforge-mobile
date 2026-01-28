@@ -23,6 +23,13 @@ export default function HomeScreen() {
 
   const features = [
     {
+      icon: 'gift',
+      title: 'Gift Games',
+      description: 'Create personalized mini-games',
+      onPress: () => navigation.navigate('GiftForgeWizard'),
+      highlight: true,
+    },
+    {
       icon: 'creation',
       title: 'Create Games',
       description: '15 ready-to-use game templates',
@@ -50,6 +57,12 @@ export default function HomeScreen() {
 
   const quickActions = [
     {
+      icon: 'gift-outline',
+      title: 'Gift Game',
+      color: theme.colors.accent,
+      onPress: () => navigation.navigate('GiftForgeWizard'),
+    },
+    {
       icon: 'plus-circle',
       title: 'New Project',
       color: theme.colors.primary,
@@ -60,12 +73,6 @@ export default function HomeScreen() {
       title: 'My Projects',
       color: theme.colors.secondary,
       onPress: () => navigation.navigate('Projects'),
-    },
-    {
-      icon: 'download',
-      title: 'Templates',
-      color: theme.colors.accent,
-      onPress: () => navigation.navigate('Templates'),
     },
   ];
 
@@ -93,6 +100,27 @@ export default function HomeScreen() {
           Build professional games, VR experiences, and educational content with zero coding required
         </Text>
       </View>
+
+      {/* GiftForge Hero Card */}
+      <TouchableOpacity 
+        style={[styles.giftForgeCard, { backgroundColor: theme.colors.accent + '15' }]}
+        onPress={() => navigation.navigate('GiftForgeWizard')}
+      >
+        <View style={styles.giftForgeContent}>
+          <View style={[styles.giftForgeIconContainer, { backgroundColor: theme.colors.accent }]}>
+            <Icon name="gift" size={32} color="#fff" />
+          </View>
+          <View style={styles.giftForgeTextContent}>
+            <Text style={[styles.giftForgeTitle, { color: theme.colors.text }]}>
+              🎁 Create a Gift Game
+            </Text>
+            <Text style={[styles.giftForgeSubtitle, { color: theme.colors.text + '80' }]}>
+              Personalized mini-games for special occasions
+            </Text>
+          </View>
+          <Icon name="chevron-right" size={24} color={theme.colors.accent} />
+        </View>
+      </TouchableOpacity>
 
       {/* Quick Actions */}
       <View style={styles.section}>
@@ -123,15 +151,31 @@ export default function HomeScreen() {
         {features.map((feature, index) => (
           <TouchableOpacity
             key={index}
-            style={[styles.featureCard, { backgroundColor: theme.colors.card }]}
+            style={[
+              styles.featureCard, 
+              { backgroundColor: theme.colors.card },
+              feature.highlight && { 
+                backgroundColor: theme.colors.accent + '15',
+                borderWidth: 1,
+                borderColor: theme.colors.accent,
+              },
+            ]}
             onPress={feature.onPress}
           >
-            <View style={[styles.featureIcon, { backgroundColor: theme.colors.primary + '20' }]}>
-              <Icon name={feature.icon} size={28} color={theme.colors.primary} />
+            <View style={[
+              styles.featureIcon, 
+              { backgroundColor: feature.highlight ? theme.colors.accent + '30' : theme.colors.primary + '20' }
+            ]}>
+              <Icon 
+                name={feature.icon} 
+                size={28} 
+                color={feature.highlight ? theme.colors.accent : theme.colors.primary} 
+              />
             </View>
             <View style={styles.featureContent}>
               <Text style={[styles.featureTitle, { color: theme.colors.text }]}>
                 {feature.title}
+                {feature.highlight && ' ✨'}
               </Text>
               <Text style={[styles.featureDescription, { color: theme.colors.text + '80' }]}>
                 {feature.description}
@@ -203,6 +247,35 @@ const styles = StyleSheet.create({
     fontSize: 14,
     textAlign: 'center',
     lineHeight: 20,
+  },
+  giftForgeCard: {
+    margin: 16,
+    marginTop: 0,
+    padding: 16,
+    borderRadius: 16,
+  },
+  giftForgeContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  giftForgeIconContainer: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 16,
+  },
+  giftForgeTextContent: {
+    flex: 1,
+  },
+  giftForgeTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 4,
+  },
+  giftForgeSubtitle: {
+    fontSize: 14,
   },
   section: {
     padding: 16,
