@@ -15,6 +15,10 @@ export type RootStackParamList = {
   VREditor: { projectId: string };
   Settings: undefined;
   Publish: { projectId: string };
+  GiftGameCreator: undefined;
+  GiftQuestionnaire: { questionnaireId?: string };
+  GiftPreview: { giftGameId: string };
+  AgentDashboard: undefined;
 };
 
 // Project types
@@ -108,7 +112,7 @@ export interface CameraSettings {
 }
 
 // Genie AI types
-export type GeniePersonality = 'creative' | 'technical' | 'marketing' | 'educator';
+export type GeniePersonality = 'creative' | 'technical' | 'marketing' | 'educator' | 'gift-guide';
 
 export interface GenieMessage {
   id: string;
@@ -125,6 +129,53 @@ export interface GenieContext {
   currentScene?: string;
   recentActions: string[];
   userPreferences: Record<string, any>;
+}
+
+// Agent types
+export type AgentRole =
+  | 'market-researcher'
+  | 'idea-generator'
+  | 'game-creator'
+  | 'game-tester'
+  | 'perfecter'
+  | 'content-creator'
+  | 'scheduler'
+  | 'engager'
+  | 'outreach';
+
+// Gift Game types
+export interface GiftQuestionnaire {
+  id: string;
+  occasion: string;
+  recipientName: string;
+  relationship: string;
+  recipientTraits: string[];
+  interests: string[];
+  emotionalTone: string;
+  gameStyle: string;
+  senderName: string;
+  customMessage?: string;
+  memories?: string[];
+  photos?: string[];
+  gameDuration: string;
+  difficultyLevel: string;
+  createdAt: Date;
+  status: 'draft' | 'generating' | 'ready' | 'delivered';
+}
+
+export interface GiftGame {
+  id: string;
+  questionnaireId: string;
+  shareableUrl: string;
+  recipientName: string;
+  senderName: string;
+  gameType: string;
+  templateId: string;
+  gameData: any;
+  createdAt: Date;
+  expiresAt?: Date;
+  views: number;
+  completed: boolean;
 }
 
 // Template types
