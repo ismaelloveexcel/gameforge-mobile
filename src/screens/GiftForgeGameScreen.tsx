@@ -4,7 +4,6 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
-  Dimensions,
   ScrollView,
   ActivityIndicator,
 } from 'react-native';
@@ -13,12 +12,8 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Animated, {
   FadeIn,
-  FadeOut,
-  SlideInRight,
-  SlideOutLeft,
   useSharedValue,
   useAnimatedStyle,
-  withSpring,
   withTiming,
   withRepeat,
   runOnJS,
@@ -27,17 +22,12 @@ import { useTheme } from '../contexts/ThemeContext';
 import { RootStackParamList } from '../types';
 import {
   GeneratedGiftGame,
-  StoryBranch,
-  QuizQuestion,
-  GameLevel,
   GiftVisualStyle,
 } from '../types/giftforge';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 type NavigationProp = StackNavigationProp<RootStackParamList>;
 type GameRouteProp = RouteProp<RootStackParamList, 'GiftForgeGame'>;
-
-const { width, height } = Dimensions.get('window');
 
 // Storage key for saved games
 const GAMES_STORAGE_KEY = '@giftforge_games';
@@ -103,17 +93,7 @@ export default function GiftForgeGameScreen() {
   const fadeAnim = useSharedValue(0);
   const sparkleRotation = useSharedValue(0);
   
-  useEffect(() => {
-    fadeAnim.value = withTiming(1, { duration: 500 });
-    sparkleRotation.value = withRepeat(
-      withTiming(360, { duration: 4000 }),
-      -1,
-      false
-    );
-    loadGame();
-  }, []);
-  
-  const loadGame = async () => {
+  const loadGame = useCallback(async () => {
     try {
       const storedGames = await AsyncStorage.getItem(GAMES_STORAGE_KEY);
       if (storedGames) {
@@ -128,7 +108,17 @@ export default function GiftForgeGameScreen() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [route.params.gameId]);
+
+  useEffect(() => {
+    fadeAnim.value = withTiming(1, { duration: 500 });
+    sparkleRotation.value = withRepeat(
+      withTiming(360, { duration: 4000 }),
+      -1,
+      false
+    );
+    loadGame();
+  }, [fadeAnim, sparkleRotation, loadGame]);
   
   const fadeStyle = useAnimatedStyle(() => ({
     opacity: fadeAnim.value,

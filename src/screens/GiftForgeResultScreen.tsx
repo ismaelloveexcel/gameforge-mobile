@@ -6,7 +6,6 @@ import {
   ScrollView,
   TouchableOpacity,
   Share,
-  Dimensions,
   ActivityIndicator,
   Clipboard,
 } from 'react-native';
@@ -21,7 +20,6 @@ import Animated, {
   useAnimatedStyle,
   withSpring,
   withRepeat,
-  withTiming,
 } from 'react-native-reanimated';
 import { useTheme } from '../contexts/ThemeContext';
 import { RootStackParamList } from '../types';
@@ -35,8 +33,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 type NavigationProp = StackNavigationProp<RootStackParamList>;
 type ResultRouteProp = RouteProp<RootStackParamList, 'GiftForgeResult'>;
-
-const { width } = Dimensions.get('window');
 
 // Storage key for saved games
 const GAMES_STORAGE_KEY = '@giftforge_games';
@@ -53,27 +49,8 @@ export default function GiftForgeResultScreen() {
   
   // Animation values
   const celebrationScale = useSharedValue(1);
-  const sparkleRotation = useSharedValue(0);
   
-  useEffect(() => {
-    // Celebration animation
-    celebrationScale.value = withRepeat(
-      withSpring(1.1, { damping: 2 }),
-      -1,
-      true
-    );
-    
-    // Sparkle rotation
-    sparkleRotation.value = withRepeat(
-      withTiming(360, { duration: 3000 }),
-      -1,
-      false
-    );
-    
-    loadGame();
-  }, []);
-  
-  const loadGame = async () => {
+  const loadGame = useCallback(async () => {
     try {
       // Try to load from AsyncStorage
       const storedGames = await AsyncStorage.getItem(GAMES_STORAGE_KEY);
@@ -94,14 +71,21 @@ export default function GiftForgeResultScreen() {
       console.error('Error loading game:', error);
       setIsLoading(false);
     }
-  };
+  }, [route.params.gameId]);
+
+  useEffect(() => {
+    // Celebration animation
+    celebrationScale.value = withRepeat(
+      withSpring(1.1, { damping: 2 }),
+      -1,
+      true
+    );
+    
+    loadGame();
+  }, [celebrationScale, loadGame]);
   
   const celebrationStyle = useAnimatedStyle(() => ({
     transform: [{ scale: celebrationScale.value }],
-  }));
-  
-  const sparkleStyle = useAnimatedStyle(() => ({
-    transform: [{ rotate: `${sparkleRotation.value}deg` }],
   }));
   
   const playableUrl = grokService.generatePlayableUrl(route.params.gameId);

@@ -6,9 +6,7 @@ import {
   ScrollView,
   TouchableOpacity,
   TextInput,
-  Dimensions,
   ActivityIndicator,
-  Alert,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -17,27 +15,15 @@ import Animated, {
   useSharedValue,
   useAnimatedStyle,
   withSpring,
-  withTiming,
-  interpolate,
   FadeIn,
-  FadeOut,
   SlideInRight,
-  SlideOutLeft,
 } from 'react-native-reanimated';
 import { useTheme } from '../contexts/ThemeContext';
 import { RootStackParamList } from '../types';
 import {
   GiftForgeQuestionnaire,
   WizardStep,
-  GiftOccasion,
-  AgeRange,
-  PersonalityTrait,
-  Interest,
-  Relationship,
-  Tone,
   GiftGameType,
-  GameLength,
-  GiftVisualStyle,
   OCCASION_LABELS,
   AGE_LABELS,
   PERSONALITY_LABELS,
@@ -53,8 +39,6 @@ import {
 import { grokService } from '../services/GrokService';
 
 type NavigationProp = StackNavigationProp<RootStackParamList>;
-
-const { width, height } = Dimensions.get('window');
 
 const WIZARD_STEPS: WizardStep[] = [
   'occasion',
@@ -94,7 +78,7 @@ export default function GiftForgeWizardScreen() {
     recipientInterests: [],
   });
   const [isGenerating, setIsGenerating] = useState(false);
-  const [generatedGame, setGeneratedGame] = useState<GeneratedGiftGame | null>(null);
+  const [, setGeneratedGame] = useState<GeneratedGiftGame | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [showPaywall, setShowPaywall] = useState(false);
   
@@ -107,7 +91,7 @@ export default function GiftForgeWizardScreen() {
   // Update progress animation
   useEffect(() => {
     progress.value = withSpring((currentStepIndex + 1) / WIZARD_STEPS.length);
-  }, [currentStepIndex]);
+  }, [currentStepIndex, progress]);
   
   const progressStyle = useAnimatedStyle(() => ({
     width: `${progress.value * 100}%`,
@@ -145,7 +129,7 @@ export default function GiftForgeWizardScreen() {
       });
       setCurrentStepIndex(prev => prev + 1);
     }
-  }, [currentStepIndex]);
+  }, [currentStepIndex, cardScale]);
 
   const handleBack = useCallback(() => {
     if (currentStepIndex > 0) {
