@@ -14,6 +14,9 @@ import MarketingDashboardScreen from '../screens/MarketingDashboardScreen';
 import VREditorScreen from '../screens/VREditorScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 import PublishScreen from '../screens/PublishScreen';
+import { GiftQuestionnaireScreen } from '../screens/GiftQuestionnaireScreen';
+import { GiftPreviewScreen } from '../screens/GiftPreviewScreen';
+import { AgentDashboardScreen } from '../screens/AgentDashboardScreen';
 
 import { RootStackParamList } from '../types';
 
@@ -111,6 +114,21 @@ export default function AppNavigator() {
         name="Settings" 
         component={SettingsScreen}
         options={{ title: 'Settings' }}
+      />
+      <Stack.Screen 
+        name="GiftQuestionnaire" 
+        component={GiftQuestionnaireScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen 
+        name="GiftPreview" 
+        component={GiftPreviewScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen 
+        name="AgentDashboard" 
+        component={AgentDashboardScreen}
+        options={{ headerShown: false }}
       />
     </Stack.Navigator>
   );

@@ -23,6 +23,13 @@ export default function HomeScreen() {
 
   const features = [
     {
+      icon: 'gift-outline',
+      title: 'Personalized Gift Games',
+      description: 'Create heartfelt game gifts in minutes',
+      onPress: () => navigation.navigate('GiftQuestionnaire', {}),
+      highlight: true,
+    },
+    {
       icon: 'creation',
       title: 'Create Games',
       description: '15 ready-to-use game templates',
@@ -31,7 +38,7 @@ export default function HomeScreen() {
     {
       icon: 'robot',
       title: 'AI Assistant',
-      description: '4 specialized personalities',
+      description: '5 specialized personalities',
       onPress: () => navigation.navigate('Genie'),
     },
     {
@@ -46,9 +53,21 @@ export default function HomeScreen() {
       description: 'Create immersive VR experiences',
       onPress: () => navigation.navigate('Templates'),
     },
+    {
+      icon: 'robot-industrial',
+      title: 'Agent Dashboard',
+      description: 'Monitor AI agent workflows',
+      onPress: () => navigation.navigate('AgentDashboard'),
+    },
   ];
 
   const quickActions = [
+    {
+      icon: 'gift',
+      title: 'Gift Game',
+      color: '#FF6B9D',
+      onPress: () => navigation.navigate('GiftQuestionnaire', {}),
+    },
     {
       icon: 'plus-circle',
       title: 'New Project',
@@ -83,7 +102,24 @@ export default function HomeScreen() {
         </Text>
       </View>
 
-      {/* Hero Card */}
+      {/* Hero Card - Gift Games */}
+      <TouchableOpacity 
+        style={[styles.heroCard, styles.giftHeroCard]}
+        onPress={() => navigation.navigate('GiftQuestionnaire', {})}
+      >
+        <Text style={styles.giftHeroEmoji}>🎁</Text>
+        <Text style={styles.giftHeroTitle}>
+          Create Personalized Gift Games
+        </Text>
+        <Text style={styles.giftHeroText}>
+          Turn memories into playable adventures. Perfect for birthdays, anniversaries, and special moments.
+        </Text>
+        <View style={styles.giftHeroBadge}>
+          <Text style={styles.giftHeroBadgeText}>NEW ✨</Text>
+        </View>
+      </TouchableOpacity>
+
+      {/* Secondary Hero Card */}
       <View style={[styles.heroCard, { backgroundColor: theme.colors.card }]}>
         <Icon name="rocket-launch" size={48} color={theme.colors.primary} />
         <Text style={[styles.heroTitle, { color: theme.colors.text }]}>
@@ -123,15 +159,29 @@ export default function HomeScreen() {
         {features.map((feature, index) => (
           <TouchableOpacity
             key={index}
-            style={[styles.featureCard, { backgroundColor: theme.colors.card }]}
+            style={[
+              styles.featureCard, 
+              { backgroundColor: theme.colors.card },
+              feature.highlight && styles.highlightCard
+            ]}
             onPress={feature.onPress}
           >
-            <View style={[styles.featureIcon, { backgroundColor: theme.colors.primary + '20' }]}>
-              <Icon name={feature.icon} size={28} color={theme.colors.primary} />
+            <View style={[
+              styles.featureIcon, 
+              { backgroundColor: feature.highlight ? '#FF6B9D20' : theme.colors.primary + '20' }
+            ]}>
+              <Icon 
+                name={feature.icon} 
+                size={28} 
+                color={feature.highlight ? '#FF6B9D' : theme.colors.primary} 
+              />
             </View>
             <View style={styles.featureContent}>
               <Text style={[styles.featureTitle, { color: theme.colors.text }]}>
                 {feature.title}
+                {feature.highlight && (
+                  <Text style={styles.newBadge}> NEW</Text>
+                )}
               </Text>
               <Text style={[styles.featureDescription, { color: theme.colors.text + '80' }]}>
                 {feature.description}
@@ -193,6 +243,40 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     alignItems: 'center',
   },
+  giftHeroCard: {
+    backgroundColor: '#FF6B9D',
+    marginBottom: 8,
+  },
+  giftHeroEmoji: {
+    fontSize: 56,
+    marginBottom: 12,
+  },
+  giftHeroTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#fff',
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  giftHeroText: {
+    fontSize: 14,
+    color: '#fff',
+    textAlign: 'center',
+    lineHeight: 20,
+    opacity: 0.95,
+  },
+  giftHeroBadge: {
+    backgroundColor: '#fff',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 12,
+    marginTop: 16,
+  },
+  giftHeroBadgeText: {
+    fontSize: 12,
+    fontWeight: 'bold',
+    color: '#FF6B9D',
+  },
   heroTitle: {
     fontSize: 24,
     fontWeight: 'bold',
@@ -234,6 +318,16 @@ const styles = StyleSheet.create({
     padding: 16,
     borderRadius: 12,
     marginBottom: 12,
+  },
+  highlightCard: {
+    borderWidth: 2,
+    borderColor: '#FF6B9D',
+  },
+  newBadge: {
+    fontSize: 10,
+    color: '#FF6B9D',
+    fontWeight: 'bold',
+    marginLeft: 4,
   },
   featureIcon: {
     width: 56,
