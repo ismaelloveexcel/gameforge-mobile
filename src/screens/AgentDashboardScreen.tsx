@@ -11,14 +11,14 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../types';
-import { agentOrchestrator } from '../services/AgentOrchestrator';
+import { agentOrchestrator, AgentWorkflow } from '../services/AgentOrchestrator';
 import { LinearGradient } from 'expo-linear-gradient';
 
 type AgentDashboardNavigationProp = StackNavigationProp<RootStackParamList, 'AgentDashboard'>;
 
 export const AgentDashboardScreen: React.FC = () => {
   const navigation = useNavigation<AgentDashboardNavigationProp>();
-  const [workflows, setWorkflows] = useState<any[]>([]);
+  const [workflows, setWorkflows] = useState<AgentWorkflow[]>([]);
   const [refreshing, setRefreshing] = useState(false);
   const [runningPipeline, setRunningPipeline] = useState(false);
 
@@ -85,7 +85,7 @@ export const AgentDashboardScreen: React.FC = () => {
     }
   };
 
-  const renderWorkflowCard = (workflow: any) => {
+  const renderWorkflowCard = (workflow: AgentWorkflow) => {
     const duration = workflow.completedAt
       ? Math.round((workflow.completedAt.getTime() - workflow.createdAt.getTime()) / 1000)
       : null;

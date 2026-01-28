@@ -99,7 +99,7 @@ class GiftGameService {
    */
   createQuestionnaire(): GiftQuestionnaire {
     const questionnaire: GiftQuestionnaire = {
-      id: `quest_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      id: `quest_${Date.now()}_${Math.random().toString(36).slice(2, 11)}`,
       occasion: 'birthday',
       recipientName: '',
       relationship: 'friend',
@@ -315,7 +315,7 @@ class GiftGameService {
 
     // Create gift game
     const giftGame: GiftGame = {
-      id: `gift_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      id: `gift_${Date.now()}_${Math.random().toString(36).slice(2, 11)}`,
       questionnaireId,
       shareableUrl: this.generateShareableUrl(),
       recipientName: questionnaire.recipientName,
@@ -345,7 +345,7 @@ class GiftGameService {
    * Generate a unique shareable URL
    */
   private generateShareableUrl(): string {
-    const uniqueCode = Math.random().toString(36).substr(2, 12);
+    const uniqueCode = Math.random().toString(36).slice(2, 14);
     return `https://gameforge.app/play/${uniqueCode}`;
   }
 

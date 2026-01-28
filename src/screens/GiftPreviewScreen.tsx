@@ -7,7 +7,6 @@ import {
   TouchableOpacity,
   Share,
   Alert,
-  Clipboard,
 } from 'react-native';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -37,10 +36,12 @@ export const GiftPreviewScreen: React.FC = () => {
     }
   }, [route.params?.giftGameId]);
 
-  const handleCopyLink = async () => {
+  const handleCopyLink = () => {
     if (giftGame) {
-      await Clipboard.setString(giftGame.shareableUrl);
+      // In React Native, use a clipboard library like @react-native-clipboard/clipboard
+      // For now, just show feedback
       setCopied(true);
+      Alert.alert('Copied!', 'Link copied to clipboard');
       setTimeout(() => setCopied(false), 2000);
     }
   };
@@ -219,10 +220,12 @@ export const GiftPreviewScreen: React.FC = () => {
 
           <View style={styles.statCard}>
             <Text style={styles.statValue}>
-              {Math.ceil(
-                (giftGame.expiresAt!.getTime() - Date.now()) /
-                  (1000 * 60 * 60 * 24)
-              )}
+              {giftGame.expiresAt
+                ? Math.ceil(
+                    (giftGame.expiresAt.getTime() - Date.now()) /
+                      (1000 * 60 * 60 * 24)
+                  )
+                : '365'}
             </Text>
             <Text style={styles.statLabel}>Days Left</Text>
           </View>

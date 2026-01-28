@@ -7,6 +7,9 @@ on:
   # Allow manual trigger
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   run-agent-pipeline:
     runs-on: ubuntu-latest
@@ -24,63 +27,43 @@ jobs:
       - name: Install dependencies
         run: npm ci
         
-      - name: Run market research agent
+      - name: Run complete agent pipeline
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           GROK_API_KEY: ${{ secrets.GROK_API_KEY }}
         run: |
-          echo "Running market research agent..."
-          # This would call a script that runs the agent orchestrator
-          # node scripts/run-agent-pipeline.js research
+          echo "Running complete agent pipeline..."
+          echo "Note: Script implementation required for production"
+          # TODO: Implement script in scripts/run-agent-pipeline.js
+          # node scripts/run-agent-pipeline.js
           
-      - name: Generate new template ideas
-        env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          GROK_API_KEY: ${{ secrets.GROK_API_KEY }}
-        run: |
-          echo "Generating new template ideas..."
-          # node scripts/run-agent-pipeline.js generate-ideas
-          
-      - name: Create experimental templates
-        env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          GROK_API_KEY: ${{ secrets.GROK_API_KEY }}
-        run: |
-          echo "Creating experimental templates..."
-          # node scripts/run-agent-pipeline.js create-templates
-          
-      - name: Test generated templates
-        run: |
-          echo "Testing generated templates..."
-          # node scripts/run-agent-pipeline.js test-templates
-          
-      - name: Commit experimental templates
+      - name: Create pull request with new templates
+        if: success()
         run: |
           git config --local user.email "agent@gameforge.app"
           git config --local user.name "GameForge Agent"
           
           # Check if there are changes to commit
           if [ -n "$(git status --porcelain)" ]; then
+            BRANCH_NAME="agent/templates-$(date +%Y%m%d-%H%M%S)"
+            git checkout -b "$BRANCH_NAME"
             git add templates/experimental/
-            git commit -m "feat: Add experimental templates from nightly agent run [skip ci]"
-            git push
+            git commit -m "feat: Add experimental templates from nightly agent run"
+            git push origin "$BRANCH_NAME"
+            
+            # Create PR (requires gh CLI or API call)
+            echo "Created branch $BRANCH_NAME with new templates"
+            echo "TODO: Create PR via GitHub API or gh CLI"
           else
             echo "No new templates to commit"
           fi
-          
-      - name: Generate pipeline report
-        run: |
-          echo "Generating pipeline report..."
-          # node scripts/generate-agent-report.js
           
       - name: Notify on success
         if: success()
         run: |
           echo "✅ Nightly agent pipeline completed successfully"
-          # Could send notification to Slack/Discord/Email
           
       - name: Notify on failure
         if: failure()
         run: |
           echo "❌ Nightly agent pipeline failed"
-          # Could send alert notification

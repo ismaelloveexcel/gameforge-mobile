@@ -110,7 +110,7 @@ class AgentOrchestrator {
     }
 
     const task: AgentTask = {
-      id: `task_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      id: `task_${Date.now()}_${Math.random().toString(36).slice(2, 11)}`,
       agentRole,
       input,
       context,
@@ -504,4 +504,13 @@ class AgentOrchestrator {
   }
 }
 
-export const agentOrchestrator = new AgentOrchestrator();
+const agentOrchestratorInstance = new AgentOrchestrator();
+
+export { agentOrchestratorInstance as agentOrchestrator };
+export type { 
+  AgentWorkflow, 
+  AgentTask, 
+  MarketResearchResult,
+  TemplateGenerationResult,
+  GameTestResult
+};
