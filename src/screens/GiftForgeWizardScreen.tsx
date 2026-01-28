@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import {
   View,
   Text,
@@ -18,6 +18,7 @@ import Animated, {
   FadeIn,
   SlideInRight,
 } from 'react-native-reanimated';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useTheme } from '../contexts/ThemeContext';
 import { RootStackParamList } from '../types';
 import {
@@ -39,6 +40,9 @@ import {
 import { grokService } from '../services/GrokService';
 
 type NavigationProp = StackNavigationProp<RootStackParamList>;
+
+// Storage key for saved games
+const GAMES_STORAGE_KEY = '@giftforge_games';
 
 const WIZARD_STEPS: WizardStep[] = [
   'occasion',
@@ -78,7 +82,6 @@ export default function GiftForgeWizardScreen() {
     recipientInterests: [],
   });
   const [isGenerating, setIsGenerating] = useState(false);
-  const [, setGeneratedGame] = useState<GeneratedGiftGame | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [showPaywall, setShowPaywall] = useState(false);
   
@@ -87,6 +90,11 @@ export default function GiftForgeWizardScreen() {
   const cardScale = useSharedValue(1);
   
   const currentStep = WIZARD_STEPS[currentStepIndex];
+  
+  // Memoize encouraging message to prevent changes on re-render
+  const encouragingMessage = useMemo(() => {
+    return ENCOURAGING_MESSAGES[Math.floor(Math.random() * ENCOURAGING_MESSAGES.length)];
+  }, [currentStepIndex]);
   
   // Update progress animation
   useEffect(() => {
@@ -144,6 +152,18 @@ export default function GiftForgeWizardScreen() {
     setShowPaywall(true);
   }, []);
 
+  // Save game to AsyncStorage
+  const saveGameToStorage = useCallback(async (game: GeneratedGiftGame) => {
+    try {
+      const storedGames = await AsyncStorage.getItem(GAMES_STORAGE_KEY);
+      const games: GeneratedGiftGame[] = storedGames ? JSON.parse(storedGames) : [];
+      games.push(game);
+      await AsyncStorage.setItem(GAMES_STORAGE_KEY, JSON.stringify(games));
+    } catch (err) {
+      console.error('Error saving game to storage:', err);
+    }
+  }, []);
+
   const handleFakePayment = useCallback(async () => {
     setShowPaywall(false);
     setIsGenerating(true);
@@ -153,18 +173,19 @@ export default function GiftForgeWizardScreen() {
       const result = await grokService.generateGame(questionnaire as GiftForgeQuestionnaire);
       
       if (result.success && result.game) {
-        setGeneratedGame(result.game);
+        // Save game to AsyncStorage for retrieval on result/game screens
+        await saveGameToStorage(result.game);
         // Navigate to result screen
         navigation.navigate('GiftForgeResult', { gameId: result.game.id });
       } else {
-        setError(result.error || 'Failed to generate game. Please try again.');
+        setError(result.error || 'Failed to generate your gift game. Please check your internet connection and try again.');
       }
     } catch (err) {
-      setError('Something went wrong. Please try again.');
+      setError('Failed to generate your gift game. Please check your internet connection and try again.');
     } finally {
       setIsGenerating(false);
     }
-  }, [questionnaire, navigation]);
+  }, [questionnaire, navigation, saveGameToStorage]);
 
   const updateQuestionnaire = useCallback((updates: Partial<GiftForgeQuestionnaire>) => {
     setQuestionnaire(prev => ({ ...prev, ...updates }));
@@ -518,7 +539,7 @@ export default function GiftForgeWizardScreen() {
               </View>
               
               <Text style={[styles.encouragingMessage, { color: theme.colors.primary }]}>
-                {ENCOURAGING_MESSAGES[Math.floor(Math.random() * ENCOURAGING_MESSAGES.length)]}
+                {encouragingMessage}
               </Text>
             </Animated.View>
           </ScrollView>
