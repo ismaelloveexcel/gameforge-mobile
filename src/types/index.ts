@@ -15,6 +15,10 @@ export type RootStackParamList = {
   VREditor: { projectId: string };
   Settings: undefined;
   Publish: { projectId: string };
+  // GiftForge routes
+  GiftForgeWizard: undefined;
+  GiftForgeGame: { gameId: string };
+  GiftForgeResult: { gameId: string };
 };
 
 // Project types

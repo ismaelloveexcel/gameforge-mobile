@@ -14,6 +14,10 @@ import MarketingDashboardScreen from '../screens/MarketingDashboardScreen';
 import VREditorScreen from '../screens/VREditorScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 import PublishScreen from '../screens/PublishScreen';
+// GiftForge screens
+import GiftForgeWizardScreen from '../screens/GiftForgeWizardScreen';
+import GiftForgeResultScreen from '../screens/GiftForgeResultScreen';
+import GiftForgeGameScreen from '../screens/GiftForgeGameScreen';
 
 import { RootStackParamList } from '../types';
 
@@ -111,6 +115,22 @@ export default function AppNavigator() {
         name="Settings" 
         component={SettingsScreen}
         options={{ title: 'Settings' }}
+      />
+      {/* GiftForge screens */}
+      <Stack.Screen 
+        name="GiftForgeWizard" 
+        component={GiftForgeWizardScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen 
+        name="GiftForgeResult" 
+        component={GiftForgeResultScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen 
+        name="GiftForgeGame" 
+        component={GiftForgeGameScreen}
+        options={{ headerShown: false }}
       />
     </Stack.Navigator>
   );
