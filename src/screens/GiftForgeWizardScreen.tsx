@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   TextInput,
   ActivityIndicator,
+  Platform,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -15,8 +16,15 @@ import Animated, {
   useSharedValue,
   useAnimatedStyle,
   withSpring,
+  withRepeat,
+  withSequence,
+  withTiming,
+  Easing,
   FadeIn,
+  FadeInUp,
+  FadeInDown,
   SlideInRight,
+  ZoomIn,
 } from 'react-native-reanimated';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useTheme } from '../contexts/ThemeContext';
@@ -44,6 +52,8 @@ type NavigationProp = StackNavigationProp<RootStackParamList>;
 // Storage key for saved games
 const GAMES_STORAGE_KEY = '@giftforge_games';
 
+const AnimatedTouchable = Animated.createAnimatedComponent(TouchableOpacity);
+
 const WIZARD_STEPS: WizardStep[] = [
   'occasion',
   'recipient_profile',
@@ -62,6 +72,26 @@ const STEP_TITLES: Record<WizardStep, string> = {
   visual_style: 'Pick a Look',
   personalization: 'Make It Personal',
   confirmation: 'Review & Create',
+};
+
+const STEP_SUBTITLES: Record<WizardStep, string> = {
+  occasion: 'Every celebration deserves something special ✨',
+  recipient_profile: 'Help us personalize their experience 💫',
+  relationship_tone: 'Set the perfect mood for your gift 💝',
+  game_type: 'Pick the perfect adventure 🎮',
+  visual_style: 'Choose a beautiful theme 🎨',
+  personalization: 'Add your personal touch 💌',
+  confirmation: 'One final look before the magic happens 🪄',
+};
+
+const STEP_ICONS: Record<WizardStep, string> = {
+  occasion: 'calendar-heart',
+  recipient_profile: 'account-heart',
+  relationship_tone: 'heart-multiple',
+  game_type: 'gamepad-variant',
+  visual_style: 'palette',
+  personalization: 'message-heart',
+  confirmation: 'check-decagram',
 };
 
 const ENCOURAGING_MESSAGES = [
@@ -663,35 +693,65 @@ export default function GiftForgeWizardScreen() {
             color={theme.colors.text} 
           />
         </TouchableOpacity>
-        <Text style={[styles.headerTitle, { color: theme.colors.text }]}>
-          Create Gift Game
-        </Text>
-        <View style={styles.headerRight}>
-          <Text style={[styles.stepIndicator, { color: theme.colors.text + '80' }]}>
+        <View style={styles.headerCenter}>
+          <Icon name="gift" size={20} color={theme.colors.accent} style={{ marginRight: 8 }} />
+          <Text style={[styles.headerTitle, { color: theme.colors.text }]}>
+            Create Gift Game
+          </Text>
+        </View>
+        <View style={[styles.stepBadge, { backgroundColor: theme.colors.primary + '20' }]}>
+          <Text style={[styles.stepIndicator, { color: theme.colors.primary }]}>
             {currentStepIndex + 1}/{WIZARD_STEPS.length}
           </Text>
         </View>
       </View>
       
-      {/* Progress Bar */}
-      <View style={[styles.progressBarContainer, { backgroundColor: theme.colors.card }]}>
-        <Animated.View 
-          style={[
-            styles.progressBarFill, 
-            { backgroundColor: theme.colors.primary },
-            progressStyle
-          ]} 
-        />
+      {/* Enhanced Progress Bar */}
+      <View style={styles.progressSection}>
+        <View style={[styles.progressBarContainer, { backgroundColor: theme.colors.card }]}>
+          <Animated.View 
+            style={[
+              styles.progressBarFill, 
+              { backgroundColor: theme.colors.primary },
+              progressStyle
+            ]} 
+          />
+          {/* Progress Dots */}
+          <View style={styles.progressDots}>
+            {WIZARD_STEPS.map((_, index) => (
+              <View 
+                key={index}
+                style={[
+                  styles.progressDot,
+                  { 
+                    backgroundColor: index <= currentStepIndex 
+                      ? theme.colors.primary 
+                      : theme.colors.card,
+                    borderColor: index <= currentStepIndex 
+                      ? theme.colors.primary 
+                      : theme.colors.border,
+                  }
+                ]} 
+              />
+            ))}
+          </View>
+        </View>
       </View>
       
-      {/* Step Title */}
+      {/* Step Header with Icon */}
       <Animated.View 
         key={currentStep}
-        entering={SlideInRight.duration(300)}
+        entering={FadeInDown.duration(400)}
         style={styles.stepTitleContainer}
       >
+        <View style={[styles.stepIconWrapper, { backgroundColor: theme.colors.primary + '15' }]}>
+          <Icon name={STEP_ICONS[currentStep]} size={24} color={theme.colors.primary} />
+        </View>
         <Text style={[styles.stepTitle, { color: theme.colors.text }]}>
           {STEP_TITLES[currentStep]}
+        </Text>
+        <Text style={[styles.stepSubtitle, { color: theme.colors.text + '70' }]}>
+          {STEP_SUBTITLES[currentStep]}
         </Text>
       </Animated.View>
       
@@ -703,7 +763,7 @@ export default function GiftForgeWizardScreen() {
       >
         <Animated.View 
           key={currentStep}
-          entering={FadeIn.duration(300)}
+          entering={FadeInUp.duration(400).delay(100)}
         >
           {renderStepContent()}
         </Animated.View>
@@ -715,37 +775,57 @@ export default function GiftForgeWizardScreen() {
       {/* Error Message */}
       {error && (
         <Animated.View 
-          entering={FadeIn}
-          style={[styles.errorContainer, { backgroundColor: theme.colors.error + '20' }]}
+          entering={ZoomIn}
+          style={[styles.errorContainer, { backgroundColor: theme.colors.error + '15' }]}
         >
+          <Icon name="alert-circle" size={20} color={theme.colors.error} />
           <Text style={[styles.errorText, { color: theme.colors.error }]}>
             {error}
           </Text>
         </Animated.View>
       )}
       
-      {/* Bottom Navigation */}
-      <View style={[styles.bottomNav, { backgroundColor: theme.colors.background }]}>
+      {/* Bottom Navigation - Premium Style */}
+      <View style={[styles.bottomNav, { 
+        backgroundColor: theme.colors.background,
+        ...Platform.select({
+          web: { boxShadow: '0 -4px 20px rgba(0,0,0,0.08)' },
+          default: { elevation: 8 }
+        })
+      }]}>
         {currentStep !== 'confirmation' ? (
           <TouchableOpacity
             style={[
               styles.nextButton,
-              { backgroundColor: theme.colors.primary },
-              !canProceed() && { opacity: 0.5 },
+              { 
+                backgroundColor: canProceed() ? theme.colors.primary : theme.colors.card,
+              },
             ]}
             onPress={handleNext}
             disabled={!canProceed()}
+            activeOpacity={0.8}
           >
-            <Text style={styles.nextButtonText}>Continue</Text>
-            <Icon name="arrow-right" size={20} color="#fff" />
+            <Text style={[
+              styles.nextButtonText,
+              !canProceed() && { color: theme.colors.text + '50' }
+            ]}>
+              Continue
+            </Text>
+            <View style={[styles.nextButtonIcon, { backgroundColor: canProceed() ? 'rgba(255,255,255,0.2)' : 'transparent' }]}>
+              <Icon name="arrow-right" size={18} color={canProceed() ? '#fff' : theme.colors.text + '50'} />
+            </View>
           </TouchableOpacity>
         ) : (
           <TouchableOpacity
             style={[styles.generateButton, { backgroundColor: theme.colors.success }]}
             onPress={handleGenerate}
+            activeOpacity={0.8}
           >
-            <Icon name="magic-staff" size={24} color="#fff" />
-            <Text style={styles.generateButtonText}>Create My Gift!</Text>
+            <View style={styles.generateButtonInner}>
+              <Icon name="creation" size={24} color="#fff" />
+              <Text style={styles.generateButtonText}>Create My Gift!</Text>
+            </View>
+            <View style={styles.generateButtonShimmer} />
           </TouchableOpacity>
         )}
       </View>
@@ -766,40 +846,91 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 16,
-    paddingTop: 50,
-    paddingBottom: 16,
+    paddingTop: 54,
+    paddingBottom: 12,
   },
   backButton: {
-    padding: 8,
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  headerCenter: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   headerTitle: {
     fontSize: 18,
-    fontWeight: '600',
+    fontWeight: '700',
+    letterSpacing: -0.2,
   },
-  headerRight: {
-    width: 50,
-    alignItems: 'flex-end',
+  stepBadge: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 20,
   },
   stepIndicator: {
-    fontSize: 14,
+    fontSize: 13,
+    fontWeight: '700',
+  },
+  progressSection: {
+    paddingHorizontal: 20,
+    paddingTop: 8,
+    paddingBottom: 4,
   },
   progressBarContainer: {
-    height: 4,
-    marginHorizontal: 16,
-    borderRadius: 2,
-    overflow: 'hidden',
+    height: 6,
+    borderRadius: 3,
+    overflow: 'visible',
+    position: 'relative',
   },
   progressBarFill: {
     height: '100%',
-    borderRadius: 2,
+    borderRadius: 3,
+  },
+  progressDots: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 2,
+  },
+  progressDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    borderWidth: 2,
   },
   stepTitleContainer: {
     paddingHorizontal: 20,
-    paddingVertical: 16,
+    paddingTop: 20,
+    paddingBottom: 16,
+    alignItems: 'center',
+  },
+  stepIconWrapper: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 12,
   },
   stepTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
+    fontSize: 26,
+    fontWeight: '800',
+    letterSpacing: -0.5,
+    textAlign: 'center',
+    marginBottom: 6,
+  },
+  stepSubtitle: {
+    fontSize: 15,
+    textAlign: 'center',
+    letterSpacing: 0.1,
   },
   content: {
     flex: 1,
@@ -807,8 +938,9 @@ const styles = StyleSheet.create({
   },
   sectionLabel: {
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: '700',
     marginBottom: 12,
+    letterSpacing: -0.2,
   },
   selectionGrid: {
     flexDirection: 'row',
@@ -816,24 +948,26 @@ const styles = StyleSheet.create({
     marginHorizontal: -4,
   },
   selectionItem: {
-    paddingVertical: 14,
-    paddingHorizontal: 12,
-    borderRadius: 12,
-    borderWidth: 1,
+    paddingVertical: 16,
+    paddingHorizontal: 14,
+    borderRadius: 16,
+    borderWidth: 2,
     borderColor: 'transparent',
     alignItems: 'center',
   },
   selectionItemText: {
-    fontSize: 14,
+    fontSize: 15,
+    fontWeight: '500',
     textAlign: 'center',
   },
   selectionHint: {
     fontSize: 13,
-    marginBottom: 8,
+    marginBottom: 10,
+    fontWeight: '500',
   },
   gameTypeCard: {
-    padding: 16,
-    borderRadius: 12,
+    padding: 18,
+    borderRadius: 16,
     marginBottom: 12,
   },
   gameTypeTitle: {
@@ -867,102 +1001,142 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   confirmationTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 16,
+    fontSize: 22,
+    fontWeight: '800',
+    marginBottom: 18,
     textAlign: 'center',
+    letterSpacing: -0.3,
   },
   confirmationRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 12,
+    marginBottom: 14,
+    paddingVertical: 4,
   },
   confirmationLabel: {
     fontSize: 14,
+    fontWeight: '500',
   },
   confirmationValue: {
     fontSize: 14,
-    fontWeight: '600',
+    fontWeight: '700',
     flex: 1,
     textAlign: 'right',
   },
   messagePreview: {
-    padding: 16,
-    borderRadius: 12,
-    marginTop: 12,
+    padding: 18,
+    borderRadius: 16,
+    marginTop: 16,
   },
   messagePreviewLabel: {
     fontSize: 12,
-    marginBottom: 8,
+    fontWeight: '600',
+    marginBottom: 10,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
   },
   messagePreviewText: {
-    fontSize: 14,
+    fontSize: 15,
     fontStyle: 'italic',
-    lineHeight: 20,
+    lineHeight: 22,
   },
   encouragingMessage: {
-    fontSize: 16,
-    fontWeight: '600',
+    fontSize: 17,
+    fontWeight: '700',
     textAlign: 'center',
-    marginVertical: 16,
+    marginVertical: 20,
+    letterSpacing: -0.2,
   },
   previewPane: {
     padding: 16,
     marginHorizontal: 16,
     marginBottom: 8,
-    borderRadius: 12,
+    borderRadius: 16,
   },
   previewTitle: {
-    fontSize: 12,
-    fontWeight: '600',
-    marginBottom: 4,
+    fontSize: 11,
+    fontWeight: '700',
+    marginBottom: 6,
+    textTransform: 'uppercase',
+    letterSpacing: 0.8,
   },
   previewText: {
-    fontSize: 14,
+    fontSize: 15,
+    fontWeight: '600',
   },
   previewGameType: {
     fontSize: 12,
-    marginTop: 4,
+    marginTop: 6,
+    fontWeight: '500',
   },
   errorContainer: {
-    padding: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 14,
     marginHorizontal: 16,
-    borderRadius: 8,
+    borderRadius: 12,
     marginBottom: 8,
+    gap: 8,
   },
   errorText: {
     fontSize: 14,
-    textAlign: 'center',
+    fontWeight: '500',
   },
   bottomNav: {
-    padding: 16,
-    paddingBottom: 32,
+    padding: 20,
+    paddingBottom: 36,
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
   },
   nextButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 16,
-    borderRadius: 12,
-    gap: 8,
+    paddingVertical: 18,
+    paddingHorizontal: 24,
+    borderRadius: 16,
   },
   nextButtonText: {
     color: '#fff',
-    fontSize: 16,
-    fontWeight: '600',
+    fontSize: 17,
+    fontWeight: '700',
+    marginRight: 8,
+    letterSpacing: -0.2,
+  },
+  nextButtonIcon: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   generateButton: {
+    position: 'relative',
+    overflow: 'hidden',
+    paddingVertical: 20,
+    paddingHorizontal: 24,
+    borderRadius: 16,
+  },
+  generateButtonInner: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 16,
-    borderRadius: 12,
-    gap: 8,
+    gap: 10,
   },
   generateButtonText: {
     color: '#fff',
-    fontSize: 18,
-    fontWeight: 'bold',
+    fontSize: 19,
+    fontWeight: '800',
+    letterSpacing: -0.3,
+  },
+  generateButtonShimmer: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    opacity: 0.2,
   },
   // Paywall styles
   paywallOverlay: {
