@@ -20,7 +20,7 @@ const { width } = Dimensions.get('window');
 
 export default function MarketingDashboardScreen() {
   const { theme } = useTheme();
-  const route = useRoute<MarketingDashboardRouteProp>();
+  // const route = useRoute<MarketingDashboardRouteProp>(); // TODO: Use for fetching project-specific data
   const [activeTab, setActiveTab] = useState<'overview' | 'campaigns' | 'analytics'>('overview');
   
   // Mock data - in production, this would come from the MarketingService
@@ -65,7 +65,7 @@ export default function MarketingDashboardScreen() {
       name: 'Launch Campaign',
       type: 'Social Media',
       status: 'active' as const,
-      startDate: '2024-01-15',
+      startDate: '2026-01-15',
       impressions: '8.2K',
       clicks: '564',
       budget: '$500',
@@ -75,7 +75,7 @@ export default function MarketingDashboardScreen() {
       name: 'Holiday Special',
       type: 'Email',
       status: 'scheduled' as const,
-      startDate: '2024-02-01',
+      startDate: '2026-02-01',
       impressions: '—',
       clicks: '—',
       budget: '$300',
@@ -85,7 +85,7 @@ export default function MarketingDashboardScreen() {
       name: 'Influencer Collab',
       type: 'Partnership',
       status: 'draft' as const,
-      startDate: '2024-02-15',
+      startDate: '2026-02-15',
       impressions: '—',
       clicks: '—',
       budget: '$750',

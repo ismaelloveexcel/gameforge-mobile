@@ -40,7 +40,12 @@ export default function OnboardingScreen() {
 
   const completeOnboarding = async () => {
     // Save that onboarding has been completed
-    await AsyncStorage.setItem('onboarding_completed', 'true');
+    try {
+      await AsyncStorage.setItem('onboarding_completed', 'true');
+    } catch (error) {
+      console.error('Failed to save onboarding state:', error);
+      // Continue anyway - user experience is more important than state persistence
+    }
     
     // Navigate based on user's goal
     if (data.goal === 'gift') {

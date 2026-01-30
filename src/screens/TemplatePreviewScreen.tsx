@@ -90,7 +90,7 @@ export default function TemplatePreviewScreen() {
           <View style={[
             styles.previewArea,
             {
-              backgroundColor: template.data.scenes[0]?.background || theme.colors.primary,
+              backgroundColor: template.data.scenes?.[0]?.background || theme.colors.primary,
             }
           ]}>
             <View style={styles.previewOverlay}>
