@@ -1,5 +1,6 @@
 // Navigation types
 export type RootStackParamList = {
+  Onboarding: undefined;
   MainTabs: undefined;
   Home: undefined;
   Projects: undefined;
