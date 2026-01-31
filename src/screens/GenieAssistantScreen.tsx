@@ -137,7 +137,7 @@ export default function GenieAssistantScreen() {
           <View style={styles.emptyState}>
             <Icon name="robot-excited" size={64} color={theme.colors.text + '40'} />
             <Text style={[styles.emptyText, { color: theme.colors.text }]}>
-              Hello! I'm Genie, your AI assistant.
+              Hello! I'm Genie, your creative companion.
             </Text>
             <Text style={[styles.emptySubtext, { color: theme.colors.text + '80' }]}>
               Ask me anything about game development!

@@ -86,8 +86,8 @@ export default function HomeScreen() {
       onPress: () => navigation.navigate('Templates'),
     },
     {
-      icon: 'robot',
-      title: 'AI Assistant',
+      icon: 'bird',
+      title: 'Dodo Helper',
       description: '4 specialized personalities',
       onPress: () => navigation.navigate('Genie'),
     },
@@ -140,7 +140,7 @@ export default function HomeScreen() {
           GameForge Mobile
         </Text>
         <Text style={[styles.subtitle, { color: theme.colors.text + '80' }]}>
-          AI-Powered Game Creation Platform
+          Create Games That Mean Something
         </Text>
       </Animated.View>
 
@@ -227,7 +227,7 @@ export default function HomeScreen() {
                     <Text style={[styles.giftForgePillText, { color: theme.colors.accent }]}>🎮 5 Game Types</Text>
                   </View>
                   <View style={[styles.giftForgePill, { backgroundColor: theme.colors.primary + '15' }]}>
-                    <Text style={[styles.giftForgePillText, { color: theme.colors.primary }]}>⚡ AI-Powered</Text>
+                    <Text style={[styles.giftForgePillText, { color: theme.colors.primary }]}>Personalized</Text>
                   </View>
                 </View>
               </View>
@@ -341,7 +341,7 @@ export default function HomeScreen() {
           {[
             { label: 'Templates', value: '15', icon: 'view-grid', color: theme.colors.primary },
             { label: 'Art Styles', value: '5', icon: 'palette', color: theme.colors.secondary },
-            { label: 'AI Modes', value: '4', icon: 'robot', color: theme.colors.accent },
+            { label: 'Helpers', value: '4', icon: 'bird', color: theme.colors.accent },
           ].map((stat, index) => (
             <AnimatedTouchable
               key={index}
