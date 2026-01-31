@@ -1,3 +1,7 @@
+/**
+ * TemplateSelectorScreen - Choose your game blueprint! 🎮
+ * Enhanced with ForgeCard design and Dodo encouragement
+ */
 import React, { useState } from 'react';
 import {
   View,
@@ -5,15 +9,17 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
-  Image,
   Dimensions,
 } from 'react-native';
+import Animated, { FadeInUp, FadeInDown } from 'react-native-reanimated';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useTheme } from '../contexts/ThemeContext';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { templateLibrary } from '../services/TemplateLibrary';
 import { GameTemplate, RootStackParamList } from '../types';
+import { LivingGradient, ForgeCard, DodoCompanion } from '../components';
+import { spacing, typography, radii, forgeColors } from '../design-tokens/theme';
 
 type NavigationProp = StackNavigationProp<RootStackParamList>;
 
@@ -34,9 +40,9 @@ export default function TemplateSelectorScreen() {
 
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
-      case 'beginner': return theme.colors.success;
-      case 'intermediate': return theme.colors.warning;
-      case 'advanced': return theme.colors.error;
+      case 'beginner': return forgeColors.moss[500];
+      case 'intermediate': return forgeColors.gold[500];
+      case 'advanced': return forgeColors.ember[500];
       default: return theme.colors.text;
     }
   };
@@ -49,122 +55,145 @@ export default function TemplateSelectorScreen() {
       default: return 'gamepad-variant';
     }
   };
+  
+  const getEngineColor = (engine: string) => {
+    switch (engine) {
+      case 'pixi': return forgeColors.spark[500];
+      case 'babylon': return forgeColors.forge[500];
+      case 'aframe': return forgeColors.ember[500];
+      default: return forgeColors.gold[500];
+    }
+  };
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
-      {/* Header */}
-      <View style={styles.header}>
-        <Text style={[styles.title, { color: theme.colors.text }]}>Game Templates</Text>
-        <Text style={[styles.subtitle, { color: theme.colors.text + '80' }]}>
-          Choose from 15 complete templates
-        </Text>
-      </View>
-
-      {/* Category Filter */}
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        style={styles.categoryScroll}
-        contentContainerStyle={styles.categoryContainer}
-      >
-        {categories.map(category => (
-          <TouchableOpacity
-            key={category}
-            style={[
-              styles.categoryChip,
-              {
-                backgroundColor: selectedCategory === category
-                  ? theme.colors.primary
-                  : theme.colors.card,
-              },
-            ]}
-            onPress={() => setSelectedCategory(category)}
-          >
-            <Text
-              style={[
-                styles.categoryText,
-                {
-                  color: selectedCategory === category
-                    ? '#fff'
-                    : theme.colors.text,
-                },
-              ]}
-            >
-              {category.charAt(0).toUpperCase() + category.slice(1)}
+    <LivingGradient intensity="subtle">
+      <View style={styles.container}>
+        {/* Header with Dodo */}
+        <Animated.View entering={FadeInDown.duration(500)} style={styles.header}>
+          <View style={styles.headerContent}>
+            <Text style={[styles.title, { color: theme.colors.text }]}>Game Templates</Text>
+            <Text style={[styles.subtitle, { color: theme.colors.textMuted }]}>
+              Choose from 15 ready-to-forge blueprints
             </Text>
-          </TouchableOpacity>
-        ))}
-      </ScrollView>
+          </View>
+          <DodoCompanion
+            mood="curious"
+            size="mini"
+            message="Pick a template to start creating! 🎮"
+            showBubble={false}
+          />
+        </Animated.View>
 
-      {/* Templates Grid */}
-      <ScrollView style={styles.templatesContainer}>
-        {filteredTemplates.map(template => (
-          <TouchableOpacity
-            key={template.id}
-            style={[styles.templateCard, { backgroundColor: theme.colors.card }]}
-            onPress={() => navigation.navigate('TemplatePreview', { templateId: template.id })}
-          >
-            <View style={styles.cardHeader}>
-              <View style={styles.cardTitleRow}>
-                <Icon
-                  name={getEngineIcon(template.engine)}
-                  size={24}
-                  color={theme.colors.primary}
-                />
-                <Text style={[styles.templateName, { color: theme.colors.text }]}>
-                  {template.name}
-                </Text>
-              </View>
-              <View
+        {/* Category Filter */}
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          style={styles.categoryScroll}
+          contentContainerStyle={styles.categoryContainer}
+        >
+          {categories.map((category, index) => (
+            <Animated.View key={category} entering={FadeInDown.duration(300).delay(index * 50)}>
+              <TouchableOpacity
                 style={[
-                  styles.difficultyBadge,
-                  { backgroundColor: getDifficultyColor(template.difficulty) + '20' },
+                  styles.categoryChip,
+                  {
+                    backgroundColor: selectedCategory === category
+                      ? forgeColors.forge[500]
+                      : theme.colors.card,
+                  },
                 ]}
+                onPress={() => setSelectedCategory(category)}
               >
                 <Text
                   style={[
-                    styles.difficultyText,
-                    { color: getDifficultyColor(template.difficulty) },
+                    styles.categoryText,
+                    {
+                      color: selectedCategory === category
+                        ? '#fff'
+                        : theme.colors.text,
+                    },
                   ]}
                 >
-                  {template.difficulty}
+                  {category.charAt(0).toUpperCase() + category.slice(1)}
                 </Text>
-              </View>
-            </View>
-
-            <Text style={[styles.templateDescription, { color: theme.colors.text + '80' }]}>
-              {template.description}
-            </Text>
-
-            <View style={styles.featuresList}>
-              {template.features.slice(0, 3).map((feature, index) => (
-                <View key={index} style={styles.featureItem}>
-                  <Icon name="check-circle" size={16} color={theme.colors.success} />
-                  <Text style={[styles.featureText, { color: theme.colors.text }]}>
-                    {feature}
-                  </Text>
-                </View>
-              ))}
-            </View>
-
-            <View style={styles.cardFooter}>
-              <View style={styles.engineBadge}>
-                <Text style={[styles.engineText, { color: theme.colors.text + '80' }]}>
-                  {template.engine.toUpperCase()}
-                </Text>
-              </View>
-              <TouchableOpacity
-                style={[styles.useButton, { backgroundColor: theme.colors.primary }]}
-                onPress={() => navigation.navigate('TemplatePreview', { templateId: template.id })}
-              >
-                <Text style={styles.useButtonText}>Use Template</Text>
-                <Icon name="arrow-right" size={16} color="#fff" />
               </TouchableOpacity>
-            </View>
-          </TouchableOpacity>
-        ))}
-      </ScrollView>
-    </View>
+            </Animated.View>
+          ))}
+        </ScrollView>
+
+        {/* Templates Grid */}
+        <ScrollView style={styles.templatesContainer} showsVerticalScrollIndicator={false}>
+          {filteredTemplates.map((template, index) => (
+            <Animated.View key={template.id} entering={FadeInUp.duration(400).delay(index * 60)}>
+              <ForgeCard
+                glowColor={getEngineColor(template.engine)}
+                variant="default"
+                onPress={() => navigation.navigate('TemplatePreview', { templateId: template.id })}
+                style={styles.templateCard}
+              >
+                <View style={styles.cardHeader}>
+                  <View style={styles.cardTitleRow}>
+                    <View style={[styles.engineIconBg, { backgroundColor: getEngineColor(template.engine) + '15' }]}>
+                      <Icon
+                        name={getEngineIcon(template.engine)}
+                        size={24}
+                        color={getEngineColor(template.engine)}
+                      />
+                    </View>
+                    <Text style={[styles.templateName, { color: theme.colors.text }]}>
+                      {template.name}
+                    </Text>
+                  </View>
+                  <View
+                    style={[
+                      styles.difficultyBadge,
+                      { backgroundColor: getDifficultyColor(template.difficulty) + '20' },
+                    ]}
+                  >
+                    <Text
+                      style={[
+                        styles.difficultyText,
+                        { color: getDifficultyColor(template.difficulty) },
+                      ]}
+                    >
+                      {template.difficulty}
+                    </Text>
+                  </View>
+                </View>
+
+                <Text style={[styles.templateDescription, { color: theme.colors.textMuted }]}>
+                  {template.description}
+                </Text>
+
+                <View style={styles.featuresList}>
+                  {template.features.slice(0, 3).map((feature, idx) => (
+                    <View key={idx} style={styles.featureItem}>
+                      <Icon name="check-circle" size={16} color={forgeColors.moss[500]} />
+                      <Text style={[styles.featureText, { color: theme.colors.text }]}>
+                        {feature}
+                      </Text>
+                    </View>
+                  ))}
+                </View>
+
+                <View style={styles.cardFooter}>
+                  <View style={[styles.engineBadge, { backgroundColor: theme.colors.card }]}>
+                    <Text style={[styles.engineText, { color: theme.colors.textMuted }]}>
+                      {template.engine.toUpperCase()}
+                    </Text>
+                  </View>
+                  <View style={[styles.useButton, { backgroundColor: getEngineColor(template.engine) }]}>
+                    <Text style={styles.useButtonText}>Use Template</Text>
+                    <Icon name="arrow-right" size={16} color="#fff" />
+                  </View>
+                </View>
+              </ForgeCard>
+            </Animated.View>
+          ))}
+          <View style={{ height: 100 }} />
+        </ScrollView>
+      </View>
+    </LivingGradient>
   );
 }
 
@@ -173,85 +202,97 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   header: {
-    padding: 20,
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+    padding: spacing.lg,
     paddingTop: 60,
   },
+  headerContent: {
+    flex: 1,
+  },
   title: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    marginBottom: 4,
+    fontSize: typography.size.xxl,
+    fontWeight: typography.weight.bold,
+    marginBottom: spacing.xxs,
   },
   subtitle: {
-    fontSize: 14,
+    fontSize: typography.size.base,
   },
   categoryScroll: {
     maxHeight: 50,
   },
   categoryContainer: {
-    paddingHorizontal: 16,
-    paddingBottom: 12,
+    paddingHorizontal: spacing.md,
+    paddingBottom: spacing.sm,
+    gap: spacing.xs,
   },
   categoryChip: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 20,
-    marginRight: 8,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.xs,
+    borderRadius: radii.full,
+    marginRight: spacing.xs,
   },
   categoryText: {
-    fontSize: 14,
-    fontWeight: '600',
+    fontSize: typography.size.sm,
+    fontWeight: typography.weight.semibold,
   },
   templatesContainer: {
     flex: 1,
-    padding: 16,
+    padding: spacing.md,
   },
   templateCard: {
-    borderRadius: 16,
-    padding: 16,
-    marginBottom: 16,
+    marginBottom: spacing.md,
   },
   cardHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-    marginBottom: 12,
+    marginBottom: spacing.sm,
   },
   cardTitleRow: {
     flexDirection: 'row',
     alignItems: 'center',
     flex: 1,
   },
+  engineIconBg: {
+    width: 40,
+    height: 40,
+    borderRadius: radii.md,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   templateName: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginLeft: 12,
+    fontSize: typography.size.md,
+    fontWeight: typography.weight.bold,
+    marginLeft: spacing.sm,
     flex: 1,
   },
   difficultyBadge: {
-    paddingHorizontal: 12,
-    paddingVertical: 4,
-    borderRadius: 12,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xxs,
+    borderRadius: radii.full,
   },
   difficultyText: {
-    fontSize: 12,
-    fontWeight: '600',
+    fontSize: typography.size.xs,
+    fontWeight: typography.weight.semibold,
   },
   templateDescription: {
-    fontSize: 14,
-    lineHeight: 20,
-    marginBottom: 12,
+    fontSize: typography.size.sm,
+    lineHeight: typography.size.sm * typography.lineHeight.relaxed,
+    marginBottom: spacing.sm,
   },
   featuresList: {
-    marginBottom: 16,
+    marginBottom: spacing.md,
   },
   featureItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 6,
+    marginBottom: spacing.xxs,
   },
   featureText: {
-    fontSize: 13,
-    marginLeft: 8,
+    fontSize: typography.size.sm,
+    marginLeft: spacing.xs,
   },
   cardFooter: {
     flexDirection: 'row',
@@ -259,25 +300,25 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   engineBadge: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 8,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xxs,
+    borderRadius: radii.sm,
   },
   engineText: {
-    fontSize: 12,
-    fontWeight: '600',
+    fontSize: typography.size.xs,
+    fontWeight: typography.weight.semibold,
   },
   useButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 8,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.xs,
+    borderRadius: radii.md,
   },
   useButtonText: {
     color: '#fff',
-    fontSize: 14,
-    fontWeight: '600',
-    marginRight: 4,
+    fontSize: typography.size.sm,
+    fontWeight: typography.weight.semibold,
+    marginRight: spacing.xxs,
   },
 });
