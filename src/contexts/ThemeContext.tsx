@@ -16,6 +16,8 @@ import {
   timeGradients,
   EmotionalState,
   TimeOfDay,
+  SeasonalTheme,
+  getActiveSeasonalTheme,
 } from '../design-tokens/theme';
 
 // Theme type definitions
@@ -132,6 +134,10 @@ interface ThemeContextType {
   // Time awareness
   timeOfDay: TimeOfDay;
   getTimeGradient: () => string[];
+  // Seasonal theming (UAE)
+  seasonalTheme: SeasonalTheme;
+  getSeasonalColors: () => SeasonalTheme['colors'];
+  getSeasonalGradient: () => string[];
   // Utilities
   getContrastText: (backgroundColor: string) => string;
   applyGlow: (color?: string) => object;
@@ -171,6 +177,7 @@ export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) =
   const [emotionalState, setEmotionalState] = useState<EmotionalState | null>(null);
   const [timeOfDay, setTimeOfDay] = useState<TimeOfDay>(getTimeOfDay());
   const [userPreferences, setUserPreferences] = useState<UserPreferences>({});
+  const [seasonalTheme, setSeasonalTheme] = useState<SeasonalTheme>(getActiveSeasonalTheme());
   
   // Load user preferences on mount
   useEffect(() => {
@@ -196,6 +203,17 @@ export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     const interval = setInterval(() => {
       setTimeOfDay(getTimeOfDay());
     }, 60000);
+    
+    return () => clearInterval(interval);
+  }, []);
+  
+  // Update seasonal theme daily (or on mount)
+  useEffect(() => {
+    setSeasonalTheme(getActiveSeasonalTheme());
+    // Check daily for theme changes
+    const interval = setInterval(() => {
+      setSeasonalTheme(getActiveSeasonalTheme());
+    }, 3600000); // Check every hour
     
     return () => clearInterval(interval);
   }, []);
@@ -235,6 +253,14 @@ export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     return timeGradients[timeOfDay];
   }, [timeOfDay]);
   
+  const getSeasonalColors = useCallback(() => {
+    return seasonalTheme.colors;
+  }, [seasonalTheme]);
+  
+  const getSeasonalGradient = useCallback(() => {
+    return seasonalTheme.gradient;
+  }, [seasonalTheme]);
+  
   const setSignatureColor = useCallback((color: string) => {
     const newPrefs = { ...userPreferences, signatureColor: color };
     setUserPreferences(newPrefs);
@@ -269,6 +295,9 @@ export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         setMakerMark,
         timeOfDay,
         getTimeGradient,
+        seasonalTheme,
+        getSeasonalColors,
+        getSeasonalGradient,
         getContrastText,
         applyGlow,
       }}
