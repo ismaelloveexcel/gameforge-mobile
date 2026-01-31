@@ -1,13 +1,12 @@
 /**
- * HomeScreen - Winter Majlis Edition
+ * HomeScreen - Dynamic Seasonal Edition
  * 
  * FORGE-CHIEF MANDATE:
  * - ONE dominant action visible in ≤3 seconds
  * - User takes action in ≤10 seconds
  * - Progress/delight in ≤30 seconds
  * 
- * Active Theme: Winter Majlis (January 2026)
- * Mood: Cozy gatherings, intimate luxury, warmth
+ * Supports: Valentine's, Winter Majlis, and all seasonal themes
  */
 import React, { useEffect, useState, useCallback } from 'react';
 import {
@@ -18,6 +17,7 @@ import {
   TouchableOpacity,
   Dimensions,
   Platform,
+  Modal,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -35,7 +35,7 @@ import Animated, {
   FadeInUp,
   SlideInUp,
 } from 'react-native-reanimated';
-import { useTheme } from '../contexts/ThemeContext';
+import { useTheme, THEME_OPTIONS, ThemeChoice } from '../contexts/ThemeContext';
 import { RootStackParamList } from '../types';
 import { 
   LivingGradient, 
@@ -50,24 +50,53 @@ const { height: SCREEN_HEIGHT, width: SCREEN_WIDTH } = Dimensions.get('window');
 
 const AnimatedTouchable = Animated.createAnimatedComponent(TouchableOpacity);
 
-// Winter Majlis greetings
-const getWinterGreeting = () => {
+// Theme-aware greetings
+const getThemeGreeting = (themeId: string) => {
   const hour = new Date().getHours();
-  if (hour < 6) return "Late night creativity? Perfect time to create something special";
-  if (hour < 12) return "Good morning — let's make someone's day";
-  if (hour < 17) return "Afternoon warmth — perfect for thoughtful gifts";
-  if (hour < 21) return "Evening gatherings inspire the best gifts";
-  return "Cozy nights are made for creating magic";
+  const isNight = hour < 6 || hour >= 21;
+  const isMorning = hour >= 6 && hour < 12;
+  const isAfternoon = hour >= 12 && hour < 17;
+  
+  // Valentine's / Romance greetings
+  if (themeId === 'eternal-romance') {
+    if (isNight) return "Love knows no hour — create something unforgettable";
+    if (isMorning) return "Start the day with a gesture of love";
+    if (isAfternoon) return "An afternoon to craft something from the heart";
+    return "Romance is in the air — make it memorable";
+  }
+  
+  // Winter Majlis greetings
+  if (themeId === 'winter-majlis') {
+    if (isNight) return "Late night creativity? Perfect time to create something special";
+    if (isMorning) return "Good morning — let's make someone's day";
+    if (isAfternoon) return "Afternoon warmth — perfect for thoughtful gifts";
+    return "Cozy nights are made for creating magic";
+  }
+  
+  // Neon Summer greetings
+  if (themeId === 'neon-dubai-summer') {
+    if (isNight) return "The city never sleeps — neither does creativity";
+    if (isMorning) return "Beat the heat with something cool";
+    if (isAfternoon) return "Pool vibes, creative energy";
+    return "Summer nights call for bold moves";
+  }
+  
+  // Default creative greeting
+  if (isNight) return "Midnight inspiration strikes";
+  if (isMorning) return "A fresh canvas awaits";
+  if (isAfternoon) return "Perfect time to create";
+  return "Let your creativity flow";
 };
 
 export default function HomeScreen() {
   const navigation = useNavigation<NavigationProp>();
-  const { theme, isDark, seasonalTheme } = useTheme();
+  const { theme, isDark, seasonalTheme, themeChoice, setThemeChoice } = useTheme();
   const [dodoMood, setDodoMood] = useState<'idle' | 'waving' | 'excited' | 'curious'>('waving');
-  const [greeting] = useState(getWinterGreeting());
+  const [showThemePicker, setShowThemePicker] = useState(false);
+  const greeting = getThemeGreeting(seasonalTheme.id);
   
-  // Winter Majlis colors from seasonal theme
-  const winterColors = seasonalTheme.colors;
+  // Dynamic colors from current seasonal theme
+  const themeColors = seasonalTheme.colors;
   
   // Animations - slower for cozy Winter Majlis feel
   const glow = useSharedValue(0.4);
@@ -145,13 +174,13 @@ export default function HomeScreen() {
       icon: 'folder-heart-outline',
       title: 'My Creations',
       onPress: () => navigation.navigate('Projects'),
-      color: winterColors.secondary,
+      color: themeColors.secondary,
     },
     {
       icon: 'view-grid-outline',
       title: 'Templates',
       onPress: () => navigation.navigate('Templates'),
-      color: winterColors.primary,
+      color: themeColors.primary,
     },
     {
       icon: 'bird',
@@ -160,14 +189,14 @@ export default function HomeScreen() {
         setDodoMood('excited');
         navigation.navigate('Genie');
       },
-      color: winterColors.accent,
+      color: themeColors.accent,
     },
   ];
 
   return (
-    <View style={[styles.container, { backgroundColor: winterColors.background }]}>
+    <View style={[styles.container, { backgroundColor: themeColors.background }]}>
       {/* Warm ambient gradient */}
-      <View style={[styles.ambientGlow, { backgroundColor: winterColors.primary }]} />
+      <View style={[styles.ambientGlow, { backgroundColor: themeColors.primary }]} />
       
       <ParticleField density="sparse">
         <ScrollView
@@ -181,14 +210,19 @@ export default function HomeScreen() {
             style={styles.header}
           >
             <View style={styles.headerLeft}>
-              <Text style={[styles.brandMark, { color: winterColors.accent }]}>
+              <Text style={[styles.brandMark, { color: themeColors.accent }]}>
                 GameForge
               </Text>
-              <View style={styles.seasonBadge}>
-                <Text style={[styles.seasonText, { color: winterColors.muted }]}>
-                  {seasonalTheme.name}
-                </Text>
-              </View>
+            <TouchableOpacity 
+              style={[styles.seasonBadge, { borderColor: themeColors.accent + '40' }]}
+              onPress={() => setShowThemePicker(true)}
+              activeOpacity={0.7}
+            >
+              <Text style={[styles.seasonText, { color: themeColors.accent }]}>
+                {seasonalTheme.name}
+              </Text>
+              <Icon name="chevron-down" size={12} color={themeColors.accent} />
+            </TouchableOpacity>
             </View>
             
             <Animated.View style={heroFloatStyle}>
@@ -220,7 +254,7 @@ export default function HomeScreen() {
               <Animated.View 
                 style={[
                   styles.heroGlowBorder,
-                  { borderColor: winterColors.accent },
+                  { borderColor: themeColors.accent },
                   glowStyle
                 ]} 
               />
@@ -228,49 +262,49 @@ export default function HomeScreen() {
               <View style={[
                 styles.heroCard,
                 { 
-                  backgroundColor: winterColors.surface,
-                  borderColor: winterColors.accent + '40',
+                  backgroundColor: themeColors.surface,
+                  borderColor: themeColors.accent + '40',
                 }
               ]}>
                 {/* Decorative corner accents */}
-                <View style={[styles.cornerAccent, styles.cornerTopLeft, { backgroundColor: winterColors.accent }]} />
-                <View style={[styles.cornerAccent, styles.cornerTopRight, { backgroundColor: winterColors.accent }]} />
-                <View style={[styles.cornerAccent, styles.cornerBottomLeft, { backgroundColor: winterColors.accent }]} />
-                <View style={[styles.cornerAccent, styles.cornerBottomRight, { backgroundColor: winterColors.accent }]} />
+                <View style={[styles.cornerAccent, styles.cornerTopLeft, { backgroundColor: themeColors.accent }]} />
+                <View style={[styles.cornerAccent, styles.cornerTopRight, { backgroundColor: themeColors.accent }]} />
+                <View style={[styles.cornerAccent, styles.cornerBottomLeft, { backgroundColor: themeColors.accent }]} />
+                <View style={[styles.cornerAccent, styles.cornerBottomRight, { backgroundColor: themeColors.accent }]} />
                 
                 {/* Hero Icon */}
                 <View style={styles.heroIconContainer}>
-                  <View style={[styles.heroIconGlow, { backgroundColor: winterColors.accent + '30' }]}>
-                    <View style={[styles.heroIconInner, { backgroundColor: winterColors.accent }]}>
-                      <Icon name="gift" size={48} color={winterColors.background} />
+                  <View style={[styles.heroIconGlow, { backgroundColor: themeColors.accent + '30' }]}>
+                    <View style={[styles.heroIconInner, { backgroundColor: themeColors.accent }]}>
+                      <Icon name="gift" size={48} color={themeColors.background} />
                     </View>
                   </View>
                 </View>
                 
                 {/* Hero Copy */}
-                <Text style={[styles.heroTitle, { color: winterColors.text }]}>
+                <Text style={[styles.heroTitle, { color: themeColors.text }]}>
                   Create a Gift
                 </Text>
-                <Text style={[styles.heroSubtitle, { color: winterColors.text }]}>
+                <Text style={[styles.heroSubtitle, { color: themeColors.text }]}>
                   for Someone You Love
                 </Text>
                 
-                <Text style={[styles.heroDescription, { color: winterColors.muted }]}>
+                <Text style={[styles.heroDescription, { color: themeColors.muted }]}>
                   A personalized mini-game they'll actually remember
                 </Text>
                 
                 {/* CTA Button */}
                 <Animated.View style={[styles.ctaContainer, pulseStyle]}>
-                  <View style={[styles.ctaButton, { backgroundColor: winterColors.accent }]}>
-                    <Text style={[styles.ctaText, { color: winterColors.background }]}>
+                  <View style={[styles.ctaButton, { backgroundColor: themeColors.accent }]}>
+                    <Text style={[styles.ctaText, { color: themeColors.background }]}>
                       Start Creating
                     </Text>
-                    <Icon name="arrow-right" size={20} color={winterColors.background} />
+                    <Icon name="arrow-right" size={20} color={themeColors.background} />
                   </View>
                 </Animated.View>
                 
                 {/* Trust signal */}
-                <Text style={[styles.trustSignal, { color: winterColors.muted }]}>
+                <Text style={[styles.trustSignal, { color: themeColors.muted }]}>
                   Takes 60 seconds
                 </Text>
               </View>
@@ -282,11 +316,11 @@ export default function HomeScreen() {
             entering={FadeIn.delay(600)}
             style={styles.dividerSection}
           >
-            <View style={[styles.dividerLine, { backgroundColor: winterColors.muted + '30' }]} />
-            <Text style={[styles.dividerText, { color: winterColors.muted }]}>
+            <View style={[styles.dividerLine, { backgroundColor: themeColors.muted + '30' }]} />
+            <Text style={[styles.dividerText, { color: themeColors.muted }]}>
               or explore
             </Text>
-            <View style={[styles.dividerLine, { backgroundColor: winterColors.muted + '30' }]} />
+            <View style={[styles.dividerLine, { backgroundColor: themeColors.muted + '30' }]} />
           </Animated.View>
 
           {/* Secondary Actions - Below the fold */}
@@ -306,14 +340,14 @@ export default function HomeScreen() {
                   <View style={[
                     styles.secondaryCard,
                     { 
-                      backgroundColor: winterColors.surface,
+                      backgroundColor: themeColors.surface,
                       borderColor: action.color + '30',
                     }
                   ]}>
                     <View style={[styles.secondaryIcon, { backgroundColor: action.color + '20' }]}>
                       <Icon name={action.icon} size={24} color={action.color} />
                     </View>
-                    <Text style={[styles.secondaryText, { color: winterColors.text }]}>
+                    <Text style={[styles.secondaryText, { color: themeColors.text }]}>
                       {action.title}
                     </Text>
                   </View>
@@ -331,8 +365,8 @@ export default function HomeScreen() {
               style={styles.settingsButton}
               onPress={() => navigation.navigate('Settings')}
             >
-              <Icon name="cog-outline" size={20} color={winterColors.muted} />
-              <Text style={[styles.settingsText, { color: winterColors.muted }]}>
+              <Icon name="cog-outline" size={20} color={themeColors.muted} />
+              <Text style={[styles.settingsText, { color: themeColors.muted }]}>
                 Settings
               </Text>
             </TouchableOpacity>
@@ -342,6 +376,61 @@ export default function HomeScreen() {
           <View style={{ height: 100 }} />
         </ScrollView>
       </ParticleField>
+      
+      {/* Theme Picker Modal */}
+      <Modal
+        visible={showThemePicker}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowThemePicker(false)}
+      >
+        <TouchableOpacity 
+          style={styles.modalOverlay}
+          activeOpacity={1}
+          onPress={() => setShowThemePicker(false)}
+        >
+          <Animated.View 
+            entering={FadeInUp.duration(300)}
+            style={[styles.themePicker, { backgroundColor: themeColors.surface }]}
+          >
+            <Text style={[styles.themePickerTitle, { color: themeColors.text }]}>
+              Choose Your Vibe
+            </Text>
+            
+            {THEME_OPTIONS.map((option) => (
+              <TouchableOpacity
+                key={option.id}
+                style={[
+                  styles.themeOption,
+                  themeChoice === option.id && { 
+                    backgroundColor: themeColors.accent + '20',
+                    borderColor: themeColors.accent,
+                  },
+                ]}
+                onPress={() => {
+                  setThemeChoice(option.id);
+                  setShowThemePicker(false);
+                }}
+              >
+                <View style={styles.themeOptionContent}>
+                  <Text style={[
+                    styles.themeOptionLabel, 
+                    { color: themeChoice === option.id ? themeColors.accent : themeColors.text }
+                  ]}>
+                    {option.label}
+                  </Text>
+                  <Text style={[styles.themeOptionDesc, { color: themeColors.muted }]}>
+                    {option.description}
+                  </Text>
+                </View>
+                {themeChoice === option.id && (
+                  <Icon name="check" size={20} color={themeColors.accent} />
+                )}
+              </TouchableOpacity>
+            ))}
+          </Animated.View>
+        </TouchableOpacity>
+      </Modal>
     </View>
   );
 }
@@ -384,13 +473,20 @@ const styles = StyleSheet.create({
     letterSpacing: typography.letterSpacing.tight,
   },
   seasonBadge: {
-    marginTop: spacing.xxs,
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: spacing.xs,
+    paddingVertical: spacing.xxs,
+    paddingHorizontal: spacing.sm,
+    borderRadius: radii.full,
+    borderWidth: 1,
+    gap: 4,
   },
   seasonText: {
     fontSize: typography.size.xs,
-    fontWeight: typography.weight.medium,
+    fontWeight: typography.weight.semibold,
     textTransform: 'uppercase',
-    letterSpacing: 1,
+    letterSpacing: 0.5,
   },
   
   // Hero Section - THE DOMINANT ACTION
@@ -580,5 +676,47 @@ const styles = StyleSheet.create({
   settingsText: {
     fontSize: typography.size.sm,
     fontWeight: typography.weight.medium,
+  },
+  
+  // Modal & Theme Picker
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.6)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: spacing.lg,
+  },
+  themePicker: {
+    width: '100%',
+    maxWidth: 340,
+    borderRadius: radii.xl,
+    padding: spacing.lg,
+  },
+  themePickerTitle: {
+    fontSize: typography.size.lg,
+    fontWeight: typography.weight.bold,
+    marginBottom: spacing.md,
+    textAlign: 'center',
+  },
+  themeOption: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: spacing.md,
+    paddingHorizontal: spacing.md,
+    borderRadius: radii.md,
+    borderWidth: 1,
+    borderColor: 'transparent',
+    marginBottom: spacing.xs,
+  },
+  themeOptionContent: {
+    flex: 1,
+  },
+  themeOptionLabel: {
+    fontSize: typography.size.base,
+    fontWeight: typography.weight.semibold,
+  },
+  themeOptionDesc: {
+    fontSize: typography.size.sm,
+    marginTop: 2,
   },
 });

@@ -388,13 +388,41 @@ export const seasonalThemes: Record<string, SeasonalTheme> = {
     heroGlow: '#6366F1',
     animationSpeed: 'normal',
   },
+  'eternal-romance': {
+    id: 'eternal-romance',
+    name: 'Eternal Romance',
+    mood: 'Deep passion, sophisticated love, timeless elegance',
+    colors: {
+      primary: '#8B0A1A',     // Deep Rose
+      secondary: '#D4AF37',   // Champagne Gold
+      accent: '#FFB6C1',      // Soft Blush
+      background: '#0F0508',  // Midnight Rose
+      surface: '#1A0C10',     // Dark Velvet
+      text: '#FFF5F5',        // Rose White
+      muted: '#8A6B70',       // Dusty Rose
+      glow: '#FF4D6D',        // Rose Glow
+    },
+    gradient: ['#1A0C10', '#0F0508', '#080204'],
+    heroGlow: '#FF4D6D',
+    animationSpeed: 'slow',
+  },
 } as const;
 
 // Get the currently active seasonal theme based on date
-export function getActiveSeasonalTheme(): SeasonalTheme {
+export function getActiveSeasonalTheme(overrideTheme?: string): SeasonalTheme {
+  // Allow manual override for user-selected themes
+  if (overrideTheme && seasonalThemes[overrideTheme]) {
+    return seasonalThemes[overrideTheme];
+  }
+  
   const now = new Date();
   const month = now.getMonth() + 1; // 1-12
   const day = now.getDate();
+
+  // Valentine's Day: Feb 1-14 (prioritized for 2 weeks lead-up)
+  if (month === 2 && day >= 1 && day <= 14) {
+    return seasonalThemes['eternal-romance'];
+  }
 
   // Ramadan 2026: approximately Feb 18 - Mar 19
   if ((month === 2 && day >= 18) || (month === 3 && day <= 19)) {
@@ -411,7 +439,7 @@ export function getActiveSeasonalTheme(): SeasonalTheme {
     return seasonalThemes['uae-pride'];
   }
 
-  // Winter: November - February
+  // Winter: November - February (excluding Valentine's period)
   if (month >= 11 || month <= 2) {
     return seasonalThemes['winter-majlis'];
   }
