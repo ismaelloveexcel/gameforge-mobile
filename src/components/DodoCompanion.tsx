@@ -582,7 +582,11 @@ export default function DodoCompanion({
           
           {/* Mood indicators now use visual elements instead of emojis for premium feel */}
           {mood === 'sleepy' && (
-            <View style={[styles.sleepyIndicator, { top: -dodoSize * 0.25 }]}>
+            <View 
+              style={[styles.sleepyIndicator, { top: -dodoSize * 0.25 }]}
+              accessibilityLabel="Dodo is feeling sleepy"
+              accessibilityRole="image"
+            >
               <View style={[styles.sleepyDot, { 
                 width: dodoSize * 0.08, 
                 height: dodoSize * 0.08, 
@@ -593,7 +597,11 @@ export default function DodoCompanion({
           )}
           
           {(mood === 'celebrating' || mood === 'excited') && (
-            <View style={[styles.sparkles, { top: -dodoSize * 0.3 }]}>
+            <View 
+              style={[styles.sparkles, { top: -dodoSize * 0.3 }]}
+              accessibilityLabel={mood === 'celebrating' ? 'Dodo is celebrating' : 'Dodo is excited'}
+              accessibilityRole="image"
+            >
               {/* Premium sparkle dots instead of emojis */}
               <View style={[styles.sparkleDot, { 
                 width: dodoSize * 0.06, 

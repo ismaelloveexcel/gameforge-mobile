@@ -25,7 +25,6 @@ type NavigationProp = StackNavigationProp<RootStackParamList>;
 export default function SettingsScreen() {
   const navigation = useNavigation<NavigationProp>();
   const { 
-    theme, 
     isDark, 
     toggleTheme, 
     seasonalTheme, 
