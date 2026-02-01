@@ -485,7 +485,7 @@ name: Nightly Agent Run
 
 on:
   schedule:
-    - cron: '0 2 * * *'  # 2 AM UTC daily (6 AM UAE time)
+    - cron: '0 2 * * *'  # 2 AM UTC daily (6 AM GST/UAE time)
   workflow_dispatch:      # Manual trigger
 
 jobs:
