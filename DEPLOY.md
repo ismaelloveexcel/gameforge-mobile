@@ -99,6 +99,16 @@ When running for the first time, you'll be asked to choose:
 
 ## 🔑 First-Time Requirements
 
+### Check Your System First
+
+Not sure if your system is ready? Run the diagnostic script:
+
+```bash
+./check-deployment.sh
+```
+
+This will check all requirements and tell you exactly what's missing!
+
 ### Before Running the Script
 
 You need accounts on these free services (one-time setup):
@@ -157,6 +167,18 @@ deploy.bat              # Windows
 ---
 
 ## ❓ Troubleshooting
+
+### Run System Diagnostics
+
+Before troubleshooting manually, run our diagnostic script:
+
+```bash
+./check-deployment.sh
+```
+
+This will automatically check your system and tell you exactly what needs to be fixed!
+
+### Common Issues
 
 ### "Node.js not found"
 Install Node.js from [nodejs.org](https://nodejs.org/)
