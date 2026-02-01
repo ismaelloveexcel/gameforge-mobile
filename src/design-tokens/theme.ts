@@ -406,6 +406,24 @@ export const seasonalThemes: Record<string, SeasonalTheme> = {
     heroGlow: '#FF4D6D',
     animationSpeed: 'slow',
   },
+  'nocturnal-romance': {
+    id: 'nocturnal-romance',
+    name: 'Nocturnal Romance',
+    mood: 'Luxurious UAE market aesthetic blending Ramadan and Valentine\'s sophistication',
+    colors: {
+      primary: '#4A1E5A',     // Deep Plum
+      secondary: '#B76E79',   // Rose Gold
+      accent: '#D4AF37',      // Gold
+      background: '#0A1931',  // Dark Midnight Blue
+      surface: '#1A2F4A',     // Deep Navy
+      text: '#FFFFFF',        // Pure White
+      muted: '#8A7B8C',       // Soft Mauve
+      glow: '#D4AF37',        // Gold glow
+    },
+    gradient: ['#4A1E5A', '#0A1931', '#1A2F4A'],
+    heroGlow: '#D4AF37',
+    animationSpeed: 'slow',
+  },
 } as const;
 
 // Islamic calendar dates by year (approximate Gregorian equivalents)

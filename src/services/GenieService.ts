@@ -396,6 +396,119 @@ Use a caring, enthusiastic tone and think like a thoughtful friend who understan
       'Test and iterate based on user feedback',
     ];
   }
+
+  /**
+   * Generate creative brief for logo and branding
+   */
+  async generateCreativeBrief(brandName: string, theme: string, colors: any): Promise<any> {
+    const prompt = `Act as a premium brand designer for the UAE market. Generate a complete design brief for the "${brandName}" logo and identity system. Core concept: fuse a gift box with a play button, symbolizing playful, personalized gifts. It must feel luxurious, emotional, and culturally sophisticated for the ${theme} theme. Use this palette: Primary ${colors.primary}, Accent ${colors.accent}, Dark ${colors.dark}, Secondary ${colors.secondary}. Output 3 distinct creative directions as structured text, including: 1) Core symbol idea, 2) Typography recommendation, 3) Key visual adjective (e.g., "Elegant Fusion," "Digital Jewel," "Luminous Abstract"). Also, list the required final asset files (e.g., app icon, favicon, full logo, banner).`;
+
+    const response = await this.processMessage(prompt, 'creative');
+
+    // Parse the response into structured data
+    return {
+      brandName,
+      theme,
+      colors,
+      brief: response.content,
+      concepts: this.parseCreativeConcepts(response.content),
+      requiredAssets: this.parseRequiredAssets(response.content),
+      timestamp: new Date().toISOString(),
+    };
+  }
+
+  /**
+   * Parse creative concepts from AI response
+   */
+  private parseCreativeConcepts(content: string): any[] {
+    const concepts = [];
+    
+    // Look for numbered concepts (1., 2., 3.)
+    const conceptPattern = /(?:Direction|Concept)\s*(\d+)[:\s]*(.*?)(?=(?:Direction|Concept)\s*\d+|$)/gis;
+    const matches = content.matchAll(conceptPattern);
+    
+    for (const match of matches) {
+      const conceptText = match[2];
+      concepts.push({
+        name: this.extractConceptName(conceptText),
+        coreSymbol: this.extractField(conceptText, 'symbol|core symbol idea'),
+        typography: this.extractField(conceptText, 'typography|font'),
+        visualAdjective: this.extractField(conceptText, 'adjective|visual|style'),
+      });
+    }
+
+    // Fallback: create default concepts if parsing fails
+    if (concepts.length === 0) {
+      concepts.push(
+        {
+          name: 'Elegant Fusion',
+          coreSymbol: 'Gift box with integrated play button forming an elegant monogram',
+          typography: 'Modern serif with geometric elements',
+          visualAdjective: 'Sophisticated and luxurious',
+        },
+        {
+          name: 'Digital Jewel',
+          coreSymbol: 'Crystalline gift box with luminous play button accent',
+          typography: 'Clean sans-serif with premium weight',
+          visualAdjective: 'Premium and radiant',
+        },
+        {
+          name: 'Luminous Abstract',
+          coreSymbol: 'Abstract ribbon forming play triangle with gift bow',
+          typography: 'Contemporary geometric typeface',
+          visualAdjective: 'Modern and ethereal',
+        }
+      );
+    }
+
+    return concepts;
+  }
+
+  /**
+   * Extract concept name from text
+   */
+  private extractConceptName(text: string): string {
+    const nameMatch = text.match(/["']([^"']+)["']|^([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)/);
+    return nameMatch ? (nameMatch[1] || nameMatch[2]) : 'Concept';
+  }
+
+  /**
+   * Extract a specific field from concept text
+   */
+  private extractField(text: string, fieldPattern: string): string {
+    const regex = new RegExp(`(?:${fieldPattern})[:\\s]+([^\n.]+)`, 'i');
+    const match = text.match(regex);
+    return match ? match[1].trim() : '';
+  }
+
+  /**
+   * Parse required assets from AI response
+   */
+  private parseRequiredAssets(content: string): string[] {
+    const defaultAssets = [
+      'App Icon (1024x1024)',
+      'Favicon (32x32)',
+      'Full Logo (SVG)',
+      'Hero Illustration (1200x600)',
+      'Social Media Banner (1500x500)',
+    ];
+
+    // Look for asset list in response
+    const assetPattern = /(?:assets?|files?)[:\s]+(.*?)(?:\n\n|$)/is;
+    const match = content.match(assetPattern);
+    
+    if (match) {
+      const assetText = match[1];
+      const assets = assetText
+        .split(/\n|,/)
+        .map(a => a.replace(/^[-•\d.)\s]+/, '').trim())
+        .filter(a => a.length > 0);
+      
+      return assets.length > 0 ? assets : defaultAssets;
+    }
+
+    return defaultAssets;
+  }
 }
 
 export const genieService = new GenieService();

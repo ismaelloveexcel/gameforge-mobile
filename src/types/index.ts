@@ -215,7 +215,8 @@ export type ArtStyle =
   | 'lowpoly'
   | 'handdrawn'
   | 'cyberpunk'
-  | 'watercolor';
+  | 'watercolor'
+  | 'nocturnal-romance';
 
 export interface ArtStyleConfig {
   id: ArtStyle;

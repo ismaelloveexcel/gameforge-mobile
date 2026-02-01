@@ -118,10 +118,11 @@ const darkTheme: Theme = {
 };
 
 // Available theme options for user selection
-export type ThemeChoice = 'auto' | 'eternal-romance' | 'winter-majlis' | 'creator-wave' | 'neon-dubai-summer';
+export type ThemeChoice = 'auto' | 'eternal-romance' | 'nocturnal-romance' | 'winter-majlis' | 'creator-wave' | 'neon-dubai-summer';
 
 export const THEME_OPTIONS: { id: ThemeChoice; label: string; description: string }[] = [
   { id: 'auto', label: 'Seasonal', description: 'Changes with the season' },
+  { id: 'nocturnal-romance', label: 'PlayGift', description: 'Luxurious branding' },
   { id: 'eternal-romance', label: 'Romance', description: 'Valentine\'s elegance' },
   { id: 'winter-majlis', label: 'Majlis', description: 'Cozy gatherings' },
   { id: 'creator-wave', label: 'Creator', description: 'Bold creativity' },
