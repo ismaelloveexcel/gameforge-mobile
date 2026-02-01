@@ -15,6 +15,7 @@ import MarketingDashboardScreen from '../screens/MarketingDashboardScreen';
 import VREditorScreen from '../screens/VREditorScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 import PublishScreen from '../screens/PublishScreen';
+import OnboardingScreen from '../screens/OnboardingScreen';
 // GiftForge screens
 import GiftForgeWizardScreen from '../screens/GiftForgeWizardScreen';
 import GiftForgeResultScreen from '../screens/GiftForgeResultScreen';
@@ -100,6 +101,11 @@ export default function AppNavigator() {
         headerShadowVisible: false,
       }}
     >
+      <Stack.Screen 
+        name="Onboarding" 
+        component={OnboardingScreen}
+        options={{ headerShown: false }}
+      />
       <Stack.Screen 
         name="MainTabs" 
         component={MainTabs} 
