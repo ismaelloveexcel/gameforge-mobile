@@ -2,9 +2,9 @@ import { artStyleService } from '../services/ArtStyleService';
 
 describe('ArtStyleService', () => {
   describe('getAllStyles', () => {
-    it('should return all 5 art styles', () => {
+    it('should return all 6 art styles', () => {
       const styles = artStyleService.getAllStyles();
-      expect(styles).toHaveLength(5);
+      expect(styles).toHaveLength(6);
     });
 
     it('should have required properties', () => {
@@ -68,12 +68,13 @@ describe('ArtStyleService', () => {
     });
 
     it('should return recommendations for all styles', () => {
-      const styles: Array<'pixel' | 'lowpoly' | 'handdrawn' | 'cyberpunk' | 'watercolor'> = [
+      const styles: Array<'pixel' | 'lowpoly' | 'handdrawn' | 'cyberpunk' | 'watercolor' | 'nocturnal-romance'> = [
         'pixel',
         'lowpoly',
         'handdrawn',
         'cyberpunk',
         'watercolor',
+        'nocturnal-romance',
       ];
 
       styles.forEach(styleId => {
@@ -123,6 +124,16 @@ describe('ArtStyleService', () => {
       const style = artStyleService.getStyleById('cyberpunk');
       expect(style?.shaders).toBeDefined();
       expect(style?.filters).toBeDefined();
+    });
+
+    it('nocturnal-romance style should exist with correct properties', () => {
+      const style = artStyleService.getStyleById('nocturnal-romance');
+      expect(style).toBeDefined();
+      expect(style?.name).toBe('Nocturnal Romance');
+      expect(style?.colors.primary).toBe('#4A1E5A');
+      expect(style?.colors.accent).toBe('#D4AF37');
+      expect(style?.colors.background).toBe('#0A1931');
+      expect(style?.colors.secondary).toBe('#B76E79');
     });
   });
 });
