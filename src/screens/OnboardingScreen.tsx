@@ -79,18 +79,18 @@ export default function OnboardingScreen() {
       </View>
       
       <Text style={[styles.stepTitle, { color: theme.colors.text }]}>
-        Welcome to GameForge! 🎮
+        Welcome to GameForge
       </Text>
       <Text style={[styles.stepDescription, { color: theme.colors.text + '90' }]}>
-        Create professional games, VR experiences, and personalized gift mini-games with zero coding required.
+        Create personalized gift games for birthdays, anniversaries, and special moments — ready to share in minutes.
       </Text>
       
       <View style={styles.featureList}>
         {[
-          { icon: 'palette', text: '15 Game Templates' },
-          { icon: 'robot', text: 'AI Assistant' },
-          { icon: 'virtual-reality', text: 'VR/AR Support' },
-          { icon: 'gift', text: 'Gift Games' },
+          { icon: 'gift', text: 'Personalized Gift Games' },
+          { icon: 'palette', text: 'Beautiful Templates' },
+          { icon: 'bird', text: 'Creative Helper' },
+          { icon: 'share-variant', text: 'Easy Sharing' },
         ].map((feature, index) => (
           <Animated.View
             key={index}
@@ -133,7 +133,7 @@ export default function OnboardingScreen() {
       style={styles.stepContainer}
     >
       <Text style={[styles.stepTitle, { color: theme.colors.text }]}>
-        What do you want to build? 🎯
+        What brings you here?
       </Text>
       <Text style={[styles.stepDescription, { color: theme.colors.text + '90' }]}>
         This helps us personalize your experience
@@ -235,7 +235,7 @@ export default function OnboardingScreen() {
       style={styles.stepContainer}
     >
       <Text style={[styles.stepTitle, { color: theme.colors.text }]}>
-        Pick your style 🎨
+        Pick your style
       </Text>
       <Text style={[styles.stepDescription, { color: theme.colors.text + '90' }]}>
         Choose a visual aesthetic for your games
@@ -356,7 +356,7 @@ export default function OnboardingScreen() {
       style={styles.stepContainer}
     >
       <Text style={[styles.stepTitle, { color: theme.colors.text }]}>
-        What's your experience level? 💪
+        How experienced are you?
       </Text>
       <Text style={[styles.stepDescription, { color: theme.colors.text + '90' }]}>
         We'll match you with appropriate templates
