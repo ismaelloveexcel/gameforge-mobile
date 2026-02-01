@@ -22,6 +22,8 @@ import GiftForgeResultScreen from '../screens/GiftForgeResultScreen';
 import GiftForgeGameScreen from '../screens/GiftForgeGameScreen';
 // Agent screens (from PR #5)
 import { AgentDashboardScreen } from '../screens/AgentDashboardScreen';
+// Command Centre (admin dashboard)
+import CommandCentreScreen from '../screens/CommandCentreScreen';
 
 import { useTheme } from '../contexts/ThemeContext';
 import { RootStackParamList } from '../types';
@@ -168,6 +170,12 @@ export default function AppNavigator() {
       <Stack.Screen 
         name="AgentDashboard" 
         component={AgentDashboardScreen}
+        options={{ headerShown: false }}
+      />
+      {/* Command Centre (admin) */}
+      <Stack.Screen 
+        name="CommandCentre" 
+        component={CommandCentreScreen}
         options={{ headerShown: false }}
       />
     </Stack.Navigator>

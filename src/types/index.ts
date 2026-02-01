@@ -22,6 +22,8 @@ export type RootStackParamList = {
   GiftForgeResult: { gameId: string };
   // Agent routes
   AgentDashboard: undefined;
+  // Admin routes
+  CommandCentre: undefined;
 };
 
 // Project types
