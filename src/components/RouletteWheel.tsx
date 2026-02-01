@@ -2,7 +2,7 @@
  * RouletteWheel - Animated spinning wheel selector
  * Fun, interactive way to make random selections
  */
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import {
   View,
   Text,

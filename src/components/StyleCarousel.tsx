@@ -16,7 +16,6 @@ import {
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
-  withSpring,
   interpolate,
   Extrapolate,
   FadeIn,
@@ -56,7 +55,7 @@ export interface StyleCarouselProps {
 const AnimatedTouchable = Animated.createAnimatedComponent(TouchableOpacity);
 
 export default function StyleCarousel({
-  styles,
+  styles: styleOptions,
   selectedStyleId,
   onStyleSelect,
   showDetails = true,
@@ -108,7 +107,7 @@ export default function StyleCarousel({
         onScroll={handleScroll}
         scrollEventThrottle={16}
       >
-        {styles.map((styleOption, index) => (
+        {styleOptions.map((styleOption, index) => (
           <StyleCard
             key={styleOption.id}
             styleOption={styleOption}
@@ -127,7 +126,7 @@ export default function StyleCarousel({
 
       {/* Page Indicators */}
       <View style={styles_local.indicatorContainer}>
-        {styles.map((_, index) => (
+        {styleOptions.map((_, index) => (
           <TouchableOpacity
             key={index}
             style={[
@@ -145,7 +144,7 @@ export default function StyleCarousel({
       </View>
 
       {/* Navigation Arrows */}
-      {styles.length > 1 && (
+      {styleOptions.length > 1 && (
         <>
           {activeIndex > 0 && (
             <Animated.View
@@ -158,7 +157,7 @@ export default function StyleCarousel({
             </Animated.View>
           )}
           
-          {activeIndex < styles.length - 1 && (
+          {activeIndex < styleOptions.length - 1 && (
             <Animated.View
               entering={FadeIn}
               style={[styles_local.arrowRight, { backgroundColor: theme.colors.surface }]}
@@ -423,7 +422,6 @@ const styles_local = StyleSheet.create({
   indicator: {
     height: 8,
     borderRadius: radii.full,
-    transition: 'all 0.3s ease',
   },
   arrowLeft: {
     position: 'absolute',

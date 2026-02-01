@@ -3,8 +3,7 @@
  * Enables sharing gift games across multiple platforms
  */
 
-import { Share, Platform } from 'react-native';
-import * as Linking from 'expo-linking';
+import { Share, Platform, Linking } from 'react-native';
 
 export interface ShareOptions {
   title: string;

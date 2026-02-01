@@ -195,6 +195,55 @@ Respond ONLY with the JSON, no additional text.`;
   }
 
   /**
+   * Generic chat method for AI interactions
+   */
+  async chat(prompt: string): Promise<string> {
+    // If no API key, return a simple response
+    if (!this.apiKey) {
+      console.log('No Grok API key configured, using fallback response');
+      return 'AI response generated locally';
+    }
+
+    try {
+      const response = await fetch(this.baseUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${this.apiKey}`,
+        },
+        body: JSON.stringify({
+          model: this.model,
+          messages: [
+            {
+              role: 'system',
+              content: 'You are a helpful and creative AI assistant.',
+            },
+            {
+              role: 'user',
+              content: prompt,
+            },
+          ],
+          temperature: 0.8,
+          max_tokens: 1000,
+        }),
+      });
+
+      if (!response.ok) {
+        console.error('Grok API error:', await response.text());
+        throw new Error('API request failed');
+      }
+
+      const data = await response.json();
+      const content = data.choices?.[0]?.message?.content;
+      
+      return content || 'No response generated';
+    } catch (error) {
+      console.error('Chat error:', error);
+      throw error;
+    }
+  }
+
+  /**
    * Generate a gift game using Grok API
    */
   async generateGame(questionnaire: GiftForgeQuestionnaire): Promise<GrokGameResponse> {
