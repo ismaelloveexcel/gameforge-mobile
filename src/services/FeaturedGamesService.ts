@@ -261,8 +261,8 @@ class FeaturedGamesService {
    * Get trending games (most gifted this week)
    */
   async getTrendingGames(limit: number = 6): Promise<FeaturedGame[]> {
-    // Return cached results if available
-    if (this.trendingCache && this.trendingCache.length > 0) {
+    // Return cached results if available (even if empty array is valid)
+    if (this.trendingCache !== null) {
       return this.trendingCache.slice(0, limit);
     }
     
@@ -278,8 +278,8 @@ class FeaturedGamesService {
    * Get curated/premium games
    */
   async getCuratedGames(limit: number = 4): Promise<FeaturedGame[]> {
-    // Return cached results if available
-    if (this.curatedCache && this.curatedCache.length > 0) {
+    // Return cached results if available (even if empty array is valid)
+    if (this.curatedCache !== null) {
       return this.curatedCache.slice(0, limit);
     }
     
