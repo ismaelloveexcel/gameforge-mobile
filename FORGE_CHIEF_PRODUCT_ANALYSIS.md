@@ -358,8 +358,8 @@ Home screen hero card:
    import { useFonts } from 'expo-font';
    
    const [loaded] = useFonts({
-     'Tajawal-Bold': require('./assets/fonts/Tajawal-Bold.ttf'),
-     'Tajawal-Regular': require('./assets/fonts/Tajawal-Regular.ttf'),
+     'NotoSansArabic-Bold': require('./assets/fonts/NotoSansArabic-Bold.ttf'),
+     'NotoSansArabic-Regular': require('./assets/fonts/NotoSansArabic-Regular.ttf'),
    });
    ```
 
@@ -533,17 +533,23 @@ const handleFakePayment = useCallback(async () => {
 
 ```typescript
 // Use PayTabs (UAE-focused payment gateway)
-import { PayTabs } from 'paytabs-react-native';
+import PayTabs from 'paytabs-react-native';
 
 const initiatePayment = async (priceAED: number) => {
+  // IMPORTANT: Never store server keys in the mobile app
+  // Payment processing should go through your backend API
+  // This example shows the client-side flow only
   const result = await PayTabs.initiatePayment({
     amount: priceAED,
     currency: 'AED',
-    merchantId: process.env.PAYTABS_MERCHANT_ID,
-    merchantKey: process.env.PAYTABS_MERCHANT_KEY,
-    customerName: senderName,
-    customerEmail: senderEmail,
-    description: `Gift Game for ${recipientName}`,
+    profileId: process.env.EXPO_PUBLIC_PAYTABS_PROFILE_ID,
+    serverKey: process.env.EXPO_PUBLIC_PAYTABS_SERVER_KEY, // Use client key in production
+    clientKey: process.env.EXPO_PUBLIC_PAYTABS_CLIENT_KEY,
+    customer: {
+      name: senderName,
+      email: senderEmail,
+    },
+    cartDescription: `Gift Game for ${recipientName}`,
   });
   
   if (result.success) {

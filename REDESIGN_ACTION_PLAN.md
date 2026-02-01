@@ -490,14 +490,14 @@ withTiming(value, { duration: 3500 })
 ### Week 3 Day 2: Arabic Typography (3 hours)
 
 ```bash
-# Download Tajawal font (open source Arabic font)
+# Download Noto Sans Arabic font (Google's high-quality Arabic font)
 mkdir assets/fonts
-# Download from: https://fonts.google.com/specimen/Tajawal
+# Download from: https://fonts.google.com/specimen/Noto+Sans+Arabic
 
 # Add to assets/fonts/:
-- Tajawal-Regular.ttf
-- Tajawal-Bold.ttf
-- Tajawal-Medium.ttf
+- NotoSansArabic-Regular.ttf
+- NotoSansArabic-Bold.ttf
+- NotoSansArabic-Medium.ttf
 ```
 
 Update `App.tsx`:
@@ -626,17 +626,31 @@ export const initiatePayment = async (
   senderEmail: string
 ) => {
   try {
+    // IMPORTANT SECURITY NOTE:
+    // Never store server keys in mobile apps. This should be handled by your backend API.
+    // The server key shown here should be replaced with a client key in production.
+    // Consider implementing a backend endpoint that handles payment processing securely.
+    
+    // Note: Deep linking must be configured in app.json for returnUrl to work
+    // Add to app.json:
+    // "scheme": "gameforge"
+    // iOS: Info.plist will be auto-configured by Expo
+    // Android: AndroidManifest.xml will be auto-configured by Expo
+    
     const result = await PayTabs.initiatePayment({
-      merchantId: process.env.PAYTABS_MERCHANT_ID,
-      serverKey: process.env.PAYTABS_SERVER_KEY,
+      profileId: process.env.EXPO_PUBLIC_PAYTABS_PROFILE_ID,
+      serverKey: process.env.EXPO_PUBLIC_PAYTABS_SERVER_KEY, // Use client key in production
+      clientKey: process.env.EXPO_PUBLIC_PAYTABS_CLIENT_KEY,
       amount: priceAED,
       currency: 'AED',
-      customerName: senderName,
-      customerEmail: senderEmail,
-      customerPhone: '', // Optional
-      description: `Gift Game - ${giftId}`,
-      returnUrl: 'gameforge://payment-success',
-      environment: process.env.PAYTABS_ENVIRONMENT,
+      customer: {
+        name: senderName,
+        email: senderEmail,
+        phone: '', // Optional
+      },
+      cartDescription: `Gift Game - ${giftId}`,
+      returnUrl: 'gameforge://payment-success', // Requires deep link config
+      environment: process.env.EXPO_PUBLIC_PAYTABS_ENVIRONMENT || 'sandbox',
     });
     
     if (result.success) {

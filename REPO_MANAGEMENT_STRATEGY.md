@@ -362,8 +362,10 @@ echo "SUPABASE_ANON_KEY=your-anon-key" >> .env
 // src/services/SupabaseService.ts
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = process.env.SUPABASE_URL!;
-const supabaseAnonKey = process.env.SUPABASE_ANON_KEY!;
+// For React Native with Expo, use EXPO_PUBLIC_ prefix for environment variables
+// These are accessible at runtime and bundled with the app
+const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL!;
+const supabaseAnonKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY!;
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
@@ -469,7 +471,7 @@ supabase.table('agent_runs').insert({
     'agent_name': 'market_researcher',
     'status': 'success',
     'output': result,
-    'completed_at': 'now()'
+    'completed_at': 'NOW()'  # Use NOW() function, not string literal
 }).execute()
 
 print(result)
@@ -673,9 +675,14 @@ CREATE POLICY "Public can view live games"
   ON featured_games FOR SELECT
   USING (status = 'live');
 
-CREATE POLICY "Service role can manage games"
+-- Note: Service role key bypasses RLS entirely
+-- This policy is for API key-based access with specific JWT claims
+-- For true service role access, use the service_role key which bypasses RLS
+CREATE POLICY "API keys with service claim can manage games"
   ON featured_games FOR ALL
-  USING (auth.jwt()->>'role' = 'service_role');
+  USING (
+    (current_setting('request.jwt.claims', true)::json->>'role')::text = 'service_role'
+  );
 
 -- gift_instances: Users can read their own, service can read all
 ALTER TABLE gift_instances ENABLE ROW LEVEL SECURITY;
