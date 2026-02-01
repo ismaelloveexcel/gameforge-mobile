@@ -6,6 +6,13 @@ Thank you for your interest in contributing to GameForge Mobile! This document p
 
 Please be respectful, inclusive, and professional in all interactions.
 
+## Repository Structure
+
+**Important:** Please review [REPOSITORY_STRUCTURE.md](REPOSITORY_STRUCTURE.md) to understand which repository to submit your contribution to:
+
+- **Submit to this repository (gameforge-mobile)** for: New features, bug fixes, UI/UX changes, service implementations, and mobile app code
+- **Submit to GameDevelopmentHub** for: Documentation updates, deployment guides, and general project information
+
 ## How to Contribute
 
 ### Reporting Bugs
