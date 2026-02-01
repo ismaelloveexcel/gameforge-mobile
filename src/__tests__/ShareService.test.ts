@@ -15,10 +15,11 @@ jest.mock('react-native', () => ({
   },
 }));
 
+// Mock expo-linking as a virtual module (may not be installed)
 jest.mock('expo-linking', () => ({
   canOpenURL: jest.fn(() => Promise.resolve(true)),
   openURL: jest.fn(() => Promise.resolve()),
-}));
+}), { virtual: true });
 
 describe('ShareService', () => {
   beforeEach(() => {

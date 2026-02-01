@@ -37,10 +37,12 @@ describe('AIService', () => {
     });
 
     it('returns fallback message on error', async () => {
-      const mockError = new Error('API error');
+      // Override mock to throw an error
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      const grokModule = require('../services/GrokService');
+      grokModule.grokService.chat.mockRejectedValueOnce(new Error('API error'));
       jest.spyOn(console, 'error').mockImplementation(() => {});
       
-      // This will use the fallback since mock might fail
       const message = await aiService.generateGiftMessage(
         'Alice',
         'Bob',
@@ -48,6 +50,7 @@ describe('AIService', () => {
         'heartfelt'
       );
       
+      // On error, fallback message should contain recipient name
       expect(message).toContain('Alice');
     });
   });
@@ -66,12 +69,19 @@ describe('AIService', () => {
     });
 
     it('returns fallback suggestions on error', async () => {
+      // Override mock to throw an error
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      const grokModule = require('../services/GrokService');
+      grokModule.grokService.chat.mockRejectedValueOnce(new Error('API error'));
+      jest.spyOn(console, 'error').mockImplementation(() => {});
+      
       const suggestions = await aiService.generateSuggestions(
         'themes',
         'test',
         5
       );
       
+      // On error, should return fallback suggestions
       expect(suggestions).toBeTruthy();
       expect(suggestions.length).toBe(5);
     });
@@ -87,9 +97,16 @@ describe('AIService', () => {
     });
 
     it('returns original text on error', async () => {
+      // Override mock to throw an error
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      const grokModule = require('../services/GrokService');
+      grokModule.grokService.chat.mockRejectedValueOnce(new Error('API error'));
+      jest.spyOn(console, 'error').mockImplementation(() => {});
+      
       const originalText = 'This is a test';
       const enhanced = await aiService.enhanceText(originalText, 'simplify');
       
+      // On error, should return original text
       expect(enhanced).toBe(originalText);
     });
   });
