@@ -6,6 +6,31 @@ interface GenieResponse {
   codeSnippet?: string;
 }
 
+// PlayGift Branding Types
+interface BrandColors {
+  primary: string;
+  accent: string;
+  dark: string;
+  secondary: string;
+}
+
+interface CreativeConcept {
+  name: string;
+  coreSymbol: string;
+  typography: string;
+  visualAdjective: string;
+}
+
+interface CreativeBrief {
+  brandName: string;
+  theme: string;
+  colors: BrandColors;
+  brief: string;
+  concepts: CreativeConcept[];
+  requiredAssets: string[];
+  timestamp: string;
+}
+
 class GenieService {
   private apiKey: string = ''; // Set via configuration
   private apiEndpoint: string = 'https://api.x.ai/v1/chat/completions'; // Grok API
@@ -400,7 +425,7 @@ Use a caring, enthusiastic tone and think like a thoughtful friend who understan
   /**
    * Generate creative brief for logo and branding
    */
-  async generateCreativeBrief(brandName: string, theme: string, colors: any): Promise<any> {
+  async generateCreativeBrief(brandName: string, theme: string, colors: BrandColors): Promise<CreativeBrief> {
     const prompt = `Act as a premium brand designer for the UAE market. Generate a complete design brief for the "${brandName}" logo and identity system. Core concept: fuse a gift box with a play button, symbolizing playful, personalized gifts. It must feel luxurious, emotional, and culturally sophisticated for the ${theme} theme. Use this palette: Primary ${colors.primary}, Accent ${colors.accent}, Dark ${colors.dark}, Secondary ${colors.secondary}. Output 3 distinct creative directions as structured text, including: 1) Core symbol idea, 2) Typography recommendation, 3) Key visual adjective (e.g., "Elegant Fusion," "Digital Jewel," "Luminous Abstract"). Also, list the required final asset files (e.g., app icon, favicon, full logo, banner).`;
 
     const response = await this.processMessage(prompt, 'creative');
@@ -420,7 +445,7 @@ Use a caring, enthusiastic tone and think like a thoughtful friend who understan
   /**
    * Parse creative concepts from AI response
    */
-  private parseCreativeConcepts(content: string): any[] {
+  private parseCreativeConcepts(content: string): CreativeConcept[] {
     const concepts = [];
     
     // Look for numbered concepts (1., 2., 3.)
@@ -512,3 +537,6 @@ Use a caring, enthusiastic tone and think like a thoughtful friend who understan
 }
 
 export const genieService = new GenieService();
+
+// Export types for external use
+export type { BrandColors, CreativeConcept, CreativeBrief };

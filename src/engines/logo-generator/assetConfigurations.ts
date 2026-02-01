@@ -3,6 +3,7 @@
  * Defines camera setups and specifications for different asset types
  */
 import * as BABYLON from 'babylonjs';
+import { LogoSceneConfig } from './PlayGiftLogoScene';
 
 export interface AssetSpecification {
   name: string;
@@ -153,7 +154,7 @@ export function getAssetConfiguration(name: string): AssetSpecification | undefi
 /**
  * Convert specification to LogoSceneConfig
  */
-export function specToLogoConfig(spec: AssetSpecification): any {
+export function specToLogoConfig(spec: AssetSpecification): LogoSceneConfig {
   return {
     concept: 'Elegant Fusion', // Default concept
     cameraPosition: new BABYLON.Vector3(

@@ -127,7 +127,7 @@ export class PlayGiftLogoScene {
   /**
    * Create logo geometry - gift box with play button
    */
-  private createLogoGeometry(concept: string, colors: any): void {
+  private createLogoGeometry(concept: string, colors: { primary: string; accent: string; background: string; secondary: string }): void {
     if (!this.scene) return;
 
     // Create gift box base
