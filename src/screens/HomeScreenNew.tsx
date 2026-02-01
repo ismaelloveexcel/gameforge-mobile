@@ -1,6 +1,12 @@
 /**
- * HomeScreen - The Forge's welcoming entrance 🏠
- * Features: Living gradients, Dodo companion, emotional UI, celebration moments
+ * HomeScreen - Dynamic Seasonal Edition
+ * 
+ * FORGE-CHIEF MANDATE:
+ * - ONE dominant action visible in ≤3 seconds
+ * - User takes action in ≤10 seconds
+ * - Progress/delight in ≤30 seconds
+ * 
+ * Supports: Valentine's, Winter Majlis, and all seasonal themes
  */
 import React, { useEffect, useState, useCallback } from 'react';
 import {
@@ -10,6 +16,8 @@ import {
   ScrollView,
   TouchableOpacity,
   Dimensions,
+  Platform,
+  Modal,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -20,186 +28,204 @@ import Animated, {
   withRepeat,
   withTiming,
   withSequence,
+  withSpring,
   Easing,
+  FadeIn,
   FadeInDown,
   FadeInUp,
+  SlideInUp,
 } from 'react-native-reanimated';
-import { useTheme } from '../contexts/ThemeContext';
+import { useTheme, THEME_OPTIONS, ThemeChoice } from '../contexts/ThemeContext';
 import { RootStackParamList } from '../types';
 import { 
   LivingGradient, 
   DodoCompanion, 
   ForgeCard, 
   ParticleField,
-  CelebrationOverlay,
 } from '../components';
-import { spacing, typography, radii, forgeColors } from '../design-tokens/theme';
+import { spacing, typography, radii } from '../design-tokens/theme';
 
 type NavigationProp = StackNavigationProp<RootStackParamList>;
-const _screenDimensions = Dimensions.get('window');
+const { height: SCREEN_HEIGHT, width: SCREEN_WIDTH } = Dimensions.get('window');
 
 const AnimatedTouchable = Animated.createAnimatedComponent(TouchableOpacity);
 
-// Dodo's context-aware greetings
-const getGreeting = () => {
+// Theme-aware greetings
+const getThemeGreeting = (themeId: string) => {
   const hour = new Date().getHours();
-  if (hour < 5) return "Burning the midnight oil? Let's create something magical! 🌙";
-  if (hour < 12) return "Good morning! Ready to forge some dreams? ☀️";
-  if (hour < 17) return "Afternoon creative session? I'm in! 🌤️";
-  if (hour < 21) return "Evening vibes! Perfect time to build something special ✨";
-  return "Night owl mode activated! Let's make something cool 🦉";
+  const isNight = hour < 6 || hour >= 21;
+  const isMorning = hour >= 6 && hour < 12;
+  const isAfternoon = hour >= 12 && hour < 17;
+  
+  // Valentine's / Romance greetings
+  if (themeId === 'eternal-romance') {
+    if (isNight) return "Love knows no hour — create something unforgettable";
+    if (isMorning) return "Start the day with a gesture of love";
+    if (isAfternoon) return "An afternoon to craft something from the heart";
+    return "Romance is in the air — make it memorable";
+  }
+  
+  // Winter Majlis greetings
+  if (themeId === 'winter-majlis') {
+    if (isNight) return "Late night creativity? Perfect time to create something special";
+    if (isMorning) return "Good morning — let's make someone's day";
+    if (isAfternoon) return "Afternoon warmth — perfect for thoughtful gifts";
+    return "Cozy nights are made for creating magic";
+  }
+  
+  // Neon Summer greetings
+  if (themeId === 'neon-dubai-summer') {
+    if (isNight) return "The city never sleeps — neither does creativity";
+    if (isMorning) return "Beat the heat with something cool";
+    if (isAfternoon) return "Pool vibes, creative energy";
+    return "Summer nights call for bold moves";
+  }
+  
+  // Default creative greeting
+  if (isNight) return "Midnight inspiration strikes";
+  if (isMorning) return "A fresh canvas awaits";
+  if (isAfternoon) return "Perfect time to create";
+  return "Let your creativity flow";
 };
 
 export default function HomeScreen() {
   const navigation = useNavigation<NavigationProp>();
-  const { theme, isDark } = useTheme();
+  const { theme, isDark, seasonalTheme, themeChoice, setThemeChoice } = useTheme();
   const [dodoMood, setDodoMood] = useState<'idle' | 'waving' | 'excited' | 'curious'>('waving');
-  const [showCelebration, setShowCelebration] = useState(false);
-  const [greeting] = useState(getGreeting());
+  const [showThemePicker, setShowThemePicker] = useState(false);
+  const greeting = getThemeGreeting(seasonalTheme.id);
   
-  // Animations
-  const glow = useSharedValue(0);
-  const sparkle = useSharedValue(0);
+  // Dynamic colors from current seasonal theme
+  const themeColors = seasonalTheme.colors;
+  
+  // Animations - slower for cozy Winter Majlis feel
+  const glow = useSharedValue(0.4);
   const heroFloat = useSharedValue(0);
+  const pulseScale = useSharedValue(1);
+  const shimmer = useSharedValue(0);
   
   useEffect(() => {
-    // Glow pulse for dark mode
+    // Gentle gold glow pulse - like candlelight
     glow.value = withRepeat(
       withSequence(
-        withTiming(1, { duration: 2000 }),
-        withTiming(0.4, { duration: 2000 })
+        withTiming(0.8, { duration: 3000, easing: Easing.inOut(Easing.ease) }),
+        withTiming(0.4, { duration: 3000, easing: Easing.inOut(Easing.ease) })
       ),
       -1,
       false
     );
     
-    // Sparkle rotation
-    sparkle.value = withRepeat(
-      withTiming(360, { duration: 6000, easing: Easing.linear }),
-      -1,
-      false
-    );
-    
-    // Hero float
+    // Gentle float for hero card - like warmth rising
     heroFloat.value = withRepeat(
       withSequence(
-        withTiming(-8, { duration: 2500, easing: Easing.inOut(Easing.ease) }),
-        withTiming(0, { duration: 2500, easing: Easing.inOut(Easing.ease) })
+        withTiming(-6, { duration: 3500, easing: Easing.inOut(Easing.ease) }),
+        withTiming(0, { duration: 3500, easing: Easing.inOut(Easing.ease) })
       ),
       -1,
       false
     );
     
-    // Dodo waves on entry, then becomes idle
-    const timeout = setTimeout(() => setDodoMood('idle'), 3000);
+    // Subtle pulse for CTA
+    pulseScale.value = withRepeat(
+      withSequence(
+        withTiming(1.02, { duration: 2000 }),
+        withTiming(1, { duration: 2000 })
+      ),
+      -1,
+      false
+    );
+    
+    // Shimmer effect
+    shimmer.value = withRepeat(
+      withTiming(1, { duration: 4000 }),
+      -1,
+      false
+    );
+    
+    // Dodo waves, then relaxes
+    const timeout = setTimeout(() => setDodoMood('idle'), 2500);
     return () => clearTimeout(timeout);
-  }, [glow, sparkle, heroFloat]);
+  }, [glow, heroFloat, pulseScale, shimmer]);
   
   const glowStyle = useAnimatedStyle(() => ({
-    opacity: isDark ? glow.value * 0.3 : 0,
-  }));
-  
-  const sparkleStyle = useAnimatedStyle(() => ({
-    transform: [{ rotate: `${sparkle.value}deg` }],
+    opacity: glow.value,
   }));
   
   const heroFloatStyle = useAnimatedStyle(() => ({
     transform: [{ translateY: heroFloat.value }],
   }));
-
-  // Feature cards - renamed from "AI" focused terminology
-  const features = [
-    {
-      icon: 'gift',
-      title: 'Gift Games',
-      description: 'Create personalized mini-games for loved ones',
-      onPress: () => navigation.navigate('GiftForgeWizard'),
-      highlight: true,
-      color: forgeColors.spark[500],
-    },
-    {
-      icon: 'view-grid-plus',
-      title: 'Game Templates',
-      description: '15 ready-to-customize game blueprints',
-      onPress: () => navigation.navigate('Templates'),
-      color: forgeColors.forge[500],
-    },
-    {
-      icon: 'bird', // Dodo reference!
-      title: 'Dodo Helper',
-      description: 'Your friendly forge companion',
-      onPress: () => {
-        setDodoMood('excited');
-        navigation.navigate('Genie'); // Still uses old route name for now
-      },
-      color: forgeColors.gold[500],
-    },
-    {
-      icon: 'palette',
-      title: 'Art Styles',
-      description: '5 signature visual themes',
-      onPress: () => navigation.navigate('Templates'),
-      color: forgeColors.moss[500],
-    },
-    {
-      icon: 'cube-outline',
-      title: 'VR Worlds',
-      description: 'Create immersive 3D experiences',
-      onPress: () => navigation.navigate('Templates'),
-      color: forgeColors.ember[500],
-    },
-  ];
-
-  const quickActions = [
-    {
-      icon: 'gift-outline',
-      title: 'Gift Game',
-      color: forgeColors.spark[500],
-      onPress: () => navigation.navigate('GiftForgeWizard'),
-    },
-    {
-      icon: 'plus-circle-outline',
-      title: 'New Project',
-      color: forgeColors.forge[500],
-      onPress: () => navigation.navigate('Templates'),
-    },
-    {
-      icon: 'folder-outline',
-      title: 'My Projects',
-      color: forgeColors.gold[500],
-      onPress: () => navigation.navigate('Projects'),
-    },
-  ];
+  
+  const pulseStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: pulseScale.value }],
+  }));
 
   const handleDodoPress = useCallback(() => {
     setDodoMood('excited');
     setTimeout(() => setDodoMood('idle'), 2000);
   }, []);
 
+  const handleCreateGift = useCallback(() => {
+    navigation.navigate('GiftForgeWizard');
+  }, [navigation]);
+
+  // Secondary actions - hidden below fold
+  const secondaryActions = [
+    {
+      icon: 'folder-heart-outline',
+      title: 'My Creations',
+      onPress: () => navigation.navigate('Projects'),
+      color: themeColors.secondary,
+    },
+    {
+      icon: 'view-grid-outline',
+      title: 'Templates',
+      onPress: () => navigation.navigate('Templates'),
+      color: themeColors.primary,
+    },
+    {
+      icon: 'bird',
+      title: 'Dodo Helper',
+      onPress: () => {
+        setDodoMood('excited');
+        navigation.navigate('Genie');
+      },
+      color: themeColors.accent,
+    },
+  ];
+
   return (
-    <LivingGradient intensity="subtle">
+    <View style={[styles.container, { backgroundColor: themeColors.background }]}>
+      {/* Warm ambient gradient */}
+      <View style={[styles.ambientGlow, { backgroundColor: themeColors.primary }]} />
+      
       <ParticleField density="sparse">
         <ScrollView
-          style={styles.container}
+          style={styles.scrollView}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.scrollContent}
         >
-          {/* Header with Dodo */}
+          {/* Minimal Header with Dodo */}
           <Animated.View 
             entering={FadeInDown.duration(600).delay(100)}
             style={styles.header}
           >
-            <View style={styles.headerContent}>
-              <Text style={[styles.title, { color: theme.colors.text }]}>
+            <View style={styles.headerLeft}>
+              <Text style={[styles.brandMark, { color: themeColors.accent }]}>
                 GameForge
               </Text>
-              <Text style={[styles.subtitle, { color: theme.colors.textMuted }]}>
-                Where ideas become playable
+            <TouchableOpacity 
+              style={[styles.seasonBadge, { borderColor: themeColors.accent + '40' }]}
+              onPress={() => setShowThemePicker(true)}
+              activeOpacity={0.7}
+            >
+              <Text style={[styles.seasonText, { color: themeColors.accent }]}>
+                {seasonalTheme.name}
               </Text>
+              <Icon name="chevron-down" size={12} color={themeColors.accent} />
+            </TouchableOpacity>
             </View>
             
-            {/* Floating Dodo */}
-            <Animated.View style={[styles.headerDodo, heroFloatStyle]}>
+            <Animated.View style={heroFloatStyle}>
               <DodoCompanion
                 mood={dodoMood}
                 size="small"
@@ -210,199 +236,207 @@ export default function HomeScreen() {
             </Animated.View>
           </Animated.View>
 
-          {/* Hero Card - GiftForge spotlight */}
-          <Animated.View entering={FadeInUp.duration(700).delay(200)}>
+          {/* 
+            HERO SECTION - THE DOMINANT ACTION
+            Takes up ~60% of above-fold space
+            ONE thing to do: Create a Gift
+          */}
+          <Animated.View 
+            entering={SlideInUp.duration(800).delay(200)}
+            style={[styles.heroSection, heroFloatStyle]}
+          >
             <TouchableOpacity 
               activeOpacity={0.95}
-              onPress={() => navigation.navigate('GiftForgeWizard')}
+              onPress={handleCreateGift}
+              style={styles.heroTouchable}
             >
-              <ForgeCard
-                glowColor={forgeColors.spark[500]}
-                glowIntensity="intense"
-                variant="elevated"
-                style={styles.heroCard}
-              >
-                {/* Glow effect */}
-                <Animated.View 
-                  style={[
-                    styles.heroGlow,
-                    { backgroundColor: forgeColors.spark[500] },
-                    glowStyle
-                  ]} 
-                />
+              {/* Glowing border effect - like candlelight */}
+              <Animated.View 
+                style={[
+                  styles.heroGlowBorder,
+                  { borderColor: themeColors.accent },
+                  glowStyle
+                ]} 
+              />
+              
+              <View style={[
+                styles.heroCard,
+                { 
+                  backgroundColor: themeColors.surface,
+                  borderColor: themeColors.accent + '40',
+                }
+              ]}>
+                {/* Decorative corner accents */}
+                <View style={[styles.cornerAccent, styles.cornerTopLeft, { backgroundColor: themeColors.accent }]} />
+                <View style={[styles.cornerAccent, styles.cornerTopRight, { backgroundColor: themeColors.accent }]} />
+                <View style={[styles.cornerAccent, styles.cornerBottomLeft, { backgroundColor: themeColors.accent }]} />
+                <View style={[styles.cornerAccent, styles.cornerBottomRight, { backgroundColor: themeColors.accent }]} />
                 
-                <View style={styles.heroContent}>
-                  {/* Icon cluster */}
-                  <View style={styles.heroIconArea}>
-                    <View style={[styles.heroIconOuter, { backgroundColor: forgeColors.spark[500] + '20' }]}>
-                      <View style={[styles.heroIconInner, { backgroundColor: forgeColors.spark[500] }]}>
-                        <Icon name="gift" size={32} color="#fff" />
-                      </View>
+                {/* Hero Icon */}
+                <View style={styles.heroIconContainer}>
+                  <View style={[styles.heroIconGlow, { backgroundColor: themeColors.accent + '30' }]}>
+                    <View style={[styles.heroIconInner, { backgroundColor: themeColors.accent }]}>
+                      <Icon name="gift" size={48} color={themeColors.background} />
                     </View>
-                    <Animated.View style={[styles.heroSparkle, sparkleStyle]}>
-                      <Text style={styles.sparkleEmoji}>✨</Text>
-                    </Animated.View>
-                    
-                    {/* NEW badge */}
-                    <View style={[styles.newBadge, { backgroundColor: forgeColors.moss[500] }]}>
-                      <Text style={styles.newBadgeText}>NEW</Text>
-                    </View>
-                  </View>
-                  
-                  {/* Text content */}
-                  <View style={styles.heroTextArea}>
-                    <Text style={[styles.heroTitle, { color: theme.colors.text }]}>
-                      Create a Gift Game 🎁
-                    </Text>
-                    <Text style={[styles.heroDescription, { color: theme.colors.textMuted }]}>
-                      Personalized mini-games for birthdays, anniversaries & special moments
-                    </Text>
-                    
-                    {/* Feature pills */}
-                    <View style={styles.heroPills}>
-                      <View style={[styles.pill, { backgroundColor: forgeColors.spark[500] + '15' }]}>
-                        <Text style={[styles.pillText, { color: forgeColors.spark[500] }]}>🎮 5 Game Types</Text>
-                      </View>
-                      <View style={[styles.pill, { backgroundColor: forgeColors.forge[500] + '15' }]}>
-                        <Text style={[styles.pillText, { color: forgeColors.forge[500] }]}>⚡ Instant Magic</Text>
-                      </View>
-                    </View>
-                  </View>
-                  
-                  {/* Arrow */}
-                  <View style={[styles.heroArrow, { backgroundColor: forgeColors.spark[500] }]}>
-                    <Icon name="arrow-right" size={20} color="#fff" />
                   </View>
                 </View>
-              </ForgeCard>
+                
+                {/* Hero Copy */}
+                <Text style={[styles.heroTitle, { color: themeColors.text }]}>
+                  Create a Gift
+                </Text>
+                <Text style={[styles.heroSubtitle, { color: themeColors.text }]}>
+                  for Someone You Love
+                </Text>
+                
+                <Text style={[styles.heroDescription, { color: themeColors.muted }]}>
+                  A personalized mini-game they'll actually remember
+                </Text>
+                
+                {/* CTA Button */}
+                <Animated.View style={[styles.ctaContainer, pulseStyle]}>
+                  <View style={[styles.ctaButton, { backgroundColor: themeColors.accent }]}>
+                    <Text style={[styles.ctaText, { color: themeColors.background }]}>
+                      Start Creating
+                    </Text>
+                    <Icon name="arrow-right" size={20} color={themeColors.background} />
+                  </View>
+                </Animated.View>
+                
+                {/* Trust signal */}
+                <Text style={[styles.trustSignal, { color: themeColors.muted }]}>
+                  Takes 60 seconds
+                </Text>
+              </View>
             </TouchableOpacity>
           </Animated.View>
 
-          {/* Quick Actions */}
+          {/* Divider with label */}
           <Animated.View 
-            entering={FadeInUp.duration(600).delay(300)}
-            style={styles.section}
+            entering={FadeIn.delay(600)}
+            style={styles.dividerSection}
           >
-            <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
-              Quick Actions
+            <View style={[styles.dividerLine, { backgroundColor: themeColors.muted + '30' }]} />
+            <Text style={[styles.dividerText, { color: themeColors.muted }]}>
+              or explore
             </Text>
-            <View style={styles.quickActions}>
-              {quickActions.map((action, index) => (
+            <View style={[styles.dividerLine, { backgroundColor: themeColors.muted + '30' }]} />
+          </Animated.View>
+
+          {/* Secondary Actions - Below the fold */}
+          <Animated.View 
+            entering={FadeInUp.duration(500).delay(700)}
+            style={styles.secondarySection}
+          >
+            <View style={styles.secondaryActions}>
+              {secondaryActions.map((action, index) => (
                 <AnimatedTouchable
                   key={action.title}
-                  entering={FadeInUp.duration(400).delay(400 + index * 80)}
-                  style={[styles.quickAction]}
+                  entering={FadeInUp.duration(400).delay(800 + index * 100)}
+                  style={styles.secondaryAction}
                   onPress={action.onPress}
                   activeOpacity={0.8}
                 >
-                  <ForgeCard 
-                    glowColor={action.color} 
-                    variant="default"
-                    style={styles.quickActionCard}
-                  >
-                    <View style={[styles.quickActionIcon, { backgroundColor: action.color + '15' }]}>
-                      <Icon name={action.icon} size={26} color={action.color} />
+                  <View style={[
+                    styles.secondaryCard,
+                    { 
+                      backgroundColor: themeColors.surface,
+                      borderColor: action.color + '30',
+                    }
+                  ]}>
+                    <View style={[styles.secondaryIcon, { backgroundColor: action.color + '20' }]}>
+                      <Icon name={action.icon} size={24} color={action.color} />
                     </View>
-                    <Text style={[styles.quickActionText, { color: theme.colors.text }]}>
+                    <Text style={[styles.secondaryText, { color: themeColors.text }]}>
                       {action.title}
                     </Text>
-                  </ForgeCard>
+                  </View>
                 </AnimatedTouchable>
               ))}
             </View>
           </Animated.View>
 
-          {/* Features */}
-          <View style={styles.section}>
-            <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
-              Forge Features
-            </Text>
-            {features.map((feature, index) => (
-              <Animated.View
-                key={feature.title}
-                entering={FadeInUp.duration(400).delay(500 + index * 60)}
-              >
-                <ForgeCard
-                  glowColor={feature.color}
-                  variant={feature.highlight ? 'elevated' : 'default'}
-                  onPress={feature.onPress}
-                  style={{
-                    ...styles.featureCard,
-                    ...(feature.highlight ? styles.featureCardHighlight : {}),
-                  }}
-                >
-                  <View style={[styles.featureIcon, { backgroundColor: feature.color + '15' }]}>
-                    <Icon name={feature.icon} size={26} color={feature.color} />
-                  </View>
-                  <View style={styles.featureContent}>
-                    <Text style={[styles.featureTitle, { color: theme.colors.text }]}>
-                      {feature.title}
-                      {feature.highlight && ' ✨'}
-                    </Text>
-                    <Text style={[styles.featureDescription, { color: theme.colors.textMuted }]}>
-                      {feature.description}
-                    </Text>
-                  </View>
-                  <View style={[styles.featureArrow, { backgroundColor: feature.color + '10' }]}>
-                    <Icon name="chevron-right" size={20} color={feature.color} />
-                  </View>
-                </ForgeCard>
-              </Animated.View>
-            ))}
-          </View>
-
-          {/* Stats with personality */}
+          {/* Minimal footer with settings */}
           <Animated.View 
-            entering={FadeInUp.duration(500).delay(700)}
-            style={styles.section}
+            entering={FadeIn.delay(1000)}
+            style={styles.footer}
           >
-            <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
-              Your Forge
-            </Text>
-            <View style={styles.statsContainer}>
-              {[
-                { label: 'Templates', value: '15', icon: 'view-grid', color: forgeColors.forge[500] },
-                { label: 'Art Styles', value: '5', icon: 'palette', color: forgeColors.spark[500] },
-                { label: 'Dodo Modes', value: '4', icon: 'bird', color: forgeColors.gold[500] },
-              ].map((stat, index) => (
-                <AnimatedTouchable
-                  key={stat.label}
-                  entering={FadeInUp.duration(400).delay(800 + index * 80)}
-                  activeOpacity={0.8}
-                >
-                  <ForgeCard 
-                    glowColor={stat.color}
-                    variant="default"
-                    style={styles.statCard}
-                  >
-                    <View style={[styles.statIconBg, { backgroundColor: stat.color + '15' }]}>
-                      <Icon name={stat.icon} size={20} color={stat.color} />
-                    </View>
-                    <Text style={[styles.statValue, { color: stat.color }]}>
-                      {stat.value}
-                    </Text>
-                    <Text style={[styles.statLabel, { color: theme.colors.textMuted }]}>
-                      {stat.label}
-                    </Text>
-                  </ForgeCard>
-                </AnimatedTouchable>
-              ))}
-            </View>
+            <TouchableOpacity 
+              style={styles.settingsButton}
+              onPress={() => navigation.navigate('Settings')}
+            >
+              <Icon name="cog-outline" size={20} color={themeColors.muted} />
+              <Text style={[styles.settingsText, { color: themeColors.muted }]}>
+                Settings
+              </Text>
+            </TouchableOpacity>
           </Animated.View>
           
           {/* Bottom spacing for tab bar */}
-          <View style={{ height: 120 }} />
+          <View style={{ height: 100 }} />
         </ScrollView>
-        
-        {/* Celebration overlay */}
-        <CelebrationOverlay
-          visible={showCelebration}
-          type="sparkles"
-          message="Welcome to the Forge!"
-          onComplete={() => setShowCelebration(false)}
-        />
       </ParticleField>
-    </LivingGradient>
+      
+      {/* Theme Picker Modal */}
+      <Modal
+        visible={showThemePicker}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowThemePicker(false)}
+      >
+        <View style={styles.modalOverlay}>
+          {/* Backdrop - tapping closes modal */}
+          <TouchableOpacity 
+            style={styles.modalBackdrop}
+            activeOpacity={1}
+            onPress={() => setShowThemePicker(false)}
+          />
+          
+          {/* Theme Picker Content - stops propagation */}
+          <Animated.View 
+            entering={FadeInUp.duration(300)}
+            style={[styles.themePicker, { backgroundColor: themeColors.surface }]}
+          >
+            <Text style={[styles.themePickerTitle, { color: themeColors.text }]}>
+              Choose Your Vibe
+            </Text>
+            
+            {THEME_OPTIONS.map((option) => (
+              <TouchableOpacity
+                key={option.id}
+                style={[
+                  styles.themeOption,
+                  themeChoice === option.id && { 
+                    backgroundColor: themeColors.accent + '20',
+                    borderColor: themeColors.accent,
+                  },
+                ]}
+                onPress={() => {
+                  setThemeChoice(option.id);
+                  setShowThemePicker(false);
+                }}
+                activeOpacity={0.7}
+              >
+                <View style={styles.themeOptionContent}>
+                  <Text style={[
+                    styles.themeOptionLabel, 
+                    { color: themeChoice === option.id ? themeColors.accent : themeColors.text }
+                  ]}>
+                    {option.label}
+                  </Text>
+                  <Text style={[styles.themeOptionDesc, { color: themeColors.muted }]}>
+                    {option.description}
+                  </Text>
+                </View>
+                {themeChoice === option.id && (
+                  <Icon name="check" size={20} color={themeColors.accent} />
+                )}
+              </TouchableOpacity>
+            ))}
+          </Animated.View>
+        </View>
+      </Modal>
+    </View>
   );
 }
 
@@ -410,223 +444,291 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+  ambientGlow: {
+    position: 'absolute',
+    top: -100,
+    left: -50,
+    width: SCREEN_WIDTH + 100,
+    height: 300,
+    opacity: 0.08,
+    borderRadius: 200,
+  },
+  scrollView: {
+    flex: 1,
+  },
   scrollContent: {
     paddingBottom: spacing.xxl,
   },
+  
+  // Header
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-    padding: spacing.lg,
+    paddingHorizontal: spacing.lg,
     paddingTop: 60,
+    paddingBottom: spacing.md,
   },
-  headerContent: {
+  headerLeft: {
     flex: 1,
   },
-  title: {
-    fontSize: typography.size.display,
+  brandMark: {
+    fontSize: typography.size.xl,
     fontWeight: typography.weight.black,
     letterSpacing: typography.letterSpacing.tight,
-    marginBottom: spacing.xxs,
   },
-  subtitle: {
-    fontSize: typography.size.base,
-    fontWeight: typography.weight.medium,
-    letterSpacing: typography.letterSpacing.normal,
-  },
-  headerDodo: {
-    marginLeft: spacing.md,
-  },
-  heroCard: {
-    marginHorizontal: spacing.md,
+  seasonBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
     marginTop: spacing.xs,
-    overflow: 'hidden',
+    paddingVertical: spacing.xxs,
+    paddingHorizontal: spacing.sm,
+    borderRadius: radii.full,
+    borderWidth: 1,
+    gap: 4,
+  },
+  seasonText: {
+    fontSize: typography.size.xs,
+    fontWeight: typography.weight.semibold,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  },
+  
+  // Hero Section - THE DOMINANT ACTION
+  heroSection: {
+    paddingHorizontal: spacing.lg,
+    paddingTop: spacing.md,
+    minHeight: SCREEN_HEIGHT * 0.5, // Takes up half the screen
+  },
+  heroTouchable: {
     position: 'relative',
   },
-  heroGlow: {
+  heroGlowBorder: {
+    position: 'absolute',
+    top: -2,
+    left: -2,
+    right: -2,
+    bottom: -2,
+    borderRadius: radii.xxl + 2,
+    borderWidth: 2,
+  },
+  heroCard: {
+    borderRadius: radii.xxl,
+    borderWidth: 1,
+    paddingVertical: spacing.xxxl,
+    paddingHorizontal: spacing.xl,
+    alignItems: 'center',
+    position: 'relative',
+    overflow: 'hidden',
+  },
+  cornerAccent: {
+    position: 'absolute',
+    width: 20,
+    height: 2,
+  },
+  cornerTopLeft: {
+    top: spacing.md,
+    left: spacing.md,
+  },
+  cornerTopRight: {
+    top: spacing.md,
+    right: spacing.md,
+  },
+  cornerBottomLeft: {
+    bottom: spacing.md,
+    left: spacing.md,
+  },
+  cornerBottomRight: {
+    bottom: spacing.md,
+    right: spacing.md,
+  },
+  heroIconContainer: {
+    marginBottom: spacing.lg,
+  },
+  heroIconGlow: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  heroIconInner: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  heroTitle: {
+    fontSize: typography.size.xxl,
+    fontWeight: typography.weight.black,
+    letterSpacing: typography.letterSpacing.tight,
+    textAlign: 'center',
+    marginBottom: spacing.xxs,
+  },
+  heroSubtitle: {
+    fontSize: typography.size.lg,
+    fontWeight: typography.weight.medium,
+    textAlign: 'center',
+    marginBottom: spacing.md,
+  },
+  heroDescription: {
+    fontSize: typography.size.base,
+    fontWeight: typography.weight.regular,
+    textAlign: 'center',
+    lineHeight: typography.size.base * typography.lineHeight.relaxed,
+    maxWidth: 280,
+    marginBottom: spacing.xl,
+  },
+  ctaContainer: {
+    marginBottom: spacing.md,
+  },
+  ctaButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: spacing.md,
+    paddingHorizontal: spacing.xl,
+    borderRadius: radii.full,
+    gap: spacing.xs,
+    ...Platform.select({
+      web: { 
+        boxShadow: '0 4px 20px rgba(212, 175, 55, 0.4)',
+        cursor: 'pointer',
+      },
+      default: { 
+        elevation: 8,
+        shadowColor: '#D4AF37',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.4,
+        shadowRadius: 12,
+      }
+    }),
+  },
+  ctaText: {
+    fontSize: typography.size.md,
+    fontWeight: typography.weight.bold,
+    letterSpacing: typography.letterSpacing.normal,
+  },
+  trustSignal: {
+    fontSize: typography.size.sm,
+    fontWeight: typography.weight.medium,
+  },
+  
+  // Divider
+  dividerSection: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: spacing.xl,
+    paddingVertical: spacing.xl,
+  },
+  dividerLine: {
+    flex: 1,
+    height: 1,
+  },
+  dividerText: {
+    paddingHorizontal: spacing.md,
+    fontSize: typography.size.sm,
+    fontWeight: typography.weight.medium,
+  },
+  
+  // Secondary Actions
+  secondarySection: {
+    paddingHorizontal: spacing.lg,
+  },
+  secondaryActions: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    gap: spacing.sm,
+  },
+  secondaryAction: {
+    flex: 1,
+  },
+  secondaryCard: {
+    borderRadius: radii.lg,
+    borderWidth: 1,
+    paddingVertical: spacing.md,
+    paddingHorizontal: spacing.sm,
+    alignItems: 'center',
+  },
+  secondaryIcon: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: spacing.xs,
+  },
+  secondaryText: {
+    fontSize: typography.size.xs,
+    fontWeight: typography.weight.semibold,
+    textAlign: 'center',
+  },
+  
+  // Footer
+  footer: {
+    paddingHorizontal: spacing.lg,
+    paddingTop: spacing.xl,
+    alignItems: 'center',
+  },
+  settingsButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
+    paddingVertical: spacing.xs,
+    paddingHorizontal: spacing.md,
+  },
+  settingsText: {
+    fontSize: typography.size.sm,
+    fontWeight: typography.weight.medium,
+  },
+  
+  // Modal & Theme Picker
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.6)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: spacing.lg,
+  },
+  modalBackdrop: {
     position: 'absolute',
     top: 0,
     left: 0,
     right: 0,
     bottom: 0,
-    opacity: 0.1,
   },
-  heroContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: spacing.xs,
+  themePicker: {
+    width: '100%',
+    maxWidth: 340,
+    borderRadius: radii.xl,
+    padding: spacing.lg,
   },
-  heroIconArea: {
-    position: 'relative',
-    marginRight: spacing.md,
-  },
-  heroIconOuter: {
-    width: 72,
-    height: 72,
-    borderRadius: 36,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  heroIconInner: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  heroSparkle: {
-    position: 'absolute',
-    top: -8,
-    right: -8,
-  },
-  sparkleEmoji: {
-    fontSize: 20,
-  },
-  newBadge: {
-    position: 'absolute',
-    top: -4,
-    left: -4,
-    paddingHorizontal: spacing.xs,
-    paddingVertical: 2,
-    borderRadius: radii.sm,
-  },
-  newBadgeText: {
-    color: '#fff',
-    fontSize: 10,
-    fontWeight: typography.weight.black,
-    letterSpacing: 0.5,
-  },
-  heroTextArea: {
-    flex: 1,
-  },
-  heroTitle: {
-    fontSize: typography.size.lg,
-    fontWeight: typography.weight.bold,
-    marginBottom: spacing.xxs,
-  },
-  heroDescription: {
-    fontSize: typography.size.sm,
-    lineHeight: typography.size.sm * typography.lineHeight.normal,
-    marginBottom: spacing.sm,
-  },
-  heroPills: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: spacing.xs,
-  },
-  pill: {
-    paddingHorizontal: spacing.sm,
-    paddingVertical: spacing.xxs,
-    borderRadius: radii.full,
-  },
-  pillText: {
-    fontSize: typography.size.xs,
-    fontWeight: typography.weight.semibold,
-  },
-  heroArrow: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginLeft: spacing.sm,
-  },
-  section: {
-    paddingHorizontal: spacing.md,
-    paddingTop: spacing.lg,
-  },
-  sectionTitle: {
+  themePickerTitle: {
     fontSize: typography.size.lg,
     fontWeight: typography.weight.bold,
     marginBottom: spacing.md,
-    letterSpacing: typography.letterSpacing.tight,
-  },
-  quickActions: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    gap: spacing.sm,
-  },
-  quickAction: {
-    flex: 1,
-  },
-  quickActionCard: {
-    alignItems: 'center',
-    paddingVertical: spacing.md,
-  },
-  quickActionIcon: {
-    width: 52,
-    height: 52,
-    borderRadius: 26,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: spacing.xs,
-  },
-  quickActionText: {
-    fontSize: typography.size.sm,
-    fontWeight: typography.weight.semibold,
     textAlign: 'center',
   },
-  featureCard: {
+  themeOption: {
     flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: spacing.sm,
-  },
-  featureCardHighlight: {
-    borderWidth: 1,
-    borderColor: forgeColors.spark[500] + '30',
-  },
-  featureIcon: {
-    width: 52,
-    height: 52,
-    borderRadius: radii.lg,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: spacing.md,
-  },
-  featureContent: {
-    flex: 1,
-  },
-  featureTitle: {
-    fontSize: typography.size.base,
-    fontWeight: typography.weight.semibold,
-    marginBottom: spacing.xxs,
-  },
-  featureDescription: {
-    fontSize: typography.size.sm,
-    lineHeight: typography.size.sm * typography.lineHeight.normal,
-  },
-  featureArrow: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  statsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    gap: spacing.sm,
-  },
-  statCard: {
-    flex: 1,
     alignItems: 'center',
     paddingVertical: spacing.md,
-  },
-  statIconBg: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
+    paddingHorizontal: spacing.md,
+    borderRadius: radii.md,
+    borderWidth: 1,
+    borderColor: 'transparent',
     marginBottom: spacing.xs,
   },
-  statValue: {
-    fontSize: typography.size.xxl,
-    fontWeight: typography.weight.black,
-    marginBottom: spacing.xxs,
+  themeOptionContent: {
+    flex: 1,
   },
-  statLabel: {
-    fontSize: typography.size.xs,
-    fontWeight: typography.weight.medium,
+  themeOptionLabel: {
+    fontSize: typography.size.base,
+    fontWeight: typography.weight.semibold,
+  },
+  themeOptionDesc: {
+    fontSize: typography.size.sm,
+    marginTop: 2,
   },
 });

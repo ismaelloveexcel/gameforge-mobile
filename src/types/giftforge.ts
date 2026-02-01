@@ -39,7 +39,12 @@ export type GiftOccasion =
   | 'get_well'
   | 'congratulations'
   | 'just_because'
-  | 'farewell';
+  | 'farewell'
+  | 'eid_fitr'
+  | 'eid_adha'
+  | 'uae_national_day'
+  | 'mothers_day'
+  | 'fathers_day';
 
 export type AgeRange = 
   | 'child' // 5-12
@@ -224,85 +229,90 @@ export interface SafetyValidationResult {
   issues: string[];
 }
 
-// Display helpers
+// Display helpers - Premium labels without emojis
 export const OCCASION_LABELS: Record<GiftOccasion, string> = {
-  birthday: '🎂 Birthday',
-  anniversary: '💝 Anniversary',
-  valentines: '💕 Valentine\'s Day',
-  christmas: '🎄 Christmas',
-  graduation: '🎓 Graduation',
-  thank_you: '🙏 Thank You',
-  get_well: '💐 Get Well Soon',
-  congratulations: '🎉 Congratulations',
-  just_because: '💫 Just Because',
-  farewell: '👋 Farewell',
+  birthday: 'Birthday',
+  anniversary: 'Anniversary',
+  valentines: 'Valentine\'s Day',
+  christmas: 'Christmas',
+  graduation: 'Graduation',
+  thank_you: 'Thank You',
+  get_well: 'Get Well Soon',
+  congratulations: 'Congratulations',
+  just_because: 'Just Because',
+  farewell: 'Farewell',
+  eid_fitr: 'Eid al-Fitr',
+  eid_adha: 'Eid al-Adha',
+  uae_national_day: 'UAE National Day',
+  mothers_day: 'Mother\'s Day',
+  fathers_day: 'Father\'s Day',
 };
 
 export const AGE_LABELS: Record<AgeRange, string> = {
-  child: '🧒 Child (5-12)',
-  teen: '🧑 Teen (13-17)',
-  young_adult: '👤 Young Adult (18-25)',
-  adult: '👨 Adult (26-45)',
-  mature_adult: '🧔 Mature Adult (46-65)',
-  senior: '👴 Senior (65+)',
+  child: 'Child (5-12)',
+  teen: 'Teen (13-17)',
+  young_adult: 'Young Adult (18-25)',
+  adult: 'Adult (26-45)',
+  mature_adult: 'Mature Adult (46-65)',
+  senior: 'Senior (65+)',
 };
 
 export const PERSONALITY_LABELS: Record<PersonalityTrait, string> = {
-  adventurous: '🏔️ Adventurous',
-  creative: '🎨 Creative',
-  analytical: '🧠 Analytical',
-  nurturing: '💗 Nurturing',
-  humorous: '😄 Humorous',
-  romantic: '💕 Romantic',
-  competitive: '🏆 Competitive',
-  laid_back: '😌 Laid Back',
-  energetic: '⚡ Energetic',
-  thoughtful: '🤔 Thoughtful',
+  adventurous: 'Adventurous',
+  creative: 'Creative',
+  analytical: 'Analytical',
+  nurturing: 'Nurturing',
+  humorous: 'Humorous',
+  romantic: 'Romantic',
+  competitive: 'Competitive',
+  laid_back: 'Laid Back',
+  energetic: 'Energetic',
+  thoughtful: 'Thoughtful',
 };
 
 export const INTEREST_LABELS: Record<Interest, string> = {
-  gaming: '🎮 Gaming',
-  music: '🎵 Music',
-  sports: '⚽ Sports',
-  cooking: '🍳 Cooking',
-  travel: '✈️ Travel',
-  reading: '📚 Reading',
-  movies: '🎬 Movies',
-  nature: '🌿 Nature',
-  technology: '💻 Technology',
-  art: '🖼️ Art',
-  fitness: '💪 Fitness',
-  animals: '🐾 Animals',
+  gaming: 'Gaming',
+  music: 'Music',
+  sports: 'Sports',
+  cooking: 'Cooking',
+  travel: 'Travel',
+  reading: 'Reading',
+  movies: 'Movies',
+  nature: 'Nature',
+  technology: 'Technology',
+  art: 'Art',
+  fitness: 'Fitness',
+  animals: 'Animals',
 };
 
 export const RELATIONSHIP_LABELS: Record<Relationship, string> = {
-  partner: '💑 Partner',
-  spouse: '💒 Spouse',
-  parent: '👨‍👧 Parent',
-  child: '👶 Child',
-  sibling: '👫 Sibling',
-  friend: '🤝 Friend',
-  colleague: '💼 Colleague',
-  grandparent: '👴 Grandparent',
-  grandchild: '👶 Grandchild',
+  partner: 'Partner',
+  spouse: 'Spouse',
+  parent: 'Parent',
+  child: 'Child',
+  sibling: 'Sibling',
+  friend: 'Friend',
+  colleague: 'Colleague',
+  grandparent: 'Grandparent',
+  grandchild: 'Grandchild',
 };
 
 export const TONE_LABELS: Record<Tone, string> = {
-  heartfelt: '💖 Heartfelt',
-  playful: '🎈 Playful',
-  nostalgic: '📷 Nostalgic',
-  encouraging: '💪 Encouraging',
-  romantic: '💝 Romantic',
-  humorous: '😂 Humorous',
-  inspirational: '✨ Inspirational',
+  heartfelt: 'Heartfelt',
+  playful: 'Playful',
+  nostalgic: 'Nostalgic',
+  encouraging: 'Encouraging',
+  romantic: 'Romantic',
+  humorous: 'Humorous',
+  inspirational: 'Inspirational',
 };
 
 export const GAME_TYPE_LABELS: Record<GiftGameType, string> = {
-  runner: '🏃 Runner Adventure',
-  story_choices: '📖 Story & Choices',
-  puzzle_challenges: '🧩 Puzzle & Challenges',
-  adventure_quest: '🗺️ Mini Adventure Quest',
-  educational_playful: '🎓 Educational & Playful',
+  runner: 'Runner Adventure',
+  story_choices: 'Story & Choices',
+  puzzle_challenges: 'Puzzle & Challenges',
+  adventure_quest: 'Mini Adventure Quest',
+  educational_playful: 'Educational & Playful',
 };
 
 export const GAME_TYPE_DESCRIPTIONS: Record<GiftGameType, string> = {
@@ -314,15 +324,15 @@ export const GAME_TYPE_DESCRIPTIONS: Record<GiftGameType, string> = {
 };
 
 export const GAME_LENGTH_LABELS: Record<GameLength, string> = {
-  quick: '⚡ Quick (2-3 min)',
-  standard: '⏱️ Standard (5-7 min)',
-  extended: '🕐 Extended (10-15 min)',
+  quick: 'Quick (2-3 min)',
+  standard: 'Standard (5-7 min)',
+  extended: 'Extended (10-15 min)',
 };
 
 export const VISUAL_STYLE_LABELS: Record<GiftVisualStyle, string> = {
-  colorful_cartoon: '🌈 Colorful Cartoon',
-  elegant_minimal: '✨ Elegant & Minimal',
-  retro_pixel: '👾 Retro Pixel',
-  cozy_handdrawn: '✏️ Cozy Hand-drawn',
-  magical_sparkle: '🪄 Magical Sparkle',
+  colorful_cartoon: 'Colorful Cartoon',
+  elegant_minimal: 'Elegant & Minimal',
+  retro_pixel: 'Retro Pixel',
+  cozy_handdrawn: 'Cozy Hand-drawn',
+  magical_sparkle: 'Magical Sparkle',
 };

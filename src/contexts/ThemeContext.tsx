@@ -16,6 +16,8 @@ import {
   timeGradients,
   EmotionalState,
   TimeOfDay,
+  SeasonalTheme,
+  getActiveSeasonalTheme,
 } from '../design-tokens/theme';
 
 // Theme type definitions
@@ -115,6 +117,17 @@ const darkTheme: Theme = {
   motion,
 };
 
+// Available theme options for user selection
+export type ThemeChoice = 'auto' | 'eternal-romance' | 'winter-majlis' | 'creator-wave' | 'neon-dubai-summer';
+
+export const THEME_OPTIONS: { id: ThemeChoice; label: string; description: string }[] = [
+  { id: 'auto', label: 'Seasonal', description: 'Changes with the season' },
+  { id: 'eternal-romance', label: 'Romance', description: 'Valentine\'s elegance' },
+  { id: 'winter-majlis', label: 'Majlis', description: 'Cozy gatherings' },
+  { id: 'creator-wave', label: 'Creator', description: 'Bold creativity' },
+  { id: 'neon-dubai-summer', label: 'Neon', description: 'Summer nights' },
+];
+
 // Context value type
 interface ThemeContextType {
   theme: Theme;
@@ -132,6 +145,12 @@ interface ThemeContextType {
   // Time awareness
   timeOfDay: TimeOfDay;
   getTimeGradient: () => string[];
+  // Seasonal theming (UAE)
+  seasonalTheme: SeasonalTheme;
+  themeChoice: ThemeChoice;
+  setThemeChoice: (choice: ThemeChoice) => void;
+  getSeasonalColors: () => SeasonalTheme['colors'];
+  getSeasonalGradient: () => string[];
   // Utilities
   getContrastText: (backgroundColor: string) => string;
   applyGlow: (color?: string) => object;
@@ -140,6 +159,7 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 const PREFERENCES_KEY = '@gameforge_user_preferences';
+const THEME_CHOICE_KEY = '@gameforge_theme_choice';
 
 // Get current time of day
 const getTimeOfDay = (): TimeOfDay => {
@@ -171,8 +191,10 @@ export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) =
   const [emotionalState, setEmotionalState] = useState<EmotionalState | null>(null);
   const [timeOfDay, setTimeOfDay] = useState<TimeOfDay>(getTimeOfDay());
   const [userPreferences, setUserPreferences] = useState<UserPreferences>({});
+  const [themeChoice, setThemeChoiceState] = useState<ThemeChoice>('auto');
+  const [seasonalTheme, setSeasonalTheme] = useState<SeasonalTheme>(getActiveSeasonalTheme());
   
-  // Load user preferences on mount
+  // Load user preferences and theme choice on mount
   useEffect(() => {
     const loadPreferences = async () => {
       try {
@@ -182,6 +204,19 @@ export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) =
           setUserPreferences(prefs);
           if (prefs.prefersDarkMode !== undefined) {
             setIsDark(prefs.prefersDarkMode);
+          }
+        }
+        
+        // Load theme choice
+        const storedTheme = await AsyncStorage.getItem(THEME_CHOICE_KEY);
+        if (storedTheme) {
+          const choice = storedTheme as ThemeChoice;
+          setThemeChoiceState(choice);
+          // Apply the theme immediately
+          if (choice === 'auto') {
+            setSeasonalTheme(getActiveSeasonalTheme());
+          } else {
+            setSeasonalTheme(getActiveSeasonalTheme(choice));
           }
         }
       } catch (e) {
@@ -198,6 +233,35 @@ export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     }, 60000);
     
     return () => clearInterval(interval);
+  }, []);
+  
+  // Update seasonal theme when choice changes or periodically for auto mode
+  useEffect(() => {
+    const updateTheme = () => {
+      if (themeChoice === 'auto') {
+        setSeasonalTheme(getActiveSeasonalTheme());
+      } else {
+        setSeasonalTheme(getActiveSeasonalTheme(themeChoice));
+      }
+    };
+    
+    updateTheme();
+    
+    // Only poll for auto mode
+    if (themeChoice === 'auto') {
+      const interval = setInterval(updateTheme, 3600000); // Check every hour
+      return () => clearInterval(interval);
+    }
+  }, [themeChoice]);
+  
+  // Set theme choice and persist
+  const setThemeChoice = useCallback(async (choice: ThemeChoice) => {
+    setThemeChoiceState(choice);
+    try {
+      await AsyncStorage.setItem(THEME_CHOICE_KEY, choice);
+    } catch (e) {
+      console.log('Failed to save theme choice');
+    }
   }, []);
   
   // Save preferences
@@ -235,6 +299,14 @@ export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     return timeGradients[timeOfDay];
   }, [timeOfDay]);
   
+  const getSeasonalColors = useCallback(() => {
+    return seasonalTheme.colors;
+  }, [seasonalTheme]);
+  
+  const getSeasonalGradient = useCallback(() => {
+    return seasonalTheme.gradient;
+  }, [seasonalTheme]);
+  
   const setSignatureColor = useCallback((color: string) => {
     const newPrefs = { ...userPreferences, signatureColor: color };
     setUserPreferences(newPrefs);
@@ -269,6 +341,11 @@ export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         setMakerMark,
         timeOfDay,
         getTimeGradient,
+        seasonalTheme,
+        themeChoice,
+        setThemeChoice,
+        getSeasonalColors,
+        getSeasonalGradient,
         getContrastText,
         applyGlow,
       }}
@@ -288,3 +365,4 @@ export const useTheme = () => {
 
 // Re-export tokens for convenience
 export { spacing, typography, radii, shadows, motion, forgeColors };
+export type { ThemeChoice };

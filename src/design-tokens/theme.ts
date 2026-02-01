@@ -259,5 +259,284 @@ export const timeGradients = {
   midnight: ['#0C0A09', '#1C1917', '#292524'],
 } as const;
 
+// UAE Seasonal Themes - Auto-applied based on date
+export interface SeasonalTheme {
+  id: string;
+  name: string;
+  mood: string;
+  colors: {
+    primary: string;
+    secondary: string;
+    accent: string;
+    background: string;
+    surface: string;
+    text: string;
+    muted: string;
+    glow: string;
+  };
+  gradient: string[];
+  heroGlow: string;
+  animationSpeed: 'slow' | 'normal' | 'fast';
+}
+
+export const seasonalThemes: Record<string, SeasonalTheme> = {
+  'winter-majlis': {
+    id: 'winter-majlis',
+    name: 'Winter Majlis',
+    mood: 'Cozy gatherings, intimate luxury, warmth against cool evenings',
+    colors: {
+      primary: '#6B2D5B',     // Deep Burgundy
+      secondary: '#1A5F4A',   // Forest Emerald
+      accent: '#D4AF37',      // Arabic Gold
+      background: '#1C1820',  // Warm Charcoal
+      surface: '#2A2530',     // Soft Plum Black
+      text: '#F5EDE6',        // Warm Cream
+      muted: '#9A8F94',       // Dusty Mauve
+      glow: '#D4AF37',        // Gold glow
+    },
+    gradient: ['#2A2530', '#1C1820', '#1A1A2E'],
+    heroGlow: '#D4AF37',
+    animationSpeed: 'slow',
+  },
+  'nocturnal-revival': {
+    id: 'nocturnal-revival',
+    name: 'Nocturnal Revival',
+    mood: 'Calm energy, spiritual warmth, late-night creativity',
+    colors: {
+      primary: '#4A3F6B',     // Midnight Purple
+      secondary: '#F4B942',   // Lantern Gold
+      accent: '#7FDBDA',      // Moonlight Teal
+      background: '#0D0D1A',  // Deep Night
+      surface: '#1A1A2E',     // Night Sky
+      text: '#F5F5F5',        // Moonlight White
+      muted: '#7A7A8C',       // Dusk Grey
+      glow: '#F4B942',        // Lantern glow
+    },
+    gradient: ['#1A1A2E', '#0D0D1A', '#0A0A14'],
+    heroGlow: '#F4B942',
+    animationSpeed: 'slow',
+  },
+  'golden-reunion': {
+    id: 'golden-reunion',
+    name: 'Golden Reunion',
+    mood: 'Celebration, reunion, premium joy, optimism',
+    colors: {
+      primary: '#D4AF37',     // Pure Gold
+      secondary: '#FFFFFF',   // Clean White
+      accent: '#E8C4A2',      // Soft Peach
+      background: '#FFFEF5',  // Warm White
+      surface: '#FFF8E7',     // Cream
+      text: '#2C2416',        // Rich Brown
+      muted: '#A89F8F',       // Warm Grey
+      glow: '#D4AF37',        // Gold glow
+    },
+    gradient: ['#FFF8E7', '#FFFEF5', '#FFFFFF'],
+    heroGlow: '#D4AF37',
+    animationSpeed: 'normal',
+  },
+  'neon-dubai-summer': {
+    id: 'neon-dubai-summer',
+    name: 'Neon Dubai Summer',
+    mood: 'Bold nightlife, poolside energy, unapologetic glamour',
+    colors: {
+      primary: '#00FFFF',     // Electric Cyan
+      secondary: '#FF00FF',   // Hot Magenta
+      accent: '#FFFF00',      // Neon Yellow
+      background: '#0A0A0F',  // Deep Black
+      surface: '#15151F',     // Charcoal
+      text: '#FFFFFF',        // Pure White
+      muted: '#6B6B7B',       // Cool Grey
+      glow: '#00FFFF',        // Cyan glow
+    },
+    gradient: ['#15151F', '#0A0A0F', '#050508'],
+    heroGlow: '#00FFFF',
+    animationSpeed: 'fast',
+  },
+  'uae-pride': {
+    id: 'uae-pride',
+    name: 'UAE Pride',
+    mood: 'Patriotic, unified, proud, hopeful',
+    colors: {
+      primary: '#FF0000',     // UAE Red
+      secondary: '#00732F',   // UAE Green
+      accent: '#FFFFFF',      // Pure White
+      background: '#111111',  // UAE Black
+      surface: '#1A1A1A',     // Soft Black
+      text: '#FFFFFF',        // White
+      muted: '#888888',       // Grey
+      glow: '#FF0000',        // Red glow
+    },
+    gradient: ['#1A1A1A', '#111111', '#0A0A0A'],
+    heroGlow: '#FF0000',
+    animationSpeed: 'normal',
+  },
+  'creator-wave': {
+    id: 'creator-wave',
+    name: 'Creator Wave',
+    mood: 'Aspirational, creative, maximalist luxury',
+    colors: {
+      primary: '#6366F1',     // Forge Purple
+      secondary: '#EC4899',   // Spark Pink
+      accent: '#F59E0B',      // Creator Gold
+      background: '#0C0A09',  // Warm Black
+      surface: '#1C1917',     // Stone
+      text: '#FAFAF9',        // Cream
+      muted: '#78716C',       // Stone Grey
+      glow: '#6366F1',        // Purple glow
+    },
+    gradient: ['#1C1917', '#0C0A09', '#0A0908'],
+    heroGlow: '#6366F1',
+    animationSpeed: 'normal',
+  },
+  'eternal-romance': {
+    id: 'eternal-romance',
+    name: 'Eternal Romance',
+    mood: 'Deep passion, sophisticated love, timeless elegance',
+    colors: {
+      primary: '#8B0A1A',     // Deep Rose
+      secondary: '#D4AF37',   // Champagne Gold
+      accent: '#FFB6C1',      // Soft Blush
+      background: '#0F0508',  // Midnight Rose
+      surface: '#1A0C10',     // Dark Velvet
+      text: '#FFF5F5',        // Rose White
+      muted: '#8A6B70',       // Dusty Rose
+      glow: '#FF4D6D',        // Rose Glow
+    },
+    gradient: ['#1A0C10', '#0F0508', '#080204'],
+    heroGlow: '#FF4D6D',
+    animationSpeed: 'slow',
+  },
+} as const;
+
+// Islamic calendar dates by year (approximate Gregorian equivalents)
+// These shift ~11 days earlier each year due to lunar calendar
+interface IslamicDates {
+  ramadanStart: { month: number; day: number };
+  ramadanEnd: { month: number; day: number };
+  eidFitrStart: { month: number; day: number };
+  eidFitrEnd: { month: number; day: number };
+  eidAdhaStart: { month: number; day: number };
+  eidAdhaEnd: { month: number; day: number };
+}
+
+const islamicDatesByYear: Record<number, IslamicDates> = {
+  2025: {
+    ramadanStart: { month: 3, day: 1 },
+    ramadanEnd: { month: 3, day: 29 },
+    eidFitrStart: { month: 3, day: 30 },
+    eidFitrEnd: { month: 4, day: 3 },
+    eidAdhaStart: { month: 6, day: 6 },
+    eidAdhaEnd: { month: 6, day: 10 },
+  },
+  2026: {
+    ramadanStart: { month: 2, day: 18 },
+    ramadanEnd: { month: 3, day: 19 },
+    eidFitrStart: { month: 3, day: 20 },
+    eidFitrEnd: { month: 3, day: 25 },
+    eidAdhaStart: { month: 5, day: 27 },
+    eidAdhaEnd: { month: 5, day: 31 },
+  },
+  2027: {
+    ramadanStart: { month: 2, day: 8 },
+    ramadanEnd: { month: 3, day: 8 },
+    eidFitrStart: { month: 3, day: 9 },
+    eidFitrEnd: { month: 3, day: 13 },
+    eidAdhaStart: { month: 5, day: 16 },
+    eidAdhaEnd: { month: 5, day: 20 },
+  },
+  2028: {
+    ramadanStart: { month: 1, day: 28 },
+    ramadanEnd: { month: 2, day: 25 },
+    eidFitrStart: { month: 2, day: 26 },
+    eidFitrEnd: { month: 3, day: 1 },
+    eidAdhaStart: { month: 5, day: 5 },
+    eidAdhaEnd: { month: 5, day: 9 },
+  },
+  2029: {
+    ramadanStart: { month: 1, day: 16 },
+    ramadanEnd: { month: 2, day: 13 },
+    eidFitrStart: { month: 2, day: 14 },
+    eidFitrEnd: { month: 2, day: 18 },
+    eidAdhaStart: { month: 4, day: 24 },
+    eidAdhaEnd: { month: 4, day: 28 },
+  },
+  2030: {
+    ramadanStart: { month: 1, day: 5 },
+    ramadanEnd: { month: 2, day: 2 },
+    eidFitrStart: { month: 2, day: 3 },
+    eidFitrEnd: { month: 2, day: 7 },
+    eidAdhaStart: { month: 4, day: 13 },
+    eidAdhaEnd: { month: 4, day: 17 },
+  },
+};
+
+// Helper to check if date is within range (handles month boundaries)
+function isDateInRange(
+  month: number,
+  day: number,
+  start: { month: number; day: number },
+  end: { month: number; day: number }
+): boolean {
+  const current = month * 100 + day;
+  const startVal = start.month * 100 + start.day;
+  const endVal = end.month * 100 + end.day;
+  return current >= startVal && current <= endVal;
+}
+
+// Get the currently active seasonal theme based on date
+export function getActiveSeasonalTheme(overrideTheme?: string): SeasonalTheme {
+  // Allow manual override for user-selected themes
+  if (overrideTheme && seasonalThemes[overrideTheme]) {
+    return seasonalThemes[overrideTheme];
+  }
+  
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = now.getMonth() + 1; // 1-12
+  const day = now.getDate();
+  
+  // Get Islamic dates for current year (fallback to 2026 if not found)
+  const islamicDates = islamicDatesByYear[year] || islamicDatesByYear[2026];
+
+  // Valentine's Day: Feb 1-14 (prioritized for 2 weeks lead-up)
+  if (month === 2 && day >= 1 && day <= 14) {
+    return seasonalThemes['eternal-romance'];
+  }
+
+  // Ramadan (dynamic based on year)
+  if (isDateInRange(month, day, islamicDates.ramadanStart, islamicDates.ramadanEnd)) {
+    return seasonalThemes['nocturnal-revival'];
+  }
+
+  // Eid al-Fitr (dynamic based on year)
+  if (isDateInRange(month, day, islamicDates.eidFitrStart, islamicDates.eidFitrEnd)) {
+    return seasonalThemes['golden-reunion'];
+  }
+
+  // Eid al-Adha (dynamic based on year)
+  if (isDateInRange(month, day, islamicDates.eidAdhaStart, islamicDates.eidAdhaEnd)) {
+    return seasonalThemes['golden-reunion'];
+  }
+
+  // UAE National Day: Nov 30 - Dec 3
+  if ((month === 11 && day >= 30) || (month === 12 && day <= 3)) {
+    return seasonalThemes['uae-pride'];
+  }
+
+  // Winter: November - February (excluding Valentine's period)
+  if (month >= 11 || month <= 2) {
+    return seasonalThemes['winter-majlis'];
+  }
+
+  // Summer: June - August
+  if (month >= 6 && month <= 8) {
+    return seasonalThemes['neon-dubai-summer'];
+  }
+
+  // Default: Creator Wave
+  return seasonalThemes['creator-wave'];
+}
+
 export type EmotionalState = keyof typeof emotionalPalettes;
 export type TimeOfDay = keyof typeof timeGradients;
+export type SeasonalThemeId = keyof typeof seasonalThemes;

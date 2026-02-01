@@ -92,10 +92,11 @@ export default function GiftForgeResultScreen() {
   
   const handleShare = async () => {
     try {
+      const shareMessage = `${game?.recipientName}, I made something special for you. Play it here: ${playableUrl}`;
       await Share.share({
-        message: `🎁 ${game?.recipientName}, you've received a personalized gift game! Play it here: ${playableUrl}`,
+        message: shareMessage,
         url: playableUrl,
-        title: game?.title || 'A Gift For You!',
+        title: game?.title || 'A Gift For You',
       });
     } catch (error) {
       console.error('Error sharing:', error);
@@ -149,7 +150,7 @@ export default function GiftForgeResultScreen() {
             style={[styles.gameSection, { backgroundColor: theme.colors.card }]}
           >
             <Text style={[styles.gameSectionTitle, { color: theme.colors.primary }]}>
-              🎮 Game Preview
+              Game Preview
             </Text>
             
             {game.gameContent.dialogue.map((item, index) => (
@@ -170,9 +171,9 @@ export default function GiftForgeResultScreen() {
               entering={FadeIn.delay(700)}
               style={[styles.gameSection, { backgroundColor: theme.colors.card }]}
             >
-              <Text style={[styles.gameSectionTitle, { color: theme.colors.primary }]}>
-                🏃 Levels
-              </Text>
+            <Text style={[styles.gameSectionTitle, { color: theme.colors.primary }]}>
+                Levels
+            </Text>
               {game.gameContent.levels.map((level, index) => (
                 <View key={index} style={styles.levelItem}>
                   <Text style={[styles.levelName, { color: theme.colors.text }]}>
@@ -191,9 +192,9 @@ export default function GiftForgeResultScreen() {
               entering={FadeIn.delay(700)}
               style={[styles.gameSection, { backgroundColor: theme.colors.card }]}
             >
-              <Text style={[styles.gameSectionTitle, { color: theme.colors.primary }]}>
-                ❓ Quiz Questions
-              </Text>
+            <Text style={[styles.gameSectionTitle, { color: theme.colors.primary }]}>
+                Quiz Questions
+            </Text>
               {game.gameContent.questions.map((q, index) => (
                 <View key={index} style={styles.questionItem}>
                   <Text style={[styles.questionText, { color: theme.colors.text }]}>
@@ -209,9 +210,9 @@ export default function GiftForgeResultScreen() {
               entering={FadeIn.delay(700)}
               style={[styles.gameSection, { backgroundColor: theme.colors.card }]}
             >
-              <Text style={[styles.gameSectionTitle, { color: theme.colors.primary }]}>
-                📖 Story Branches
-              </Text>
+            <Text style={[styles.gameSectionTitle, { color: theme.colors.primary }]}>
+                Story Branches
+            </Text>
               {game.gameContent.storyBranches.slice(0, 2).map((branch, index) => (
                 <View key={index} style={styles.branchItem}>
                   <Text style={[styles.branchText, { color: theme.colors.text }]}>
@@ -236,6 +237,16 @@ export default function GiftForgeResultScreen() {
             <Text style={[styles.senderSignature, { color: theme.colors.primary }]}>
               {game.endScreen.senderSignature}
             </Text>
+            
+            {/* Made by Stamp */}
+            <View style={[styles.madeByStamp, { borderColor: theme.colors.primary + '40' }]}>
+              <Text style={[styles.madeByLabel, { color: theme.colors.text + '60' }]}>
+                Made with love by
+              </Text>
+              <Text style={[styles.madeByName, { color: theme.colors.primary }]}>
+                {game.senderName}
+              </Text>
+            </View>
           </Animated.View>
         </ScrollView>
       </View>
@@ -270,7 +281,7 @@ export default function GiftForgeResultScreen() {
           </Animated.View>
           
           <Text style={[styles.successTitle, { color: theme.colors.text }]}>
-            🎉 Gift Created!
+            Gift Created
           </Text>
           <Text style={[styles.successSubtitle, { color: theme.colors.text + '80' }]}>
             Your personalized game is ready to share
@@ -323,7 +334,7 @@ export default function GiftForgeResultScreen() {
           style={[styles.linkCard, { backgroundColor: theme.colors.card }]}
         >
           <Text style={[styles.linkTitle, { color: theme.colors.primary }]}>
-            📎 Shareable Link
+            Shareable Link
           </Text>
           
           <View style={[styles.linkBox, { backgroundColor: theme.colors.background }]}>
@@ -384,7 +395,7 @@ export default function GiftForgeResultScreen() {
           style={styles.encouragement}
         >
           <Text style={[styles.encouragementText, { color: theme.colors.text + '80' }]}>
-            💝 Your recipient is going to love this! Send them the link and watch their face light up.
+            Your recipient is going to love this. Send them the link and watch their face light up.
           </Text>
         </Animated.View>
       </ScrollView>
@@ -620,5 +631,27 @@ const styles = StyleSheet.create({
   senderSignature: {
     fontSize: 14,
     fontWeight: '600',
+  },
+  // Made by Stamp
+  madeByStamp: {
+    marginTop: 24,
+    paddingTop: 20,
+    paddingHorizontal: 20,
+    paddingBottom: 16,
+    borderTopWidth: 1,
+    alignItems: 'center',
+    width: '100%',
+  },
+  madeByLabel: {
+    fontSize: 11,
+    fontWeight: '500',
+    textTransform: 'uppercase',
+    letterSpacing: 1.5,
+    marginBottom: 4,
+  },
+  madeByName: {
+    fontSize: 18,
+    fontWeight: '700',
+    fontStyle: 'italic',
   },
 });

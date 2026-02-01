@@ -1,5 +1,5 @@
 /**
- * GrokService - AI-powered game generation using Grok API (x.ai)
+ * GrokService - Personalized game generation using Grok API (x.ai)
  * OpenAI-compatible API interface for generating personalized gift games
  */
 

@@ -32,7 +32,7 @@ export const GenieProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     setMessages((prev) => [...prev, userMessage]);
 
     try {
-      // Get AI response
+      // Get Genie response
       const response = await genieService.processMessage(content, personality, context);
 
       // Add assistant message
