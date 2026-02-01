@@ -20,6 +20,8 @@ import OnboardingScreen from '../screens/OnboardingScreen';
 import GiftForgeWizardScreen from '../screens/GiftForgeWizardScreen';
 import GiftForgeResultScreen from '../screens/GiftForgeResultScreen';
 import GiftForgeGameScreen from '../screens/GiftForgeGameScreen';
+// Agent screens (from PR #5)
+import { AgentDashboardScreen } from '../screens/AgentDashboardScreen';
 
 import { useTheme } from '../contexts/ThemeContext';
 import { RootStackParamList } from '../types';
@@ -160,6 +162,12 @@ export default function AppNavigator() {
       <Stack.Screen 
         name="GiftForgeGame" 
         component={GiftForgeGameScreen}
+        options={{ headerShown: false }}
+      />
+      {/* Agent screens */}
+      <Stack.Screen 
+        name="AgentDashboard" 
+        component={AgentDashboardScreen}
         options={{ headerShown: false }}
       />
     </Stack.Navigator>
