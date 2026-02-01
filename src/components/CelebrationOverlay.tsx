@@ -154,7 +154,7 @@ const ConfettiPiece = memo(({ particle }: { particle: Particle }) => {
   );
 });
 
-export default function CelebrationOverlay({
+const CelebrationOverlay = React.memo(function CelebrationOverlay({
   visible,
   type = 'confetti',
   message,
@@ -227,7 +227,7 @@ export default function CelebrationOverlay({
       )}
     </Animated.View>
   );
-}
+});
 
 const styles = StyleSheet.create({
   overlay: {
@@ -287,3 +287,5 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
 });
+
+export default CelebrationOverlay;

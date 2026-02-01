@@ -239,94 +239,102 @@ export default function GiftForgeWizardScreen() {
     });
   }, []);
 
-  // Render selection grid
+  // Render selection grid helper function
   const renderSelectionGrid = <T extends string>(
     items: Record<T, string>,
     selectedValue: T | undefined,
     onSelect: (value: T) => void,
     columns: number = 2
-  ) => (
-    <View style={[styles.selectionGrid, { flexWrap: 'wrap' }]}>
-      {(Object.entries(items) as [T, string][]).map(([key, label]) => (
-        <Animated.View
-          key={key}
-          entering={FadeIn.delay(100)}
-          style={{ width: `${100 / columns - 2}%`, margin: '1%' }}
-        >
-          <TouchableOpacity
-            style={[
-              styles.selectionItem,
-              { backgroundColor: theme.colors.card },
-              selectedValue === key && { 
-                backgroundColor: theme.colors.primary,
-                borderColor: theme.colors.primary,
-              },
-            ]}
-            onPress={() => onSelect(key)}
+  ) => {
+    const entries = Object.entries(items) as [T, string][];
+    
+    return (
+      <View style={[styles.selectionGrid, { flexWrap: 'wrap' }]}>
+        {entries.map(([key, label]) => (
+          <Animated.View
+            key={key}
+            entering={FadeIn.delay(100)}
+            style={{ width: `${100 / columns - 2}%`, margin: '1%' }}
           >
-            <Text
+            <TouchableOpacity
               style={[
-                styles.selectionItemText,
-                { color: theme.colors.text },
-                selectedValue === key && { color: '#fff' },
+                styles.selectionItem,
+                { backgroundColor: theme.colors.card },
+                selectedValue === key && { 
+                  backgroundColor: theme.colors.primary,
+                  borderColor: theme.colors.primary,
+                },
               ]}
+              onPress={() => onSelect(key)}
             >
-              {label}
-            </Text>
-          </TouchableOpacity>
-        </Animated.View>
-      ))}
-    </View>
-  );
+              <Text
+                style={[
+                  styles.selectionItemText,
+                  { color: theme.colors.text },
+                  selectedValue === key && { color: '#fff' },
+                ]}
+              >
+                {label}
+              </Text>
+            </TouchableOpacity>
+          </Animated.View>
+        ))}
+      </View>
+    );
+  };
 
-  // Render multi-selection grid
+  // Render multi-selection grid helper function
   const renderMultiSelectionGrid = <T extends string>(
     items: Record<T, string>,
     selectedValues: T[],
     onToggle: (value: T) => void,
     maxItems: number,
     columns: number = 2
-  ) => (
-    <View>
-      <Text style={[styles.selectionHint, { color: theme.colors.text + '80' }]}>
-        Select up to {maxItems} ({selectedValues.length}/{maxItems})
-      </Text>
-      <View style={[styles.selectionGrid, { flexWrap: 'wrap' }]}>
-        {(Object.entries(items) as [T, string][]).map(([key, label]) => {
-          const isSelected = selectedValues.includes(key);
-          return (
-            <Animated.View
-              key={key}
-              entering={FadeIn.delay(100)}
-              style={{ width: `${100 / columns - 2}%`, margin: '1%' }}
-            >
-              <TouchableOpacity
-                style={[
-                  styles.selectionItem,
-                  { backgroundColor: theme.colors.card },
-                  isSelected && { 
-                    backgroundColor: theme.colors.primary,
-                    borderColor: theme.colors.primary,
-                  },
-                ]}
-                onPress={() => onToggle(key)}
+  ) => {
+    const entries = Object.entries(items) as [T, string][];
+    
+    return (
+      <View>
+        <Text style={[styles.selectionHint, { color: theme.colors.text + '80' }]}>
+          Select up to {maxItems} ({selectedValues.length}/{maxItems})
+        </Text>
+        <View style={[styles.selectionGrid, { flexWrap: 'wrap' }]}>
+          {entries.map(([key, label]) => {
+            const isSelected = selectedValues.includes(key);
+            return (
+              <Animated.View
+                key={key}
+                entering={FadeIn.delay(100)}
+                style={{ width: `${100 / columns - 2}%`, margin: '1%' }}
               >
-                <Text
+                <TouchableOpacity
                   style={[
-                    styles.selectionItemText,
-                    { color: theme.colors.text },
-                    isSelected && { color: '#fff' },
+                    styles.selectionItem,
+                    { backgroundColor: theme.colors.card },
+                    isSelected && { 
+                      backgroundColor: theme.colors.primary,
+                      borderColor: theme.colors.primary,
+                    },
                   ]}
+                  onPress={() => onToggle(key)}
                 >
-                  {label}
-                </Text>
-              </TouchableOpacity>
-            </Animated.View>
-          );
-        })}
+                  <Text
+                    style={[
+                      styles.selectionItemText,
+                      { color: theme.colors.text },
+                      isSelected && { color: '#fff' },
+                    ]}
+                  >
+                    {label}
+                  </Text>
+                </TouchableOpacity>
+              </Animated.View>
+            );
+          })}
+        </View>
       </View>
-    </View>
-  );
+    );
+  };
 
   // Render step content
   const renderStepContent = () => {

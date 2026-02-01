@@ -8,7 +8,7 @@
  * 
  * Supports: Valentine's, Winter Majlis, and all seasonal themes
  */
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useRef, useMemo } from 'react';
 import {
   View,
   Text,
@@ -100,6 +100,9 @@ export default function HomeScreen() {
   const [showThemePicker, setShowThemePicker] = useState(false);
   const greeting = getThemeGreeting(seasonalTheme.id);
   
+  // Use ref to track timeout for cleanup
+  const dodoTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  
   // Featured games from agents
   const [seasonalDrop, setSeasonalDrop] = useState<SeasonalDrop | null>(null);
   const [trendingGames, setTrendingGames] = useState<FeaturedGame[]>([]);
@@ -177,6 +180,15 @@ export default function HomeScreen() {
     loadGames();
   }, []);
   
+  // Cleanup dodo timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (dodoTimeoutRef.current) {
+        clearTimeout(dodoTimeoutRef.current);
+      }
+    };
+  }, []);
+  
   const glowStyle = useAnimatedStyle(() => ({
     opacity: glow.value,
   }));
@@ -190,16 +202,21 @@ export default function HomeScreen() {
   }));
 
   const handleDodoPress = useCallback(() => {
+    // Clear any existing timeout
+    if (dodoTimeoutRef.current) {
+      clearTimeout(dodoTimeoutRef.current);
+    }
+    
     setDodoMood('excited');
-    setTimeout(() => setDodoMood('idle'), 2000);
+    dodoTimeoutRef.current = setTimeout(() => setDodoMood('idle'), 2000);
   }, []);
 
   const handleCreateGift = useCallback(() => {
     navigation.navigate('GiftForgeWizard');
   }, [navigation]);
 
-  // Secondary actions - hidden below fold
-  const secondaryActions = [
+  // Secondary actions - memoized to prevent recreation on every render
+  const secondaryActions = useMemo(() => [
     {
       icon: 'folder-heart-outline',
       title: 'My Creations',
@@ -221,7 +238,7 @@ export default function HomeScreen() {
       },
       color: themeColors.accent,
     },
-  ];
+  ], [navigation, themeColors.secondary, themeColors.primary, themeColors.accent]);
 
   return (
     <View style={[styles.container, { backgroundColor: themeColors.background }]}>
