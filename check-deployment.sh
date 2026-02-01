@@ -20,7 +20,7 @@ echo ""
 check_command() {
     if command -v $1 &> /dev/null; then
         echo -e "${GREEN}✓${NC} $1 is installed ($(command -v $1))"
-        if [ ! -z "$2" ]; then
+        if [ -n "$2" ]; then
             VERSION=$($1 $2 2>&1 | head -1)
             echo -e "  ${BLUE}Version:${NC} $VERSION"
         fi

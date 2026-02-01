@@ -180,21 +180,21 @@ This will automatically check your system and tell you exactly what needs to be 
 
 ### Common Issues
 
-### "Node.js not found"
+#### "Node.js not found"
 Install Node.js from [nodejs.org](https://nodejs.org/)
 
-### "Permission denied" (Mac/Linux)
+#### "Permission denied" (Mac/Linux)
 ```bash
 chmod +x deploy.sh
 ./deploy.sh
 ```
 
-### "Vercel login failed"
+#### "Vercel login failed"
 1. Make sure you have a Vercel account
 2. Check your internet connection
 3. Try: `vercel login`
 
-### "EAS build failed"
+#### "EAS build failed"
 1. Make sure you have an Expo account
 2. Try: `eas login`
 3. Run the script again

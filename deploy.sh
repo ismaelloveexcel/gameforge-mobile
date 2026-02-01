@@ -51,6 +51,12 @@ if [ ! -f "$CONFIG_FILE" ]; then
     echo ""
     read -p "Choose option (1-3): " deploy_choice
     
+    # Validate input
+    while [[ ! "$deploy_choice" =~ ^[1-3]$ ]]; do
+        print_error "Invalid choice. Please enter 1, 2, or 3"
+        read -p "Choose option (1-3): " deploy_choice
+    done
+    
     # Save configuration
     echo "DEPLOY_CHOICE=$deploy_choice" > "$CONFIG_FILE"
     
@@ -70,7 +76,7 @@ if [ ! -f "$CONFIG_FILE" ]; then
     print_success "npm is installed"
     
     # Check for deployment tools based on choice
-    if [ "$deploy_choice" == "1" ] || [ "$deploy_choice" == "3" ]; then
+    if [ "$deploy_choice" = "1" ] || [ "$deploy_choice" = "3" ]; then
         if ! command -v vercel &> /dev/null; then
             print_warning "Vercel CLI not found. Installing..."
             npm install -g vercel
@@ -78,7 +84,7 @@ if [ ! -f "$CONFIG_FILE" ]; then
         print_success "Vercel CLI is ready"
     fi
     
-    if [ "$deploy_choice" == "2" ] || [ "$deploy_choice" == "3" ]; then
+    if [ "$deploy_choice" = "2" ] || [ "$deploy_choice" = "3" ]; then
         if ! command -v eas &> /dev/null; then
             print_warning "EAS CLI not found. Installing..."
             npm install -g eas-cli

@@ -23,7 +23,15 @@ if not exist "%CONFIG_FILE%" (
     echo 2^) Android app ^(free, takes longer^)
     echo 3^) Both web and Android
     echo.
+    
+    :GET_CHOICE
     set /p DEPLOY_CHOICE="Choose option (1-3): "
+    
+    REM Validate input
+    if not "!DEPLOY_CHOICE!"=="1" if not "!DEPLOY_CHOICE!"=="2" if not "!DEPLOY_CHOICE!"=="3" (
+        echo [ERROR] Invalid choice. Please enter 1, 2, or 3
+        goto GET_CHOICE
+    )
     
     REM Save configuration
     echo DEPLOY_CHOICE=!DEPLOY_CHOICE!> "%CONFIG_FILE%"
