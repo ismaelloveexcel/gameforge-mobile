@@ -42,15 +42,18 @@ You are the single source of truth for product experience.
 ### 3. UAE Seasonal Awareness (Automatic)
 Apply correct theme **WITHOUT ASKING**:
 
-| Season/Event | Theme | Mood |
-|--------------|-------|------|
-| **Valentine's (Feb 1-14)** | Eternal Romance | Deep passion, sophisticated love |
-| **Ramadan** | Nocturnal Revival | Calm, warm, late-night creativity |
-| **Eid** | Golden Reunion | Premium celebration, gold accents |
-| **National Day (Nov 30-Dec 3)** | UAE Pride | Red, green, white, black |
-| **Winter (Nov-Feb)** | Winter Majlis | Jewel tones, cozy gatherings |
-| **Summer (Jun-Aug)** | Neon Dubai Summer | Bold neons, nightlife energy |
-| **Default** | Creator Wave | Maximalist luxury, aspirational |
+| Season/Event | Theme | Mood | 2026 Dates |
+|--------------|-------|------|------------|
+| **Valentine's (Feb 1-14)** | Eternal Romance | Deep passion, sophisticated love | Feb 1-14 |
+| **Ramadan 2026** | Nocturnal Revival | Calm, warm, late-night creativity | ~Feb 18 - Mar 19* |
+| **Eid 2026** | Golden Reunion | Premium celebration, gold accents | ~Mar 20-25* |
+| **Summer (May-Aug)** | Neon Dubai Summer | Bold neons, nightlife energy | May 1 - Aug 31 |
+| **Autumn (Sep-Nov 29)** | Autumn Harvest | Warm transition, cozy gatherings | Sep 1 - Nov 29 |
+| **National Day (Nov 30-Dec 3)** | UAE Pride | Red, green, white, black | Nov 30 - Dec 3 |
+| **Winter (Dec 4-Jan 31)** | Winter Majlis | Jewel tones, cozy gatherings | Dec 4 - Jan 31 |
+| **Default** | Creator Wave | Maximalist luxury, aspirational | Fills gaps |
+
+*Subject to moon sighting, varies by region. Use remote config in production.
 
 ### 4. Premium Visual Standard
 - Agency-grade only: lighting, depth, hierarchy, motion

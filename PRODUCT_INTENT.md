@@ -1,5 +1,7 @@
 # PRODUCT INTENT — GameForge Mobile
 
+> **Note on Naming:** "GameForge Mobile" is the technical product name. The product is positioned as an **emotional gifting platform** that uses games as the medium — NOT a game builder tool. Marketing and UX should emphasize the gifting experience over the game creation mechanics.
+
 ## The One-Line Promise
 **Create a shareable mini-game for someone you love — in 60 seconds.**
 
