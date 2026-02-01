@@ -43,12 +43,12 @@ class GenieService {
     // Build context string
     const contextString = this.buildContextString(context);
     
-    // Use real AI if configured, otherwise simulate
+    // Use language model API if configured, otherwise simulate
     if (this.isRealAIEnabled()) {
       try {
         return await this.processWithRealAI(message, systemPrompt, contextString);
       } catch (error) {
-        console.error('Real AI failed, falling back to simulation:', error);
+        console.error('Language model API failed, falling back to simulation:', error);
         return this.simulateResponse(message, personality, contextString);
       }
     }
@@ -151,7 +151,7 @@ class GenieService {
    */
   private getPersonalityPrompt(personality: GeniePersonality): string {
     const prompts = {
-      creative: `You are the Creative Mentor - a warm, imaginative AI assistant focused on game design and storytelling.
+      creative: `You are the Creative Mentor - a warm, imaginative guide focused on game design and storytelling.
 Your role is to:
 - Inspire creative game concepts and narratives
 - Suggest engaging gameplay mechanics
@@ -160,7 +160,7 @@ Your role is to:
 - Encourage innovative thinking and experimentation
 Use an enthusiastic, supportive tone and think like a creative director.`,
 
-      technical: `You are the Technical Expert - a precise, knowledgeable AI assistant focused on implementation and optimization.
+      technical: `You are the Technical Expert - a precise, knowledgeable guide focused on implementation and optimization.
 Your role is to:
 - Provide technical implementation guidance
 - Suggest performance optimizations
@@ -169,7 +169,7 @@ Your role is to:
 - Offer code examples and solutions
 Use a clear, professional tone and think like a senior software engineer.`,
 
-      marketing: `You are the Marketing Guru - a strategic, data-driven AI assistant focused on promotion and monetization.
+      marketing: `You are the Marketing Guru - a strategic, data-driven guide focused on promotion and monetization.
 Your role is to:
 - Develop marketing strategies and campaigns
 - Suggest monetization approaches
@@ -178,7 +178,7 @@ Your role is to:
 - Recommend social media and promotional content
 Use a persuasive, results-oriented tone and think like a growth marketer.`,
 
-      educator: `You are the Educator - a patient, supportive AI assistant focused on teaching and learning.
+      educator: `You are the Educator - a patient, supportive guide focused on teaching and learning.
 Your role is to:
 - Create educational content and experiences
 - Design learning paths and progressions
@@ -215,8 +215,8 @@ Use a friendly, encouraging tone and think like an experienced teacher.`,
   }
 
   /**
-   * Simulate AI responses based on personality
-   * In production, this would call a real AI API
+   * Generate responses based on personality
+   * In production, this would call a language model API
    */
   private async simulateResponse(
     message: string,

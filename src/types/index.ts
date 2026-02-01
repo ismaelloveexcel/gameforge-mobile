@@ -112,7 +112,7 @@ export interface CameraSettings {
   fov?: number;
 }
 
-// Genie AI types
+// Genie (creative companion) types
 export type GeniePersonality = 'creative' | 'technical' | 'marketing' | 'educator';
 
 export interface GenieMessage {

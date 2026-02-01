@@ -1,14 +1,15 @@
 import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { Platform } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
-import HomeScreen from '../screens/HomeScreen';
+import HomeScreen from '../screens/HomeScreenNew';
 import ProjectListScreen from '../screens/ProjectListScreen';
 import ProjectEditorScreen from '../screens/ProjectEditorScreen';
 import TemplateSelectorScreen from '../screens/TemplateSelectorScreen';
 import TemplatePreviewScreen from '../screens/TemplatePreviewScreen';
-import GenieAssistantScreen from '../screens/GenieAssistantScreen';
+import DodoAssistantScreen from '../screens/DodoAssistantScreen';
 import AssetLibraryScreen from '../screens/AssetLibraryScreen';
 import MarketingDashboardScreen from '../screens/MarketingDashboardScreen';
 import VREditorScreen from '../screens/VREditorScreen';
@@ -20,12 +21,16 @@ import GiftForgeWizardScreen from '../screens/GiftForgeWizardScreen';
 import GiftForgeResultScreen from '../screens/GiftForgeResultScreen';
 import GiftForgeGameScreen from '../screens/GiftForgeGameScreen';
 
+import { useTheme } from '../contexts/ThemeContext';
 import { RootStackParamList } from '../types';
+import { forgeColors } from '../design-tokens/theme';
 
 const Stack = createStackNavigator<RootStackParamList>();
 const Tab = createBottomTabNavigator();
 
 function MainTabs() {
+  const { theme, isDark } = useTheme();
+  
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
@@ -42,8 +47,8 @@ function MainTabs() {
             case 'Templates':
               iconName = focused ? 'view-grid' : 'view-grid-outline';
               break;
-            case 'Genie':
-              iconName = focused ? 'robot' : 'robot-outline';
+            case 'Genie': // Keep route name for compatibility
+              iconName = 'bird'; // Dodo icon!
               break;
             default:
               iconName = 'help-circle-outline';
@@ -51,30 +56,49 @@ function MainTabs() {
 
           return <Icon name={iconName} size={size} color={color} />;
         },
-        tabBarActiveTintColor: '#6366f1',
-        tabBarInactiveTintColor: '#9ca3af',
+        tabBarActiveTintColor: forgeColors.forge[500],
+        tabBarInactiveTintColor: theme.colors.textMuted,
+        tabBarStyle: {
+          backgroundColor: isDark ? forgeColors.stone[900] : '#fff',
+          borderTopColor: theme.colors.border,
+          borderTopWidth: 1,
+          paddingTop: 8,
+          paddingBottom: Platform.OS === 'ios' ? 24 : 8,
+          height: Platform.OS === 'ios' ? 88 : 64,
+        },
+        tabBarLabelStyle: {
+          fontSize: 11,
+          fontWeight: '600',
+        },
         headerShown: false,
       })}
     >
       <Tab.Screen name="Home" component={HomeScreen} />
       <Tab.Screen name="Projects" component={ProjectListScreen} />
       <Tab.Screen name="Templates" component={TemplateSelectorScreen} />
-      <Tab.Screen name="Genie" component={GenieAssistantScreen} />
+      <Tab.Screen 
+        name="Genie" 
+        component={DodoAssistantScreen} 
+        options={{ tabBarLabel: 'Dodo' }}
+      />
     </Tab.Navigator>
   );
 }
 
 export default function AppNavigator() {
+  const { theme, isDark } = useTheme();
+  
   return (
     <Stack.Navigator
       screenOptions={{
         headerStyle: {
-          backgroundColor: '#1a1a2e',
+          backgroundColor: isDark ? forgeColors.stone[900] : '#fff',
         },
-        headerTintColor: '#fff',
+        headerTintColor: theme.colors.text,
         headerTitleStyle: {
           fontWeight: 'bold',
         },
+        headerShadowVisible: false,
       }}
     >
       <Stack.Screen 
