@@ -231,7 +231,7 @@ export default function RouletteWheel({
       {/* Result Display */}
       {selectedSegment && !isSpinning && (
         <Animated.View
-          entering={withSpring}
+          entering={FadeIn}
           style={[
             styles.resultContainer,
             { backgroundColor: theme.colors.surface },

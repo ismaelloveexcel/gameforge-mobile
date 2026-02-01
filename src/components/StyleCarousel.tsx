@@ -237,7 +237,7 @@ function StyleCard({
         {
           width: cardWidth,
           height: cardHeight,
-          marginRight: index === styleOption.id.length - 1 ? 0 : CARD_SPACING,
+          marginRight: CARD_SPACING,
         },
         isSelected && {
           borderWidth: 3,
