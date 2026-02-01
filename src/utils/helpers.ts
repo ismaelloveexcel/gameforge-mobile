@@ -123,20 +123,21 @@ export function throttle<T extends (...args: any[]) => any>(
 
 /**
  * Deep clone an object
- * Uses structuredClone when available (modern browsers/Node 17+),
- * falls back to JSON method for simple objects
+ * Uses structuredClone when available, with robust fallback for React Native
  */
 export function deepClone<T>(obj: T): T {
-  // Use structuredClone if available (faster and handles more types)
-  if (typeof structuredClone !== 'undefined') {
+  // Check if structuredClone is available (modern browsers/Node 17+/recent Hermes)
+  if (typeof structuredClone === 'function') {
     try {
       return structuredClone(obj);
     } catch (e) {
       // Fall through to JSON method if structuredClone fails
+      // (e.g., circular references, unsupported types)
     }
   }
   
-  // Fallback to JSON method (works for simple objects without functions/symbols)
+  // Fallback to JSON method for React Native environments without structuredClone
+  // Works for simple objects without functions, symbols, or circular references
   return JSON.parse(JSON.stringify(obj));
 }
 
