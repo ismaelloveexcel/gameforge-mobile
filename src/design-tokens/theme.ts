@@ -408,6 +408,81 @@ export const seasonalThemes: Record<string, SeasonalTheme> = {
   },
 } as const;
 
+// Islamic calendar dates by year (approximate Gregorian equivalents)
+// These shift ~11 days earlier each year due to lunar calendar
+interface IslamicDates {
+  ramadanStart: { month: number; day: number };
+  ramadanEnd: { month: number; day: number };
+  eidFitrStart: { month: number; day: number };
+  eidFitrEnd: { month: number; day: number };
+  eidAdhaStart: { month: number; day: number };
+  eidAdhaEnd: { month: number; day: number };
+}
+
+const islamicDatesByYear: Record<number, IslamicDates> = {
+  2025: {
+    ramadanStart: { month: 3, day: 1 },
+    ramadanEnd: { month: 3, day: 29 },
+    eidFitrStart: { month: 3, day: 30 },
+    eidFitrEnd: { month: 4, day: 3 },
+    eidAdhaStart: { month: 6, day: 6 },
+    eidAdhaEnd: { month: 6, day: 10 },
+  },
+  2026: {
+    ramadanStart: { month: 2, day: 18 },
+    ramadanEnd: { month: 3, day: 19 },
+    eidFitrStart: { month: 3, day: 20 },
+    eidFitrEnd: { month: 3, day: 25 },
+    eidAdhaStart: { month: 5, day: 27 },
+    eidAdhaEnd: { month: 5, day: 31 },
+  },
+  2027: {
+    ramadanStart: { month: 2, day: 8 },
+    ramadanEnd: { month: 3, day: 8 },
+    eidFitrStart: { month: 3, day: 9 },
+    eidFitrEnd: { month: 3, day: 13 },
+    eidAdhaStart: { month: 5, day: 16 },
+    eidAdhaEnd: { month: 5, day: 20 },
+  },
+  2028: {
+    ramadanStart: { month: 1, day: 28 },
+    ramadanEnd: { month: 2, day: 25 },
+    eidFitrStart: { month: 2, day: 26 },
+    eidFitrEnd: { month: 3, day: 1 },
+    eidAdhaStart: { month: 5, day: 5 },
+    eidAdhaEnd: { month: 5, day: 9 },
+  },
+  2029: {
+    ramadanStart: { month: 1, day: 16 },
+    ramadanEnd: { month: 2, day: 13 },
+    eidFitrStart: { month: 2, day: 14 },
+    eidFitrEnd: { month: 2, day: 18 },
+    eidAdhaStart: { month: 4, day: 24 },
+    eidAdhaEnd: { month: 4, day: 28 },
+  },
+  2030: {
+    ramadanStart: { month: 1, day: 5 },
+    ramadanEnd: { month: 2, day: 2 },
+    eidFitrStart: { month: 2, day: 3 },
+    eidFitrEnd: { month: 2, day: 7 },
+    eidAdhaStart: { month: 4, day: 13 },
+    eidAdhaEnd: { month: 4, day: 17 },
+  },
+};
+
+// Helper to check if date is within range (handles month boundaries)
+function isDateInRange(
+  month: number,
+  day: number,
+  start: { month: number; day: number },
+  end: { month: number; day: number }
+): boolean {
+  const current = month * 100 + day;
+  const startVal = start.month * 100 + start.day;
+  const endVal = end.month * 100 + end.day;
+  return current >= startVal && current <= endVal;
+}
+
 // Get the currently active seasonal theme based on date
 export function getActiveSeasonalTheme(overrideTheme?: string): SeasonalTheme {
   // Allow manual override for user-selected themes
@@ -416,21 +491,30 @@ export function getActiveSeasonalTheme(overrideTheme?: string): SeasonalTheme {
   }
   
   const now = new Date();
+  const year = now.getFullYear();
   const month = now.getMonth() + 1; // 1-12
   const day = now.getDate();
+  
+  // Get Islamic dates for current year (fallback to 2026 if not found)
+  const islamicDates = islamicDatesByYear[year] || islamicDatesByYear[2026];
 
   // Valentine's Day: Feb 1-14 (prioritized for 2 weeks lead-up)
   if (month === 2 && day >= 1 && day <= 14) {
     return seasonalThemes['eternal-romance'];
   }
 
-  // Ramadan 2026: approximately Feb 18 - Mar 19
-  if ((month === 2 && day >= 18) || (month === 3 && day <= 19)) {
+  // Ramadan (dynamic based on year)
+  if (isDateInRange(month, day, islamicDates.ramadanStart, islamicDates.ramadanEnd)) {
     return seasonalThemes['nocturnal-revival'];
   }
 
-  // Eid al-Fitr 2026: approximately Mar 20 - Mar 25
-  if (month === 3 && day >= 20 && day <= 25) {
+  // Eid al-Fitr (dynamic based on year)
+  if (isDateInRange(month, day, islamicDates.eidFitrStart, islamicDates.eidFitrEnd)) {
+    return seasonalThemes['golden-reunion'];
+  }
+
+  // Eid al-Adha (dynamic based on year)
+  if (isDateInRange(month, day, islamicDates.eidAdhaStart, islamicDates.eidAdhaEnd)) {
     return seasonalThemes['golden-reunion'];
   }
 

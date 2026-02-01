@@ -384,11 +384,15 @@ export default function HomeScreen() {
         animationType="fade"
         onRequestClose={() => setShowThemePicker(false)}
       >
-        <TouchableOpacity 
-          style={styles.modalOverlay}
-          activeOpacity={1}
-          onPress={() => setShowThemePicker(false)}
-        >
+        <View style={styles.modalOverlay}>
+          {/* Backdrop - tapping closes modal */}
+          <TouchableOpacity 
+            style={styles.modalBackdrop}
+            activeOpacity={1}
+            onPress={() => setShowThemePicker(false)}
+          />
+          
+          {/* Theme Picker Content - stops propagation */}
           <Animated.View 
             entering={FadeInUp.duration(300)}
             style={[styles.themePicker, { backgroundColor: themeColors.surface }]}
@@ -411,6 +415,7 @@ export default function HomeScreen() {
                   setThemeChoice(option.id);
                   setShowThemePicker(false);
                 }}
+                activeOpacity={0.7}
               >
                 <View style={styles.themeOptionContent}>
                   <Text style={[
@@ -429,7 +434,7 @@ export default function HomeScreen() {
               </TouchableOpacity>
             ))}
           </Animated.View>
-        </TouchableOpacity>
+        </View>
       </Modal>
     </View>
   );
@@ -685,6 +690,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: spacing.lg,
+  },
+  modalBackdrop: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
   },
   themePicker: {
     width: '100%',
