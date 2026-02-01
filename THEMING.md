@@ -14,7 +14,7 @@ A well-executed seasonal theme says:
 
 ## RAMADAN THEME (LAUNCH DEFAULT)
 
-### When: Feb 28 - Mar 30, 2026
+### When: ~Feb 18 – ~Mar 19, 2026 (subject to moon sighting)
 
 ### Positioning
 - **Universal, not religious**: Celebrates connection, not worship
@@ -120,7 +120,7 @@ const ramadanGradients = {
 
 ## EID AL-FITR THEME (POST-RAMADAN)
 
-### When: Mar 30 - Apr 15, 2026
+### When: ~Mar 20 – ~Mar 22, 2026 (subject to moon sighting)
 
 ### Positioning
 - **Celebratory**: End of fasting, joyful reunion
@@ -186,7 +186,7 @@ const ramadanGradients = {
 
 ## UAE NATIONAL DAY THEME
 
-### When: December 1-7, 2026
+### When: Dec 2-3, 2026
 
 ### Positioning
 - **Proud & unified**: Celebrate UAE heritage
@@ -210,15 +210,51 @@ const ramadanGradients = {
 - **Stars**: Representing the 7 emirates
 
 #### Copy
-- "Celebrate 55 years of pride"
-- "Create a gift to honor our unity"
+- "Celebrate UAE heritage and unity"
+- "Create a gift to honor our nation"
 - "Made in the UAE, for the UAE"
+
+---
+
+## AUTUMN THEME (SEPTEMBER - NOVEMBER)
+
+### When: September 1 - November 30, 2026
+
+**Note**: Autumn theme fills the gap between Summer and National Day, maintaining year-round seasonal relevance.
+
+### Positioning
+- **Warm & transitional**: Changing seasons, new beginnings
+- **Back-to-school**: Academic year starts, new routines
+- **Harvest & gratitude**: Mild weather, outdoor activities
+
+### Visual Language
+
+#### Color Palette
+| Color | Hex | Usage |
+|-------|-----|-------|
+| **Burnt Orange** | `#CC5500` | Primary gradient |
+| **Golden Brown** | `#D2691E` | Gradient end |
+| **Olive Green** | `#6B8E23` | Accents |
+| **Warm Beige** | `#F5E6D3` | Backgrounds (light) |
+| **Deep Brown** | `#4A3C2E` | Dark mode base |
+
+#### Motifs
+- **Falling leaves**: Gentle particle effects
+- **Warm tones**: Earthy, natural palette
+- **Subtle patterns**: Geometric leaf shapes
+
+#### Copy
+- "Celebrate new beginnings"
+- "Create a gift for every milestone"
+- "Made for moments of gratitude"
 
 ---
 
 ## WINTER THEME (DECEMBER - FEBRUARY)
 
-### When: December 15 - February 27, 2027
+### When: December 4 - February 17, 2027
+
+**Note**: Winter theme now runs from Dec 4 (after National Day) through mid-February (before Ramadan 2027), avoiding date gaps.
 
 ### Positioning
 - **Cozy & reflective**: End of year, new beginnings
@@ -255,19 +291,29 @@ const ramadanGradients = {
 #### 1. Date-Based Auto-Switch (Recommended)
 ```typescript
 // /src/contexts/ThemeContext.tsx
+type ThemeName = 'ramadan' | 'eid' | 'summer' | 'autumn' | 'national-day' | 'winter' | 'default';
+
 const getActiveTheme = (): ThemeName => {
   const now = new Date();
   const month = now.getMonth() + 1; // 1-12
   const day = now.getDate();
 
-  // Ramadan (Feb 28 - Mar 30)
-  if ((month === 2 && day >= 28) || (month === 3 && day <= 30)) {
+  // Ramadan (~Feb 18 - ~Mar 19, 2026)
+  // Note: Ramadan dates shift ~10-11 days earlier each year (lunar calendar)
+  // Recommend using remote config or Islamic calendar library for production
+  if ((month === 2 && day >= 18) || (month === 3 && day <= 19)) {
     return 'ramadan';
   }
 
-  // Eid (Mar 30 - Apr 15)
-  if ((month === 3 && day > 30) || (month === 4 && day <= 15)) {
+  // Eid al-Fitr (~Mar 20-22, 2026)
+  // Typically 1-3 days after Ramadan ends
+  if (month === 3 && day >= 20 && day <= 22) {
     return 'eid';
+  }
+
+  // Spring/Late March to April (fills gap after Eid)
+  if ((month === 3 && day > 22) || month === 4) {
+    return 'default'; // or create a 'spring' theme
   }
 
   // Summer (May - Aug)
@@ -275,17 +321,31 @@ const getActiveTheme = (): ThemeName => {
     return 'summer';
   }
 
-  // National Day (Dec 1-7)
-  if (month === 12 && day >= 1 && day <= 7) {
+  // Autumn (Sept - Nov, fills gap before National Day)
+  if (month >= 9 && month <= 11) {
+    return 'autumn'; // or 'default'
+  }
+
+  // National Day (Dec 2-3)
+  if (month === 12 && day >= 2 && day <= 3) {
     return 'national-day';
   }
 
-  // Winter (Dec 15 - Feb 27)
-  if ((month === 12 && day >= 15) || month === 1 || (month === 2 && day < 28)) {
+  // Early December (Dec 1, gap before National Day)
+  if (month === 12 && day === 1) {
+    return 'winter'; // Start winter early to avoid gap
+  }
+
+  // Late December to mid-February (Dec 4 - Feb 17)
+  if (
+    (month === 12 && day >= 4) ||
+    month === 1 ||
+    (month === 2 && day < 18)
+  ) {
     return 'winter';
   }
 
-  // Default (fallback)
+  // Default (fallback for any uncovered periods)
   return 'default';
 };
 ```
@@ -295,12 +355,14 @@ Use Firebase Remote Config or similar to override dates:
 ```json
 {
   "activeTheme": "ramadan",
-  "themeStartDate": "2026-02-28",
-  "themeEndDate": "2026-03-30"
+  "themeStartDate": "2026-02-18",
+  "themeEndDate": "2026-03-19"
 }
 ```
 
-**Benefit**: Can adjust theme dates without app update (e.g., if Ramadan dates shift).
+**Benefit**: Can adjust theme dates without app update (essential for lunar calendar dates like Ramadan/Eid).
+
+**Recommended for Production**: Use remote config for Ramadan and Eid dates since they shift by ~10-11 days each year. Hardcoded dates will be incorrect in 2027 and beyond.
 
 ### Testing Themes
 ```typescript

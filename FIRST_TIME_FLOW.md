@@ -244,7 +244,8 @@ Within 30 seconds of tapping "Create a Gift Game", users should see **something 
 1. Tap "Share Link"
 2. Native share sheet opens (WhatsApp, Messages, Instagram, Copy Link)
 3. Link includes recipient name: `gameforge.app/gift/sarah-birthday-abc123`
-4. **First share triggers**: Tabs unlock (next section)
+4. **After first preview generation**: Templates, Dodo Assistant, and "How It Works" unlock (see next section)
+5. **After first share**: "Your Games" tab unlocks
 
 ---
 
@@ -252,12 +253,14 @@ Within 30 seconds of tapping "Create a Gift Game", users should see **something 
 
 ### What Unlocks After First Preview
 
+**Important**: "First preview" = the moment the game preview is generated, **before** the user shares the link.
+
 | Feature | Unlocked When | Where It Appears |
 |---------|---------------|------------------|
-| **"Your Games" tab** | After sharing link | Bottom tab bar (new tab) |
-| **"Templates" tab** | After first game created | Bottom tab bar |
-| **"Dodo Assistant"** | After first game created | Top-right icon (chat bubble) |
-| **"How It Works"** | After first game created | Settings menu |
+| **"Templates" tab** | After first preview generated | Bottom tab bar |
+| **"Dodo Assistant"** | After first preview generated | Top-right icon (chat bubble) |
+| **"How It Works"** | After first preview generated | Settings menu |
+| **"Your Games" tab** | After sharing first link | Bottom tab bar (new tab) |
 | **Advanced options** | After 3 games created | Wizard has "Customize" toggle |
 
 **Rationale:**

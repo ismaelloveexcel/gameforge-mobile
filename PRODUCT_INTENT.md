@@ -6,6 +6,8 @@ GameForge Mobile is **not** a game creation platform.
 GameForge Mobile is **not** a no-code game builder.  
 GameForge Mobile is **not** "Canva for games."
 
+**Note on Naming**: While the technical product name is "GameForge Mobile" (reflecting its game creation engine), the product positioning and marketing emphasize the **gifting experience**. The name may evolve to better reflect this positioning (e.g., "GiftForge"), but for now, all user-facing messaging focuses on creating personalized gifts, not building games.
+
 ### What It Actually Is:
 **An emotional gifting experience that happens to use games as the medium.**
 
@@ -122,7 +124,7 @@ Games are **interactive stories**. They:
 - **Premium expectations**: Users expect polish, not "beta vibes"
 
 ### Why Ramadan Launch?
-- **Timing**: Ramadan 2026 (Feb 28 - Mar 30) is peak gifting season
+- **Timing**: Ramadan 2026 (expected around Feb 18–Mar 19, subject to moon sighting) is peak gifting season
 - **Positioning**: "Celebrate connection" (fits the spirit without being preachy)
 - **Virality**: People share more during Ramadan (family groups, friends)
 - **Cultural fit**: A thoughtful gift game aligns with the reflective, generous mood
@@ -130,10 +132,12 @@ Games are **interactive stories**. They:
 ### Theme Rotation Strategy
 | Season | Occasion | Gifting Moment | Theme Vibe |
 |--------|----------|----------------|------------|
-| **Ramadan** | Daily iftars, charity | "Made this for you" | Calm, warm, reflective |
-| **Eid al-Fitr** | Post-fast celebration | "Let's celebrate!" | Joyful, bright, festive |
-| **Summer** | Vacations, graduations | "Congrats!" / "Miss you" | Playful, energetic |
-| **National Day** | UAE pride (Dec 2) | "Happy National Day!" | Proud, heritage, unity |
+| **Ramadan** (~Feb 18–Mar 19) | Daily iftars, charity | "Made this for you" | Calm, warm, reflective |
+| **Eid al-Fitr** (~Mar 20-22) | Post-fast celebration | "Let's celebrate!" | Joyful, bright, festive |
+| **Summer** (May - Aug) | Vacations, graduations | "Congrats!" / "Miss you" | Playful, energetic |
+| **Autumn** (Sept - Nov) | Back to school, new beginnings | "Good luck!" / "Thinking of you" | Warm, transitional |
+| **National Day** (Dec 2-3) | UAE pride | "Happy National Day!" | Proud, heritage, unity |
+| **Winter** (Dec 4 - Feb 17) | Holidays, new year | "Season's greetings" / "Happy New Year" | Cozy, reflective |
 
 **Key insight**: Themes are not decoration. They're **positioning strategy**.  
 A Ramadan theme says: "This product understands your world."

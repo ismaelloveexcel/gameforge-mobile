@@ -71,10 +71,11 @@ When in doubt:
 ### Post-Ramadan Rotation
 | Period | Theme | Positioning |
 |--------|-------|-------------|
-| **Eid al-Fitr** (Mar 30 - Apr 15) | Celebratory, joyful | Family & joy |
+| **Eid al-Fitr** (~Mar 20-22) | Celebratory, joyful | Family & joy |
 | **Summer** (May - Aug) | Beach vibes, bright colors | Playful & energetic |
+| **Autumn** (Sept - Nov) | Warm, transitional | New beginnings & gratitude |
 | **National Day** (Dec 2-3) | UAE flag colors (red, green, white, black) | Pride & heritage |
-| **Winter** (Dec - Feb) | Cool blues, snowflakes | Cozy & reflective |
+| **Winter** (Dec 4 - Feb 17) | Cool blues, snowflakes | Cozy & reflective |
 
 Theme changes require:
 1. Update `THEMING.md` with new palette
