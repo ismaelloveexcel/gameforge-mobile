@@ -9,6 +9,31 @@
 [![Build Mobile](https://github.com/ismaelloveexcel/gameforge-mobile/actions/workflows/build-mobile.yml/badge.svg)](https://github.com/ismaelloveexcel/gameforge-mobile/actions/workflows/build-mobile.yml)
 [![CI](https://github.com/ismaelloveexcel/gameforge-mobile/actions/workflows/ci.yml/badge.svg)](https://github.com/ismaelloveexcel/gameforge-mobile/actions/workflows/ci.yml)
 
+---
+
+## ⚡ One-Click Deployment
+
+**Deploy your app in ONE command** - Perfect for non-technical users!
+
+```bash
+# Mac/Linux
+./deploy.sh
+
+# Windows
+deploy.bat
+```
+
+✨ **That's it!** The script handles everything:
+- ✅ Automatic configuration on first run
+- ✅ Installs required tools automatically
+- ✅ Builds and deploys with zero manual steps
+- ✅ Remembers your preferences
+- ✅ 100% FREE deployment options
+
+**📖 [Complete One-Click Guide →](DEPLOY.md)**
+
+---
+
 ## 🌟 Features
 
 ### 🎁 GiftForge – Personalized Gift Mini-Games
@@ -266,7 +291,32 @@ npm run build:android
 
 ## 🚀 Deployment
 
-### ⭐ NEW: Automated Deployment with GitHub Actions
+### ⚡ **ONE-CLICK DEPLOYMENT** (Recommended for Non-Technical Users)
+
+The easiest way to deploy - just run one command!
+
+```bash
+# Mac/Linux
+./deploy.sh
+
+# Windows  
+deploy.bat
+```
+
+**Benefits:**
+- 🎯 **Zero configuration** - Script handles everything
+- 🤖 **Fully automated** - No manual steps required
+- 💡 **Beginner-friendly** - Clear prompts and messages
+- 🔄 **Remembers settings** - Configure once, deploy forever
+- 💰 **100% FREE** - Uses free tiers of Vercel & Expo
+
+📖 **[Complete One-Click Guide →](DEPLOY.md)**
+
+---
+
+### ⭐ Automated Deployment with GitHub Actions (For Continuous Deployment)
+
+For developers who want automatic deployment on every code push:
 
 GameForge Mobile now includes **automated CI/CD pipelines** using GitHub Actions - the free portal within GitHub!
 

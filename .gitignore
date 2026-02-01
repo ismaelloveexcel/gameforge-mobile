@@ -45,3 +45,6 @@ google-service-account.json
 # Build artifacts
 build/
 *.tgz
+
+# Deployment configuration (user-specific)
+.deployment-config
