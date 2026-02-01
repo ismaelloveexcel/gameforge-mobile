@@ -239,14 +239,13 @@ export default function GiftForgeWizardScreen() {
     });
   }, []);
 
-  // Render selection grid - memoized to prevent unnecessary re-computations
+  // Render selection grid - useCallback prevents function recreation on parent re-renders
   const renderSelectionGrid = useCallback(<T extends string>(
     items: Record<T, string>,
     selectedValue: T | undefined,
     onSelect: (value: T) => void,
     columns: number = 2
   ) => {
-    // Pre-compute entries outside of render
     const entries = Object.entries(items) as [T, string][];
     
     return (
@@ -284,7 +283,7 @@ export default function GiftForgeWizardScreen() {
     );
   }, [theme.colors.card, theme.colors.primary, theme.colors.text]);
 
-  // Render multi-selection grid - memoized to prevent unnecessary re-computations
+  // Render multi-selection grid - useCallback prevents function recreation on parent re-renders
   const renderMultiSelectionGrid = useCallback(<T extends string>(
     items: Record<T, string>,
     selectedValues: T[],
@@ -292,7 +291,6 @@ export default function GiftForgeWizardScreen() {
     maxItems: number,
     columns: number = 2
   ) => {
-    // Pre-compute entries outside of render
     const entries = Object.entries(items) as [T, string][];
     
     return (
