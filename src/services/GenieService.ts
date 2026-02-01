@@ -8,6 +8,26 @@ interface GenieResponse {
 
 class GenieService {
   private apiKey: string = ''; // Set via configuration
+  private apiEndpoint: string = 'https://api.x.ai/v1/chat/completions'; // Grok API
+  private model: string = 'grok-beta';
+  private useRealAI: boolean = false;
+
+  /**
+   * Configure the AI service
+   */
+  configure(apiKey: string, endpoint?: string, model?: string): void {
+    this.apiKey = apiKey;
+    if (endpoint) this.apiEndpoint = endpoint;
+    if (model) this.model = model;
+    this.useRealAI = !!apiKey;
+  }
+
+  /**
+   * Check if real AI is enabled
+   */
+  isRealAIEnabled(): boolean {
+    return this.useRealAI && !!this.apiKey;
+  }
 
   /**
    * Process a message with the selected personality
@@ -23,9 +43,107 @@ class GenieService {
     // Build context string
     const contextString = this.buildContextString(context);
     
-    // In a real implementation, this would call an AI API (OpenAI, etc.)
-    // For now, we'll simulate responses based on personality
+    // Use language model API if configured, otherwise simulate
+    if (this.isRealAIEnabled()) {
+      try {
+        return await this.processWithRealAI(message, systemPrompt, contextString);
+      } catch (error) {
+        console.error('Language model API failed, falling back to simulation:', error);
+        return this.simulateResponse(message, personality, contextString);
+      }
+    }
+    
+    // Fallback to simulated responses
     return this.simulateResponse(message, personality, contextString);
+  }
+
+  /**
+   * Process message with real AI API
+   */
+  private async processWithRealAI(
+    message: string,
+    systemPrompt: string,
+    contextString: string
+  ): Promise<GenieResponse> {
+    const fullMessage = contextString 
+      ? `Context: ${contextString}\n\nUser: ${message}`
+      : message;
+
+    const response = await fetch(this.apiEndpoint, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${this.apiKey}`,
+      },
+      body: JSON.stringify({
+        model: this.model,
+        messages: [
+          {
+            role: 'system',
+            content: systemPrompt,
+          },
+          {
+            role: 'user',
+            content: fullMessage,
+          },
+        ],
+        temperature: 0.7,
+        max_tokens: 1000,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`AI API error: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    const content = data.choices?.[0]?.message?.content;
+    
+    if (!content) {
+      throw new Error('No response from AI');
+    }
+
+    // Parse response and extract suggestions if present
+    const suggestions = this.extractSuggestions(content);
+    const codeSnippet = this.extractCodeSnippet(content);
+
+    return {
+      content: content.replace(/```[\s\S]*?```/g, '').trim(),
+      suggestions,
+      codeSnippet,
+    };
+  }
+
+  /**
+   * Extract suggestions from AI response
+   */
+  private extractSuggestions(content: string): string[] | undefined {
+    // Look for bullet points or numbered lists that might be suggestions
+    const suggestionPatterns = [
+      /(?:Try|Consider|You could):\s*\n([•\-\d.].*(?:\n[•\-\d.].*)*)/gi,
+      /Suggestions?:\s*\n([•\-\d.].*(?:\n[•\-\d.].*)*)/gi,
+    ];
+
+    for (const pattern of suggestionPatterns) {
+      const match = pattern.exec(content);
+      if (match) {
+        return match[1]
+          .split('\n')
+          .map(s => s.replace(/^[•\-\d.]\s*/, '').trim())
+          .filter(s => s.length > 0)
+          .slice(0, 3);
+      }
+    }
+
+    return undefined;
+  }
+
+  /**
+   * Extract code snippet from AI response
+   */
+  private extractCodeSnippet(content: string): string | undefined {
+    const codeMatch = /```(?:javascript|typescript|js|ts)?\n([\s\S]*?)```/i.exec(content);
+    return codeMatch ? codeMatch[1].trim() : undefined;
   }
 
   /**
@@ -33,7 +151,7 @@ class GenieService {
    */
   private getPersonalityPrompt(personality: GeniePersonality): string {
     const prompts = {
-      creative: `You are the Creative Mentor - a warm, imaginative AI assistant focused on game design and storytelling.
+      creative: `You are the Creative Mentor - a warm, imaginative guide focused on game design and storytelling.
 Your role is to:
 - Inspire creative game concepts and narratives
 - Suggest engaging gameplay mechanics
@@ -42,7 +160,7 @@ Your role is to:
 - Encourage innovative thinking and experimentation
 Use an enthusiastic, supportive tone and think like a creative director.`,
 
-      technical: `You are the Technical Expert - a precise, knowledgeable AI assistant focused on implementation and optimization.
+      technical: `You are the Technical Expert - a precise, knowledgeable guide focused on implementation and optimization.
 Your role is to:
 - Provide technical implementation guidance
 - Suggest performance optimizations
@@ -51,7 +169,7 @@ Your role is to:
 - Offer code examples and solutions
 Use a clear, professional tone and think like a senior software engineer.`,
 
-      marketing: `You are the Marketing Guru - a strategic, data-driven AI assistant focused on promotion and monetization.
+      marketing: `You are the Marketing Guru - a strategic, data-driven guide focused on promotion and monetization.
 Your role is to:
 - Develop marketing strategies and campaigns
 - Suggest monetization approaches
@@ -60,7 +178,7 @@ Your role is to:
 - Recommend social media and promotional content
 Use a persuasive, results-oriented tone and think like a growth marketer.`,
 
-      educator: `You are the Educator - a patient, supportive AI assistant focused on teaching and learning.
+      educator: `You are the Educator - a patient, supportive guide focused on teaching and learning.
 Your role is to:
 - Create educational content and experiences
 - Design learning paths and progressions
@@ -106,8 +224,8 @@ Use a caring, enthusiastic tone and think like a thoughtful friend who understan
   }
 
   /**
-   * Simulate AI responses based on personality
-   * In production, this would call a real AI API
+   * Generate responses based on personality
+   * In production, this would call a language model API
    */
   private async simulateResponse(
     message: string,

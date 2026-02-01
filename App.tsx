@@ -4,7 +4,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import AppNavigator from './src/navigation/AppNavigator';
 import { ThemeProvider } from './src/contexts/ThemeContext';
-import { GenieProvider } from './src/contexts/GenieContext';
+import { DodoProvider } from './src/contexts/DodoContext';
 
 const queryClient = new QueryClient();
 
@@ -13,11 +13,11 @@ export default function App() {
     <SafeAreaProvider>
       <QueryClientProvider client={queryClient}>
         <ThemeProvider>
-          <GenieProvider>
+          <DodoProvider>
             <NavigationContainer>
               <AppNavigator />
             </NavigationContainer>
-          </GenieProvider>
+          </DodoProvider>
         </ThemeProvider>
       </QueryClientProvider>
     </SafeAreaProvider>

@@ -1,5 +1,6 @@
 // Navigation types
 export type RootStackParamList = {
+  Onboarding: undefined;
   MainTabs: undefined;
   Home: undefined;
   Projects: undefined;
@@ -15,9 +16,11 @@ export type RootStackParamList = {
   VREditor: { projectId: string };
   Settings: undefined;
   Publish: { projectId: string };
-  GiftGameCreator: undefined;
-  GiftQuestionnaire: { questionnaireId?: string };
-  GiftPreview: { giftGameId: string };
+  // GiftForge routes
+  GiftForgeWizard: undefined;
+  GiftForgeGame: { gameId: string };
+  GiftForgeResult: { gameId: string };
+  // Agent routes
   AgentDashboard: undefined;
 };
 
@@ -111,7 +114,7 @@ export interface CameraSettings {
   fov?: number;
 }
 
-// Genie AI types
+// Genie (creative companion) types
 export type GeniePersonality = 'creative' | 'technical' | 'marketing' | 'educator' | 'gift-guide';
 
 export interface GenieMessage {

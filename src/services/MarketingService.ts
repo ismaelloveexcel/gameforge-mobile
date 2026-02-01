@@ -42,14 +42,14 @@ class MarketingService {
   }
 
   /**
-   * Generate promotional content using AI
+   * Generate promotional content dynamically
    */
   async generatePromotionalContent(
     projectName: string,
     gameType: string,
     features: string[]
   ): Promise<CampaignContent> {
-    // Simulate AI content generation
+    // Simulate content generation
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
     const titles = [

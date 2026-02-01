@@ -11,6 +11,37 @@
 
 ## 🌟 Features
 
+### 🎁 GiftForge – Personalized Gift Mini-Games
+
+Create unique, personalized mini-games as gifts for loved ones!
+
+**How it works:**
+1. **Start**: Tap "Create a Gift Game" on the home screen
+2. **Questionnaire**: Complete a guided multi-step wizard:
+   - Choose the **occasion** (birthday, anniversary, Valentine's, etc.)
+   - Describe the **recipient** (age, personality traits, interests)
+   - Set the **relationship & tone** (heartfelt, playful, romantic, etc.)
+   - Pick a **game type** (Runner, Story & Choices, Puzzle, Adventure, Educational)
+   - Select a **visual style** (Colorful Cartoon, Elegant Minimal, Retro Pixel, etc.)
+   - Add **personal touches** (recipient name, your name, heartfelt message)
+3. **Generate**: AI creates a personalized game with custom dialogue, mechanics, and intro/end screens
+4. **Share**: Get a unique playable web link to send to your recipient!
+
+**Available Game Templates:**
+- 🏃 **Runner Adventure** - Collect themed items in a side-scrolling adventure
+- 📖 **Story & Choices** - Interactive narrative with meaningful decisions
+- 🧩 **Puzzle & Challenges** - Brain teasers and fun challenges
+- 🗺️ **Mini Adventure Quest** - Exploration with quests and surprises
+- 🎓 **Educational & Playful** - Learn while having fun
+
+**Features:**
+- Progress bar and smooth Reanimated animations
+- Live preview pane during creation
+- AI-powered personalization via Grok API
+- Safety filters to auto-reject inappropriate content
+- Beautiful visual styles to match any taste
+- Unique shareable web links for each gift
+
 ### Core Capabilities
 - **🎨 15 Complete Game Templates** - Ready-to-use templates across all genres
 - **🤖 Genie AI Assistant** - 4 specialized AI personalities to guide you
