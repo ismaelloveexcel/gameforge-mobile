@@ -46,7 +46,6 @@ import {
 import { spacing, typography, radii } from '../design-tokens/theme';
 import { 
   featuredGamesService, 
-  FeaturedGame, 
   SeasonalDrop 
 } from '../services/FeaturedGamesService';
 
@@ -103,9 +102,8 @@ export default function HomeScreen() {
   // Use ref to track timeout for cleanup
   const dodoTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   
-  // Featured games from agents
+  // Featured games from agents (seasonal drops only - trending removed per FORGE-CHIEF mandate)
   const [seasonalDrop, setSeasonalDrop] = useState<SeasonalDrop | null>(null);
-  const [trendingGames, setTrendingGames] = useState<FeaturedGame[]>([]);
   const [isLoadingGames, setIsLoadingGames] = useState(true);
   
   // Dynamic colors from current seasonal theme
@@ -160,17 +158,13 @@ export default function HomeScreen() {
     return () => clearTimeout(timeout);
   }, [glow, heroFloat, pulseScale, shimmer]);
   
-  // Load featured games from agents
+  // Load seasonal drop only (trending removed per FORGE-CHIEF mandate)
   useEffect(() => {
     const loadGames = async () => {
       setIsLoadingGames(true);
       try {
-        const [drop, trending] = await Promise.all([
-          featuredGamesService.getCurrentSeasonalDrop(),
-          featuredGamesService.getTrendingGames(4),
-        ]);
+        const drop = await featuredGamesService.getCurrentSeasonalDrop();
         setSeasonalDrop(drop);
-        setTrendingGames(trending);
       } catch (e) {
         console.log('Failed to load featured games');
       } finally {
@@ -328,31 +322,41 @@ export default function HomeScreen() {
                   </View>
                 </View>
                 
-                {/* Hero Copy */}
+                {/* Hero Copy - Valentine's Romantic Edition */}
                 <Text style={[styles.heroTitle, { color: themeColors.text }]}>
-                  Create a Gift
+                  {seasonalTheme.id === 'eternal-romance' ? 'Make Their Heart Skip' : 'Create a Gift'}
                 </Text>
                 <Text style={[styles.heroSubtitle, { color: themeColors.text }]}>
-                  for Someone You Love
+                  {seasonalTheme.id === 'eternal-romance' 
+                    ? 'A Love Letter They Can Play' 
+                    : 'for Someone You Love'}
                 </Text>
                 
                 <Text style={[styles.heroDescription, { color: themeColors.muted }]}>
-                  A personalized mini-game they'll actually remember
+                  {seasonalTheme.id === 'eternal-romance'
+                    ? 'Turn your feelings into a personalized game — unforgettable and uniquely yours'
+                    : 'A personalized mini-game they\'ll actually remember'}
                 </Text>
                 
-                {/* CTA Button */}
+                {/* CTA Button - Romantic for Valentine's */}
                 <Animated.View style={[styles.ctaContainer, pulseStyle]}>
                   <View style={[styles.ctaButton, { backgroundColor: themeColors.accent }]}>
                     <Text style={[styles.ctaText, { color: themeColors.background }]}>
-                      Start Creating
+                      {seasonalTheme.id === 'eternal-romance' ? 'Begin Your Love Story' : 'Start Creating'}
                     </Text>
-                    <Icon name="arrow-right" size={20} color={themeColors.background} />
+                    <Icon 
+                      name={seasonalTheme.id === 'eternal-romance' ? 'heart' : 'arrow-right'} 
+                      size={20} 
+                      color={themeColors.background} 
+                    />
                   </View>
                 </Animated.View>
                 
-                {/* Trust signal */}
+                {/* Trust signal - warm and inviting */}
                 <Text style={[styles.trustSignal, { color: themeColors.muted }]}>
-                  Takes 60 seconds
+                  {seasonalTheme.id === 'eternal-romance' 
+                    ? 'Ready to share in under 60 seconds' 
+                    : 'Takes 60 seconds'}
                 </Text>
               </View>
             </TouchableOpacity>
@@ -431,60 +435,11 @@ export default function HomeScreen() {
             </Animated.View>
           )}
 
-          {/* Trending Games */}
-          {trendingGames.length > 0 && (
-            <Animated.View 
-              entering={FadeInUp.delay(650)}
-              style={styles.trendingSection}
-            >
-              <View style={styles.sectionHeader}>
-                <Text style={[styles.sectionTitle, { color: themeColors.text }]}>
-                  Trending This Week
-                </Text>
-                <TouchableOpacity>
-                  <Text style={[styles.seeAllText, { color: themeColors.accent }]}>
-                    See All
-                  </Text>
-                </TouchableOpacity>
-              </View>
-              
-              <ScrollView 
-                horizontal 
-                showsHorizontalScrollIndicator={false}
-                contentContainerStyle={styles.trendingContent}
-              >
-                {trendingGames.map((game) => (
-                  <TouchableOpacity
-                    key={game.id}
-                    style={[
-                      styles.trendingCard,
-                      { backgroundColor: themeColors.surface, borderColor: themeColors.muted + '20' }
-                    ]}
-                    onPress={() => navigation.navigate('GiftForgeWizard')}
-                  >
-                    <View style={[styles.trendingIcon, { backgroundColor: themeColors.accent + '15' }]}>
-                      <Icon 
-                        name={
-                          game.occasion === 'birthday' ? 'cake-variant' :
-                          game.occasion === 'graduation' ? 'school' :
-                          game.occasion === 'farewell' ? 'hand-wave' :
-                          'gamepad-variant'
-                        } 
-                        size={28} 
-                        color={themeColors.accent} 
-                      />
-                    </View>
-                    <Text style={[styles.trendingName, { color: themeColors.text }]} numberOfLines={1}>
-                      {game.name}
-                    </Text>
-                    <Text style={[styles.trendingStats, { color: themeColors.muted }]}>
-                      {game.stats.gifted} this week
-                    </Text>
-                  </TouchableOpacity>
-                ))}
-              </ScrollView>
-            </Animated.View>
-          )}
+          {/* 
+            FORGE-CHIEF: Removed "Trending This Week" section
+            Reason: Dashboard pattern creates noise and competing hierarchies
+            The hero CTA should be the ONLY focus for first-time users
+          */}
 
           {/* Divider with label */}
           <Animated.View 
@@ -978,52 +933,5 @@ const styles = StyleSheet.create({
     fontWeight: typography.weight.bold,
   },
   
-  // Trending Section
-  trendingSection: {
-    paddingTop: spacing.lg,
-  },
-  sectionHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: spacing.lg,
-    marginBottom: spacing.md,
-  },
-  sectionTitle: {
-    fontSize: typography.size.md,
-    fontWeight: typography.weight.bold,
-  },
-  seeAllText: {
-    fontSize: typography.size.sm,
-    fontWeight: typography.weight.medium,
-  },
-  trendingContent: {
-    paddingHorizontal: spacing.lg,
-    gap: spacing.sm,
-  },
-  trendingCard: {
-    width: 100,
-    borderRadius: radii.lg,
-    borderWidth: 1,
-    padding: spacing.md,
-    alignItems: 'center',
-  },
-  trendingIcon: {
-    width: 52,
-    height: 52,
-    borderRadius: 26,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: spacing.sm,
-  },
-  trendingName: {
-    fontSize: typography.size.xs,
-    fontWeight: typography.weight.semibold,
-    textAlign: 'center',
-    marginBottom: 2,
-  },
-  trendingStats: {
-    fontSize: 10,
-    textAlign: 'center',
-  },
+  // Trending Section removed per FORGE-CHIEF mandate (dashboard pattern = noise)
 });

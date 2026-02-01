@@ -75,13 +75,13 @@ const STEP_TITLES: Record<WizardStep, string> = {
 };
 
 const STEP_SUBTITLES: Record<WizardStep, string> = {
-  occasion: 'Every celebration deserves something special ✨',
-  recipient_profile: 'Help us personalize their experience 💫',
-  relationship_tone: 'Set the perfect mood for your gift 💝',
-  game_type: 'Pick the perfect adventure 🎮',
-  visual_style: 'Choose a beautiful theme 🎨',
-  personalization: 'Add your personal touch 💌',
-  confirmation: 'One final look before the magic happens 🪄',
+  occasion: 'Every celebration deserves something special',
+  recipient_profile: 'Help us personalize their experience',
+  relationship_tone: 'Set the perfect mood for your gift',
+  game_type: 'Pick the perfect adventure',
+  visual_style: 'Choose a beautiful theme',
+  personalization: 'Add your personal touch',
+  confirmation: 'One final look before the magic happens',
 };
 
 const STEP_ICONS: Record<WizardStep, string> = {
@@ -95,11 +95,11 @@ const STEP_ICONS: Record<WizardStep, string> = {
 };
 
 const ENCOURAGING_MESSAGES = [
-  '✨ This is going to be amazing!',
-  '🎉 They\'re going to love it!',
-  '💝 What a thoughtful gift!',
-  '🌟 You\'re creating something special!',
-  '🎁 Almost there - keep going!',
+  'This is going to be amazing',
+  'They\'re going to love it',
+  'What a thoughtful gift',
+  'You\'re creating something special',
+  'Almost there — keep going',
 ];
 
 export default function GiftForgeWizardScreen() {
@@ -518,7 +518,7 @@ export default function GiftForgeWizardScreen() {
             <Animated.View entering={FadeIn}>
               <View style={[styles.confirmationCard, { backgroundColor: theme.colors.card }]}>
                 <Text style={[styles.confirmationTitle, { color: theme.colors.primary }]}>
-                  🎁 Gift Summary
+                  Gift Summary
                 </Text>
                 
                 <View style={styles.confirmationRow}>
@@ -597,7 +597,7 @@ export default function GiftForgeWizardScreen() {
       >
         <Icon name="gift" size={64} color={theme.colors.primary} />
         <Text style={[styles.paywallTitle, { color: theme.colors.text }]}>
-          Create Your Gift! 🎁
+          Create Your Gift
         </Text>
         <Text style={[styles.paywallSubtitle, { color: theme.colors.text + '80' }]}>
           Generate a personalized mini-game for your special someone
@@ -658,7 +658,7 @@ export default function GiftForgeWizardScreen() {
           Crafting a personalized experience for {questionnaire.recipientName}
         </Text>
         <Text style={[styles.generatingHint, { color: theme.colors.primary }]}>
-          ✨ Adding a touch of magic...
+          Adding a touch of magic...
         </Text>
       </Animated.View>
     </View>
@@ -674,7 +674,7 @@ export default function GiftForgeWizardScreen() {
         style={[styles.previewPane, { backgroundColor: theme.colors.primary + '10' }]}
       >
         <Text style={[styles.previewTitle, { color: theme.colors.primary }]}>
-          📱 Preview
+          Preview
         </Text>
         <Text style={[styles.previewText, { color: theme.colors.text }]}>
           {questionnaire.recipientName 
