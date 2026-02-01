@@ -2,6 +2,33 @@
 
 Learn how to build and publish your GameForge games to iOS, Android, and Web platforms.
 
+## ⚡ Quick Start: One-Click Deployment
+
+**For non-technical users** - The easiest way to deploy!
+
+```bash
+# Mac/Linux
+./deploy.sh
+
+# Windows
+deploy.bat
+```
+
+This automated script handles:
+- ✅ Initial setup and configuration
+- ✅ Tool installation
+- ✅ Building your app
+- ✅ Deploying to production
+- ✅ All with minimal manual intervention
+
+📖 **[Complete One-Click Deployment Guide →](../DEPLOY.md)**
+
+---
+
+## Manual Deployment Options
+
+For users who prefer manual control or need custom configurations:
+
 ## Pre-Deployment Checklist
 
 - [ ] Game is fully tested on target devices

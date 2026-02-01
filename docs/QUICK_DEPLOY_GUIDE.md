@@ -2,7 +2,30 @@
 
 Get your GameForge Mobile app deployed in under 10 minutes!
 
-## 🌐 Deploy Web Version (Fastest)
+## ⚡ **ONE-CLICK DEPLOYMENT** (Recommended)
+
+**Easiest way** - Just run one command!
+
+```bash
+# Mac/Linux
+./deploy.sh
+
+# Windows
+deploy.bat
+```
+
+**What it does:**
+- ✅ Automatic setup on first run
+- ✅ Installs required tools
+- ✅ Guides you through choices
+- ✅ Remembers your preferences
+- ✅ Handles everything automatically
+
+📖 **[Complete One-Click Guide →](../DEPLOY.md)**
+
+---
+
+## 🌐 Manual Deploy: Web Version (If You Prefer)
 
 ### Using Vercel (Recommended)
 
