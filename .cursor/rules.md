@@ -31,7 +31,7 @@ First-session users see:
 Breaking this = Breaking the product.
 
 ### 3. UAE Market + Seasonal Relevance
-- Launch during **Ramadan 2026** (Feb 28 - Mar 30)
+- Launch during **Ramadan 2026** (~Feb 18 - ~Mar 19, subject to moon sighting)
 - Ramadan theme is **default out-of-the-box** (not opt-in)
 - Positioning: Premium, inclusive, calm (not religious)
 - Theme rotates **every 1-2 months** (Eid, Summer, National Day, etc.)
