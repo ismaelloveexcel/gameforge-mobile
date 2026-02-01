@@ -61,40 +61,82 @@ export function formatDuration(seconds: number): string {
 }
 
 /**
- * Debounce function
+ * Debounce function with cleanup support
+ * Returns both the debounced function and a cancel method
  */
 export function debounce<T extends (...args: any[]) => any>(
   func: T,
   wait: number
-): (...args: Parameters<T>) => void {
+): ((...args: Parameters<T>) => void) & { cancel: () => void } {
   let timeout: NodeJS.Timeout | null = null;
-  return (...args: Parameters<T>) => {
+  
+  const debounced = (...args: Parameters<T>) => {
     if (timeout) clearTimeout(timeout);
-    timeout = setTimeout(() => func(...args), wait);
+    timeout = setTimeout(() => {
+      timeout = null;
+      func(...args);
+    }, wait);
   };
+  
+  debounced.cancel = () => {
+    if (timeout) {
+      clearTimeout(timeout);
+      timeout = null;
+    }
+  };
+  
+  return debounced;
 }
 
 /**
- * Throttle function
+ * Throttle function with cleanup support
+ * Returns both the throttled function and a cancel method
  */
 export function throttle<T extends (...args: any[]) => any>(
   func: T,
   limit: number
-): (...args: Parameters<T>) => void {
-  let inThrottle: boolean;
-  return (...args: Parameters<T>) => {
+): ((...args: Parameters<T>) => void) & { cancel: () => void } {
+  let inThrottle: boolean = false;
+  let timeout: NodeJS.Timeout | null = null;
+  
+  const throttled = (...args: Parameters<T>) => {
     if (!inThrottle) {
       func(...args);
       inThrottle = true;
-      setTimeout(() => (inThrottle = false), limit);
+      timeout = setTimeout(() => {
+        inThrottle = false;
+        timeout = null;
+      }, limit);
     }
   };
+  
+  throttled.cancel = () => {
+    if (timeout) {
+      clearTimeout(timeout);
+      timeout = null;
+    }
+    inThrottle = false;
+  };
+  
+  return throttled;
 }
 
 /**
  * Deep clone an object
+ * Uses structuredClone when available (modern browsers/Node 17+),
+ * falls back to JSON method for simple objects
  */
 export function deepClone<T>(obj: T): T {
+  // Use structuredClone if available (faster and handles more types)
+  if (typeof structuredClone !== 'undefined') {
+    try {
+      return structuredClone(obj);
+    } catch (e) {
+      // Fall through to JSON method if structuredClone fails
+    }
+  }
+  
+  // Fallback to JSON method (works for simple objects without functions/symbols)
   return JSON.parse(JSON.stringify(obj));
 }
 

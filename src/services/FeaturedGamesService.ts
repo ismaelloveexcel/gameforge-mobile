@@ -75,6 +75,11 @@ class FeaturedGamesService {
   private cache: FeaturedGame[] = [];
   private lastFetch: Date | null = null;
   private cacheTimeout = 1000 * 60 * 30; // 30 minutes
+  
+  // Cached filtered results to avoid repeated filtering/sorting
+  private trendingCache: FeaturedGame[] | null = null;
+  private curatedCache: FeaturedGame[] | null = null;
+  private occasionCache: Map<string, FeaturedGame[]> = new Map();
 
   /**
    * Get all featured games (with caching)
@@ -112,6 +117,9 @@ class FeaturedGamesService {
     // Update cache
     this.cache = games;
     this.lastFetch = new Date();
+    
+    // Invalidate derived caches when base cache is updated
+    this.invalidateDerivedCaches();
     
     // Persist to AsyncStorage
     try {
@@ -253,30 +261,50 @@ class FeaturedGamesService {
    * Get trending games (most gifted this week)
    */
   async getTrendingGames(limit: number = 6): Promise<FeaturedGame[]> {
+    // Return cached results if available
+    if (this.trendingCache && this.trendingCache.length > 0) {
+      return this.trendingCache.slice(0, limit);
+    }
+    
     const all = await this.getFeaturedGames();
-    return all
+    this.trendingCache = all
       .filter(g => g.stats.trending || g.stats.gifted > 50)
-      .sort((a, b) => b.stats.gifted - a.stats.gifted)
-      .slice(0, limit);
+      .sort((a, b) => b.stats.gifted - a.stats.gifted);
+    
+    return this.trendingCache.slice(0, limit);
   }
 
   /**
    * Get curated/premium games
    */
   async getCuratedGames(limit: number = 4): Promise<FeaturedGame[]> {
+    // Return cached results if available
+    if (this.curatedCache && this.curatedCache.length > 0) {
+      return this.curatedCache.slice(0, limit);
+    }
+    
     const all = await this.getFeaturedGames();
-    return all
+    this.curatedCache = all
       .filter(g => g.tier === 'premium' || g.tier === 'exclusive')
-      .sort((a, b) => b.stats.avgRating - a.stats.avgRating)
-      .slice(0, limit);
+      .sort((a, b) => b.stats.avgRating - a.stats.avgRating);
+    
+    return this.curatedCache.slice(0, limit);
   }
 
   /**
    * Get games by occasion
    */
   async getGamesByOccasion(occasion: string): Promise<FeaturedGame[]> {
+    // Return cached results if available
+    if (this.occasionCache.has(occasion)) {
+      return this.occasionCache.get(occasion)!;
+    }
+    
     const all = await this.getFeaturedGames();
-    return all.filter(g => g.occasion === occasion);
+    const filtered = all.filter(g => g.occasion === occasion);
+    this.occasionCache.set(occasion, filtered);
+    
+    return filtered;
   }
 
   /**
@@ -448,7 +476,17 @@ class FeaturedGamesService {
   async clearCache(): Promise<void> {
     this.cache = [];
     this.lastFetch = null;
+    this.invalidateDerivedCaches();
     await AsyncStorage.removeItem(FEATURED_CACHE_KEY);
+  }
+  
+  /**
+   * Invalidate derived caches (trending, curated, occasion)
+   */
+  private invalidateDerivedCaches(): void {
+    this.trendingCache = null;
+    this.curatedCache = null;
+    this.occasionCache.clear();
   }
 }
 

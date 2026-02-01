@@ -103,7 +103,7 @@ const DODO_COLORS = {
   featherAccent: '#89A4B8',
 };
 
-export default function DodoCompanion({
+const DodoCompanion = React.memo(function DodoCompanion({
   mood = 'idle',
   size = 'medium',
   message,
@@ -845,7 +845,7 @@ export default function DodoCompanion({
       </Animated.View>
     </View>
   );
-}
+});
 
 const styles = StyleSheet.create({
   container: {
@@ -893,3 +893,5 @@ const styles = StyleSheet.create({
     marginTop: -1,
   },
 });
+
+export default DodoCompanion;
