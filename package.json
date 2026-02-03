@@ -6,7 +6,6 @@
   "scripts": {
     "start": "expo start",
     "review": "expo start --tunnel",
-    "quick-review": "expo start --tunnel",
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
