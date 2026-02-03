@@ -226,6 +226,13 @@ const safety = grokService.validateSafety(input);
 6. **Revenue Check** — Clear conversion path?
 7. **Verdict** — SHIP, CONDITIONAL, or BLOCK
 
+### Verdict Definitions
+| Verdict | Meaning | Action |
+|---------|---------|--------|
+| **SHIP** | Meets all criteria, no blockers | Deploy immediately |
+| **CONDITIONAL** | Minor issues, none blocking | Approve with follow-up tasks |
+| **BLOCK** | Fundamental problems | Must resolve before shipping |
+
 ---
 
 ## Verdict Format (Required)

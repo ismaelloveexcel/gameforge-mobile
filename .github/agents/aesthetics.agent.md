@@ -95,6 +95,11 @@ MONETIZATION → Clear path to conversion?
 VERDICT → SHIP / CONDITIONAL / BLOCK
 ```
 
+### Verdict Definitions
+- **SHIP**: Ready for production. Meets all criteria, no blockers.
+- **CONDITIONAL**: Has minor issues that don't block launch but need tracking. Approved with follow-up tasks.
+- **BLOCK**: Fundamental problems that prevent launch. Must be resolved before shipping.
+
 ---
 
 ## GiftForge-Specific Checks
