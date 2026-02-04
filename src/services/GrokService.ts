@@ -66,13 +66,10 @@ class GrokService {
     // Auto-detect preferred provider based on available keys
     if (this.openaiApiKey) {
       this.preferredProvider = 'openai';
-      console.log('✅ Using OpenAI API for game generation');
     } else if (this.apiKey) {
       this.preferredProvider = 'grok';
-      console.log('✅ Using Grok API for game generation');
-    } else {
-      console.log('⚠️ No AI API key configured - using fallback generation');
     }
+    // If no API key configured, fallback generation will be used
   }
 
   /**
@@ -105,7 +102,6 @@ class GrokService {
     this.openaiApiKey = key;
     if (key) {
       this.preferredProvider = 'openai';
-      console.log('✅ OpenAI API key configured');
     }
   }
 
@@ -272,7 +268,6 @@ Respond ONLY with the JSON, no additional text.`;
     }
 
     // No API available, return fallback
-    console.log('No AI API key configured, using fallback response');
     return 'AI response generated locally';
   }
 
@@ -369,7 +364,6 @@ Respond ONLY with the JSON, no additional text.`;
 
     // If no API key available, use fallback generation
     if (!this.apiKey && !this.openaiApiKey) {
-      console.log('No AI API key configured, using fallback generation');
       return this.generateFallbackGame(questionnaire);
     }
 
@@ -382,8 +376,6 @@ Respond ONLY with the JSON, no additional text.`;
       const apiUrl = useOpenAI ? this.openaiBaseUrl : this.baseUrl;
       const apiKey = useOpenAI ? this.openaiApiKey : this.apiKey;
       const model = useOpenAI ? this.openaiModel : this.model;
-      
-      console.log(`🎮 Generating game with ${useOpenAI ? 'OpenAI' : 'Grok'} API...`);
       
       const response = await fetch(apiUrl, {
         method: 'POST',

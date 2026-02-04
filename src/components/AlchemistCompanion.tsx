@@ -145,14 +145,20 @@ export const AlchemistCompanion: React.FC<AlchemistCompanionProps> = ({
     <View style={styles.container}>
       <Animated.View style={[styles.character, { height: config.container }, floatingStyle]}>
         {/* Alchemist */}
-        <Text style={{ fontSize: config.emoji }}>
+        <Text
+          style={{ fontSize: config.emoji }}
+          accessibilityLabel="Alchemist character"
+        >
           {ALCHEMIST_EMOJI}
         </Text>
         
         {/* Potion (only when brewing) */}
         {mood === 'brewing' && (
           <View style={styles.potionContainer}>
-            <Text style={{ fontSize: config.emoji * 0.5 }}>
+            <Text
+              style={{ fontSize: config.emoji * 0.5 }}
+              accessibilityLabel="Brewing potion"
+            >
               {POTION_EMOJI}
             </Text>
             

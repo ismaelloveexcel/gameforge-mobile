@@ -85,9 +85,7 @@ class OpenAIService {
     if (config.baseUrl) this.baseUrl = config.baseUrl;
     this.isConfigured = !!this.apiKey;
     
-    if (this.isConfigured) {
-      console.log('✅ OpenAI Service configured successfully');
-    }
+    // Service configured - ready for use
   }
 
   /**

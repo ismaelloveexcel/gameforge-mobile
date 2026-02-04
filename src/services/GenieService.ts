@@ -35,7 +35,6 @@ class GenieService {
       this.openaiApiKey = openaiKey;
       this.preferredProvider = 'openai';
       this.useRealAI = true;
-      console.log('✅ GenieService: OpenAI API configured');
     }
     
     if (grokKey) {
@@ -43,7 +42,6 @@ class GenieService {
       if (!openaiKey) {
         this.preferredProvider = 'grok';
         this.useRealAI = true;
-        console.log('✅ GenieService: Grok API configured');
       }
     }
   }
@@ -75,7 +73,6 @@ class GenieService {
     this.preferredProvider = 'openai';
     if (model) this.openaiModel = model;
     this.useRealAI = true;
-    console.log('✅ GenieService: OpenAI configured');
   }
 
   /**
