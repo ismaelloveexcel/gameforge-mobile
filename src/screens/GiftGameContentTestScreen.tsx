@@ -32,7 +32,6 @@ export default function GiftGameContentTestScreen() {
         gameType: "simple puzzle gift game",
         visualStyle: "Neon Cyberpunk",
         personalMessage: "You make every day brighter than the neon lights",
-        personality: "Creative Mentor"
       });
 
       console.log('GROK RESPONSE:', result);

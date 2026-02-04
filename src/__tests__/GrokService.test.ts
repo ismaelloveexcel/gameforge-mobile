@@ -15,7 +15,6 @@ describe('GrokService - generateGiftGameContent', () => {
       gameType: "simple puzzle gift game",
       visualStyle: "Neon Cyberpunk",
       personalMessage: "You make every day brighter than the neon lights",
-      personality: "Creative Mentor"
     });
 
     expect(result).toBeTruthy();

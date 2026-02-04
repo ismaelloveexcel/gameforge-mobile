@@ -745,7 +745,8 @@ export async function generateGiftGameContent(params: GiftGameContentParams): Pr
 
 // Helper parsing functions
 function mapOccasion(occasion: string): GiftOccasion {
-  const lower = occasion.toLowerCase().replace(/['\s-]/g, '_');
+  // Normalize: lowercase, remove apostrophes, replace spaces/hyphens with underscores
+  const normalized = occasion.toLowerCase().replace(/'/g, '').replace(/[\s-]+/g, '_');
   
   // Map common variations to valid GiftOccasion values
   const occasionMap: Record<string, GiftOccasion> = {
@@ -773,7 +774,7 @@ function mapOccasion(occasion: string): GiftOccasion {
     'fathers_day': 'fathers_day',
   };
   
-  return occasionMap[lower] || 'just_because';
+  return occasionMap[normalized] || 'just_because';
 }
 
 function parseAge(description: string): AgeRange {
@@ -932,13 +933,19 @@ function mapVisualStyle(visualStyle: string): GiftVisualStyle {
 
 function extractRecipientName(description: string): string {
   // Try to extract name from various patterns
-  // Pattern 1: "my [relationship], [Name]"
-  const nameMatch = description.match(/my\s+\w+,\s*([A-Z][\w'-]+)/);
+  // Pattern 1: "my [relationship], [Name]" - with comma
+  let nameMatch = description.match(/my\s+\w+,\s*([A-Z][\w'-]+)/);
   if (nameMatch) {
     return nameMatch[1];
   }
   
-  // Pattern 2: Look for any capitalized word that could be a name
+  // Pattern 2: "my [relationship] [Name]" - without comma
+  nameMatch = description.match(/my\s+\w+\s+([A-Z][\w'-]+)/);
+  if (nameMatch) {
+    return nameMatch[1];
+  }
+  
+  // Pattern 3: Look for any capitalized word that could be a name
   const capitalizedMatch = description.match(/\b([A-Z][\w'-]+)\b/);
   if (capitalizedMatch) {
     return capitalizedMatch[1];
