@@ -93,7 +93,7 @@ eas build --platform ios --profile production
 - [ ] `npm run lint` passes with 0 errors
 - [ ] `npm test` passes all tests
 - [ ] `npx tsc --noEmit` TypeScript clean
-- [ ] No console.log statements in production code
+- [ ] No `console.log` in production code (enforce via ESLint `no-console` rule in `.eslintrc.js`)
 - [ ] All imports resolve correctly
 
 ### Configuration
@@ -158,7 +158,12 @@ eas whoami
 
 ### Missing Secrets
 ```bash
-# Set via GitHub UI or CLI:
+# Prerequisites:
+# 1. Install GitHub CLI: https://cli.github.com/
+# 2. Authenticate: gh auth login
+# 3. Ensure you have admin or write access with secrets scope
+
+# Set via GitHub UI (Settings > Secrets) or CLI:
 gh secret set EXPO_TOKEN
 gh secret set VERCEL_TOKEN
 gh secret set GROK_API_KEY

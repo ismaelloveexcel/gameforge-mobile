@@ -182,11 +182,12 @@ template.status = 'testing';
 // Generate preview URL
 const previewUrl = grokService.generatePlayableUrl(template.id);
 
-// Schedule internal review
-scheduleReview(template.id, {
-  reviewer: 'content-team',
-  deadline: new Date(Date.now() + 24 * 60 * 60 * 1000),
-});
+// Schedule internal review (proposed future API)
+// TODO: Implement scheduleReview() when review workflow is built
+// scheduleReview(template.id, {
+//   reviewer: 'content-team',
+//   deadline: new Date(Date.now() + 24 * 60 * 60 * 1000),
+// });
 ```
 
 ---
@@ -208,11 +209,13 @@ scheduleReview(template.id, {
 template.status = 'live';
 template.launchedAt = new Date();
 
-// Update featured games
-await featuredGamesService.refresh();
+// Update featured games (proposed future API - requires backend integration)
+// TODO: Implement featuredGamesService.refresh() when Supabase is connected
+// await featuredGamesService.refresh();
 
-// Notify stakeholders
-notifySlack(`🚀 New template "${template.name}" is now live!`);
+// Notify stakeholders (proposed future API - requires Slack integration)
+// TODO: Implement notifySlack() via ExternalIntegrations service
+// notifySlack(`🚀 New template "${template.name}" is now live!`);
 ```
 
 ---
@@ -222,13 +225,15 @@ notifySlack(`🚀 New template "${template.name}" is now live!`);
 | Month | Occasion | Action |
 |-------|----------|--------|
 | Feb 1-14 | Valentine's | Launch romance templates |
-| Feb 18-Mar 19 | Ramadan | Activate night-mode templates |
-| Mar 20-25 | Eid al-Fitr | Celebration templates |
+| Feb 18-Mar 19* | Ramadan | Activate night-mode templates |
+| Mar 20-25* | Eid al-Fitr | Celebration templates |
 | May | Mother's Day | Family appreciation templates |
-| Jun | Eid al-Adha | Festival templates |
+| Jun* | Eid al-Adha | Festival templates |
 | Sep | Back to School | Educational templates |
 | Nov 30-Dec 3 | UAE National Day | Patriotic templates |
 | Dec | Year End | Farewell/New Year templates |
+
+> \* Islamic dates (Ramadan, Eid al-Fitr, Eid al-Adha) follow the lunar calendar. Dates shown are for 2026 and should be adjusted each year.
 
 ---
 
@@ -293,16 +298,18 @@ RECOMMENDATIONS:
 ## Quick Commands
 
 ```typescript
-// Run full pipeline
+// Run full pipeline (uses existing AgentOrchestrator method)
 import { agentOrchestrator } from 'src/services/AgentOrchestrator';
 const results = await agentOrchestrator.runCompletePipeline();
 
 // Check pipeline health
 import { templateLibrary } from 'src/services/TemplateLibrary';
-const stats = templateLibrary.getStatistics();
+const allTemplates = templateLibrary.getAllTemplates();
+// TODO: Derive statistics from allTemplates (proposed future getStatistics() helper)
 
-// Generate content for specific occasion
-const valentinesTemplates = await generateForOccasion('valentines', 3);
+// Generate content for specific occasion (proposed future API)
+// TODO: Implement generateForOccasion(occasion: string, count: number)
+// const valentinesTemplates = await generateForOccasion('valentines', 3);
 ```
 
 ---

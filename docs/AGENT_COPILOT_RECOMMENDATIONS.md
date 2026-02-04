@@ -62,19 +62,34 @@ jobs:
     steps:
       - name: Run with auto-recovery
         run: |
-          # First attempt
-          npm run agent:pipeline || {
-            # Auto-diagnose
-            echo "Diagnosing failure..."
-            npm run agent:diagnose > /tmp/diagnosis.json
+          MAX_RETRIES=3
+          RETRY_COUNT=0
+          
+          while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
+            # Attempt run
+            if npm run agent:pipeline; then
+              echo "Pipeline succeeded"
+              exit 0
+            fi
             
-            # Attempt auto-fix
-            npm run agent:autofix
+            RETRY_COUNT=$((RETRY_COUNT + 1))
+            echo "Attempt $RETRY_COUNT failed, diagnosing..."
             
-            # Retry
-            npm run agent:pipeline
-          }
+            # Auto-diagnose (proposed script - requires implementation)
+            # npm run agent:diagnose > /tmp/diagnosis.json
+            
+            # Attempt auto-fix (proposed script - requires implementation)
+            # npm run agent:autofix
+            
+            # Exponential backoff
+            sleep $((30 * RETRY_COUNT))
+          done
+          
+          echo "Pipeline failed after $MAX_RETRIES attempts"
+          exit 1
 ```
+
+> **Note:** The `agent:pipeline`, `agent:diagnose`, and `agent:autofix` scripts are proposed future implementations that would need to be added to `package.json`.
 
 **Impact:** Reduces manual intervention for common failures.
 
@@ -116,7 +131,7 @@ class AgentMemory {
 **Recommendation:** Add scheduled health checks.
 
 ```yaml
-# .github/workflows/proactive-checks.yml
+# .github/workflows/proactive-checks.yml (proposed)
 name: Proactive Health Checks
 
 on:
@@ -130,15 +145,23 @@ jobs:
         run: npm audit --json > /tmp/audit.json
         
       - name: Check for stale templates
-        run: npm run check:stale-templates
+        # Proposed script - requires implementation in package.json
+        # run: npm run check:stale-templates
+        run: echo "TODO: Implement check:stale-templates script"
         
       - name: Check seasonal alignment
-        run: npm run check:seasonal-themes
+        # Proposed script - requires implementation in package.json
+        # run: npm run check:seasonal-themes
+        run: echo "TODO: Implement check:seasonal-themes script"
         
       - name: Report issues
         if: failure()
-        uses: ./.github/actions/create-issue
+        # Proposed action - requires implementation
+        # uses: ./.github/actions/create-issue
+        run: echo "TODO: Implement create-issue action"
 ```
+
+> **Note:** The `check:stale-templates` and `check:seasonal-themes` scripts would need to be added to `package.json` along with a `.github/actions/create-issue` action.
 
 **Impact:** Issues discovered before they affect users.
 
@@ -273,7 +296,7 @@ const tier = defaults.getRecommendedTier(8.5); // "premium"
 **Recommendation:** Add batch processing capability.
 
 ```typescript
-// src/services/AgentBatch.ts
+// src/services/AgentBatch.ts (proposed)
 interface BatchOperation {
   operationType: 'create' | 'update' | 'validate' | 'deploy';
   items: any[];
@@ -284,11 +307,27 @@ interface BatchOperation {
 class AgentBatch {
   async execute(operation: BatchOperation): Promise<BatchResult> {
     const chunks = this.chunkArray(operation.items, operation.parallelism);
+    const total = operation.items.length;
+    let processed = 0;
     
     for (const chunk of chunks) {
       await Promise.all(chunk.map(item => this.processItem(item)));
+      processed += chunk.length;
       operation.onProgress(processed, total);
     }
+  }
+  
+  private chunkArray<T>(array: T[], size: number): T[][] {
+    const chunks: T[][] = [];
+    for (let i = 0; i < array.length; i += size) {
+      chunks.push(array.slice(i, i + size));
+    }
+    return chunks;
+  }
+  
+  private async processItem(item: any): Promise<any> {
+    // Implementation depends on operation type
+    throw new Error('Not implemented');
   }
 }
 ```
@@ -357,13 +396,15 @@ class ExternalIntegrations {
 
 ## Success Metrics
 
-| Metric | Current | Target | How to Measure |
-|--------|---------|--------|----------------|
-| Manual interventions/week | ~20 | <5 | GitHub issue count |
-| Agent task completion rate | 70% | 95% | Workflow success rate |
-| Time to deploy | 30 min | 5 min | Deploy workflow duration |
-| Content pipeline throughput | 2/week | 10/week | Templates created |
-| UX issues caught pre-release | 40% | 90% | FORGE-CHIEF reviews |
+| Metric | Current (est.) | Target | How to Measure |
+|--------|----------------|--------|----------------|
+| Manual interventions/week | ~20 | ≤5 | Count GitHub issues labeled `agent-manual-intervention` |
+| Agent task completion rate | ~70% | 95% | Percentage of workflows completing without manual retry |
+| Time to deploy | ~30 min | 5 min | Median duration of deploy workflow runs |
+| Content pipeline throughput | ~2/week | 10/week | Templates created via content-pipeline workflows |
+| UX issues caught pre-release | ~40% | 90% | Issues identified during FORGE-CHIEF review |
+
+> **Note:** Current values are estimated baselines. Replace with measured data once tracking is implemented.
 
 ---
 
