@@ -31,6 +31,7 @@ import {
   Tone,
   GiftGameType,
   GiftVisualStyle,
+  GiftOccasion,
 } from '../types/giftforge';
 
 // Unsafe content patterns to reject
@@ -706,7 +707,7 @@ export async function generateGiftGameContent(params: GiftGameContentParams): Pr
   // Parse the simplified parameters into a full questionnaire
   const questionnaire: GiftForgeQuestionnaire = {
     // Map occasion string to GiftOccasion type
-    occasion: params.occasion.toLowerCase().replace(/['\s]/g, '_') as any,
+    occasion: mapOccasion(params.occasion),
     
     // Parse recipient description for age/personality/interests
     // For simplicity, we'll extract age from common patterns and use defaults
@@ -743,6 +744,38 @@ export async function generateGiftGameContent(params: GiftGameContentParams): Pr
 }
 
 // Helper parsing functions
+function mapOccasion(occasion: string): GiftOccasion {
+  const lower = occasion.toLowerCase().replace(/['\s-]/g, '_');
+  
+  // Map common variations to valid GiftOccasion values
+  const occasionMap: Record<string, GiftOccasion> = {
+    'birthday': 'birthday',
+    'anniversary': 'anniversary',
+    'valentines': 'valentines',
+    'valentines_day': 'valentines',
+    'valentine': 'valentines',
+    'christmas': 'christmas',
+    'xmas': 'christmas',
+    'graduation': 'graduation',
+    'thank_you': 'thank_you',
+    'thanks': 'thank_you',
+    'get_well': 'get_well',
+    'get_well_soon': 'get_well',
+    'congratulations': 'congratulations',
+    'congrats': 'congratulations',
+    'just_because': 'just_because',
+    'farewell': 'farewell',
+    'goodbye': 'farewell',
+    'eid_fitr': 'eid_fitr',
+    'eid_adha': 'eid_adha',
+    'uae_national_day': 'uae_national_day',
+    'mothers_day': 'mothers_day',
+    'fathers_day': 'fathers_day',
+  };
+  
+  return occasionMap[lower] || 'just_because';
+}
+
 function parseAge(description: string): AgeRange {
   const ageMatch = description.match(/(\d+)\s*years?\s*old/i);
   if (ageMatch) {
@@ -885,7 +918,10 @@ function mapGameType(gameType: string): GiftGameType {
 function mapVisualStyle(visualStyle: string): GiftVisualStyle {
   const lower = visualStyle.toLowerCase();
   
-  if (lower.includes('neon') || lower.includes('cyberpunk') || lower.includes('colorful') || lower.includes('cartoon')) return 'colorful_cartoon';
+  // Map to available visual styles
+  // Note: 'Neon Cyberpunk' maps to 'colorful_cartoon' as it's the closest available style
+  // with vibrant, energetic colors. Consider adding more specific styles in the future.
+  if (lower.includes('colorful') || lower.includes('cartoon') || lower.includes('neon') || lower.includes('cyberpunk')) return 'colorful_cartoon';
   if (lower.includes('minimal') || lower.includes('modern') || lower.includes('elegant')) return 'elegant_minimal';
   if (lower.includes('retro') || lower.includes('pixel') || lower.includes('vintage')) return 'retro_pixel';
   if (lower.includes('cozy') || lower.includes('handdrawn') || lower.includes('hand drawn')) return 'cozy_handdrawn';
@@ -895,10 +931,17 @@ function mapVisualStyle(visualStyle: string): GiftVisualStyle {
 }
 
 function extractRecipientName(description: string): string {
-  // Try to extract "my [relationship], [name]"
-  const nameMatch = description.match(/my\s+\w+,\s*([A-Z][a-z]+)/);
+  // Try to extract name from various patterns
+  // Pattern 1: "my [relationship], [Name]"
+  const nameMatch = description.match(/my\s+\w+,\s*([A-Z][\w'-]+)/);
   if (nameMatch) {
     return nameMatch[1];
+  }
+  
+  // Pattern 2: Look for any capitalized word that could be a name
+  const capitalizedMatch = description.match(/\b([A-Z][\w'-]+)\b/);
+  if (capitalizedMatch) {
+    return capitalizedMatch[1];
   }
   
   return 'Friend'; // default

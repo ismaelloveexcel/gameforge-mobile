@@ -3,6 +3,9 @@
  */
 import { generateGiftGameContent } from '../services/GrokService';
 
+// Timeout constant for API calls
+const API_TIMEOUT = 10000; // 10 seconds
+
 describe('GrokService - generateGiftGameContent', () => {
   it('should generate gift game content with simplified parameters', async () => {
     const result = await generateGiftGameContent({
@@ -25,7 +28,7 @@ describe('GrokService - generateGiftGameContent', () => {
     expect(gameData).toHaveProperty('introScreen');
     expect(gameData).toHaveProperty('endScreen');
     expect(gameData).toHaveProperty('gameContent');
-  }, 10000); // 10 second timeout for API call
+  }, API_TIMEOUT);
 
   it('should parse age from recipient description', async () => {
     const result = await generateGiftGameContent({
@@ -41,7 +44,7 @@ describe('GrokService - generateGiftGameContent', () => {
     const gameData = JSON.parse(result);
     // Should create a game suitable for teen age group
     expect(gameData).toHaveProperty('title');
-  }, 10000);
+  }, API_TIMEOUT);
 
   it('should extract interests from description', async () => {
     const result = await generateGiftGameContent({
@@ -56,7 +59,7 @@ describe('GrokService - generateGiftGameContent', () => {
     expect(result).toBeTruthy();
     const gameData = JSON.parse(result);
     expect(gameData).toHaveProperty('gameContent');
-  }, 10000);
+  }, API_TIMEOUT);
 
   it('should handle different game types', async () => {
     const result = await generateGiftGameContent({
@@ -71,7 +74,7 @@ describe('GrokService - generateGiftGameContent', () => {
     expect(result).toBeTruthy();
     const gameData = JSON.parse(result);
     expect(gameData.gameContent).toHaveProperty('type');
-  }, 10000);
+  }, API_TIMEOUT);
 
   it('should include personal message in end screen', async () => {
     const personalMessage = "You make every day brighter than the neon lights";
@@ -89,7 +92,7 @@ describe('GrokService - generateGiftGameContent', () => {
     expect(gameData.endScreen).toHaveProperty('personalMessage');
     // Personal message should be in the end screen
     expect(gameData.endScreen.personalMessage).toBeTruthy();
-  }, 10000);
+  }, API_TIMEOUT);
 
   it('should handle errors gracefully', async () => {
     // Test with minimal data
@@ -111,5 +114,5 @@ describe('GrokService - generateGiftGameContent', () => {
       // If it throws, it should be a meaningful error
       expect(error).toHaveProperty('message');
     }
-  }, 10000);
+  }, API_TIMEOUT);
 });
