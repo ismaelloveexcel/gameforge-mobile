@@ -1,6 +1,8 @@
 /**
- * GrokService - Personalized game generation using Grok API (x.ai)
+ * GrokService - Personalized game generation using Grok API (x.ai) or OpenAI
  * OpenAI-compatible API interface for generating personalized gift games
+ * 
+ * Supports both Grok (x.ai) and OpenAI APIs with automatic fallback
  */
 
 import {
@@ -44,15 +46,49 @@ const UNSAFE_NAMES = [
   'osama', 'bin laden', 'isis', 'al qaeda',
 ];
 
+// API Provider type
+type APIProvider = 'grok' | 'openai';
+
 class GrokService {
   private apiKey: string;
+  private openaiApiKey: string;
   private baseUrl: string = 'https://api.x.ai/v1/chat/completions';
+  private openaiBaseUrl: string = 'https://api.openai.com/v1/chat/completions';
   private model: string = 'grok-beta';
+  private openaiModel: string = 'gpt-4o-mini';
+  private preferredProvider: APIProvider = 'openai'; // Default to OpenAI for reliability
 
   constructor() {
-    // API key would be loaded from environment in production
-    // For demo, we use a placeholder that can be overridden
-    this.apiKey = process.env.GROK_API_KEY || '';
+    // Load API keys from environment
+    this.apiKey = process.env.GROK_API_KEY || process.env.EXPO_PUBLIC_GROK_API_KEY || '';
+    this.openaiApiKey = process.env.OPENAI_API_KEY || process.env.EXPO_PUBLIC_OPENAI_API_KEY || '';
+    
+    // Auto-detect preferred provider based on available keys
+    if (this.openaiApiKey) {
+      this.preferredProvider = 'openai';
+      console.log('✅ Using OpenAI API for game generation');
+    } else if (this.apiKey) {
+      this.preferredProvider = 'grok';
+      console.log('✅ Using Grok API for game generation');
+    } else {
+      console.log('⚠️ No AI API key configured - using fallback generation');
+    }
+  }
+
+  /**
+   * Check if any AI API is available
+   */
+  isAIEnabled(): boolean {
+    return !!(this.apiKey || this.openaiApiKey);
+  }
+
+  /**
+   * Get the active provider name
+   */
+  getActiveProvider(): string {
+    if (this.openaiApiKey && this.preferredProvider === 'openai') return 'OpenAI';
+    if (this.apiKey) return 'Grok';
+    return 'Fallback (No API)';
   }
 
   /**
@@ -60,6 +96,24 @@ class GrokService {
    */
   setApiKey(key: string): void {
     this.apiKey = key;
+  }
+
+  /**
+   * Set OpenAI API key
+   */
+  setOpenAIKey(key: string): void {
+    this.openaiApiKey = key;
+    if (key) {
+      this.preferredProvider = 'openai';
+      console.log('✅ OpenAI API key configured');
+    }
+  }
+
+  /**
+   * Set preferred AI provider
+   */
+  setPreferredProvider(provider: APIProvider): void {
+    this.preferredProvider = provider;
   }
 
   /**
@@ -195,56 +249,113 @@ Respond ONLY with the JSON, no additional text.`;
   }
 
   /**
-   * Generic chat method for AI interactions
+   * Generic chat method for AI interactions - supports both OpenAI and Grok
    */
   async chat(prompt: string): Promise<string> {
-    // If no API key, return a simple response
-    if (!this.apiKey) {
-      console.log('No Grok API key configured, using fallback response');
-      return 'AI response generated locally';
-    }
-
-    try {
-      const response = await fetch(this.baseUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${this.apiKey}`,
-        },
-        body: JSON.stringify({
-          model: this.model,
-          messages: [
-            {
-              role: 'system',
-              content: 'You are a helpful and creative AI assistant.',
-            },
-            {
-              role: 'user',
-              content: prompt,
-            },
-          ],
-          temperature: 0.8,
-          max_tokens: 1000,
-        }),
-      });
-
-      if (!response.ok) {
-        console.error('Grok API error:', await response.text());
-        throw new Error('API request failed');
+    // Try OpenAI first if available and preferred
+    if (this.openaiApiKey && this.preferredProvider === 'openai') {
+      try {
+        return await this.chatWithOpenAI(prompt);
+      } catch (error) {
+        console.warn('OpenAI API failed, trying fallback:', error);
+        // Fall through to try Grok
       }
-
-      const data = await response.json();
-      const content = data.choices?.[0]?.message?.content;
-      
-      return content || 'No response generated';
-    } catch (error) {
-      console.error('Chat error:', error);
-      throw error;
     }
+
+    // Try Grok if available
+    if (this.apiKey) {
+      try {
+        return await this.chatWithGrok(prompt);
+      } catch (error) {
+        console.warn('Grok API failed:', error);
+      }
+    }
+
+    // No API available, return fallback
+    console.log('No AI API key configured, using fallback response');
+    return 'AI response generated locally';
   }
 
   /**
-   * Generate a gift game using Grok API
+   * Chat with OpenAI API
+   */
+  private async chatWithOpenAI(prompt: string): Promise<string> {
+    const response = await fetch(this.openaiBaseUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${this.openaiApiKey}`,
+      },
+      body: JSON.stringify({
+        model: this.openaiModel,
+        messages: [
+          {
+            role: 'system',
+            content: 'You are a helpful and creative AI assistant specializing in personalized gift experiences.',
+          },
+          {
+            role: 'user',
+            content: prompt,
+          },
+        ],
+        temperature: 0.8,
+        max_tokens: 1500,
+      }),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('OpenAI API error:', errorText);
+      throw new Error(`OpenAI API error: ${response.status}`);
+    }
+
+    const data = await response.json();
+    const content = data.choices?.[0]?.message?.content;
+    
+    if (!content) throw new Error('No response from OpenAI');
+    return content;
+  }
+
+  /**
+   * Chat with Grok API
+   */
+  private async chatWithGrok(prompt: string): Promise<string> {
+    const response = await fetch(this.baseUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${this.apiKey}`,
+      },
+      body: JSON.stringify({
+        model: this.model,
+        messages: [
+          {
+            role: 'system',
+            content: 'You are a helpful and creative AI assistant.',
+          },
+          {
+            role: 'user',
+            content: prompt,
+          },
+        ],
+        temperature: 0.8,
+        max_tokens: 1000,
+      }),
+    });
+
+    if (!response.ok) {
+      console.error('Grok API error:', await response.text());
+      throw new Error('Grok API request failed');
+    }
+
+    const data = await response.json();
+    const content = data.choices?.[0]?.message?.content;
+    
+    return content || 'No response generated';
+  }
+
+  /**
+   * Generate a gift game using AI (OpenAI or Grok)
    */
   async generateGame(questionnaire: GiftForgeQuestionnaire): Promise<GrokGameResponse> {
     // Safety check first
@@ -256,41 +367,45 @@ Respond ONLY with the JSON, no additional text.`;
       };
     }
 
-    // If no API key, use fallback generation
-    if (!this.apiKey) {
-      console.log('No Grok API key configured, using fallback generation');
+    // If no API key available, use fallback generation
+    if (!this.apiKey && !this.openaiApiKey) {
+      console.log('No AI API key configured, using fallback generation');
       return this.generateFallbackGame(questionnaire);
     }
 
     try {
       const prompt = this.buildGamePrompt(questionnaire);
+      const systemPrompt = 'You are a creative game designer specializing in personalized gift experiences. Generate heartfelt, age-appropriate, and engaging mini-game content. Always respond with valid JSON only.';
       
-      const response = await fetch(this.baseUrl, {
+      // Determine which API to use
+      const useOpenAI = this.openaiApiKey && this.preferredProvider === 'openai';
+      const apiUrl = useOpenAI ? this.openaiBaseUrl : this.baseUrl;
+      const apiKey = useOpenAI ? this.openaiApiKey : this.apiKey;
+      const model = useOpenAI ? this.openaiModel : this.model;
+      
+      console.log(`🎮 Generating game with ${useOpenAI ? 'OpenAI' : 'Grok'} API...`);
+      
+      const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${this.apiKey}`,
+          'Authorization': `Bearer ${apiKey}`,
         },
         body: JSON.stringify({
-          model: this.model,
+          model,
           messages: [
-            {
-              role: 'system',
-              content: 'You are a creative game designer specializing in personalized gift experiences. Generate heartfelt, age-appropriate, and engaging mini-game content. Always respond with valid JSON only.',
-            },
-            {
-              role: 'user',
-              content: prompt,
-            },
+            { role: 'system', content: systemPrompt },
+            { role: 'user', content: prompt },
           ],
           temperature: 0.8,
-          max_tokens: 2000,
+          max_tokens: 2500,
+          ...(useOpenAI && { response_format: { type: 'json_object' } }),
         }),
       });
 
       if (!response.ok) {
         const errorText = await response.text();
-        console.error('Grok API error:', errorText);
+        console.error(`${useOpenAI ? 'OpenAI' : 'Grok'} API error:`, errorText);
         // Fall back to local generation
         return this.generateFallbackGame(questionnaire);
       }

@@ -184,6 +184,129 @@ const watercolorStyle: ArtStyleConfig = {
   ],
 };
 
+// Style 6: Valentine Iridescent
+const valentineIridescentStyle: ArtStyleConfig = {
+  id: 'valentine-iridescent',
+  name: 'Valentine Iridescent',
+  description: 'Romantic premium style with iridescent shimmer and heart sparkles',
+  colors: {
+    primary: '#C41E3A',
+    secondary: '#FFB6C1',
+    accent: '#FAEBD7',
+    background: '#FFF5F7',
+    text: '#4A1C2B',
+    custom: ['#FF69B4', '#FFB6C1', '#FFC0CB', '#FAEBD7', '#E6B8C3'],
+  },
+  filters: [
+    {
+      type: 'iridescent',
+      parameters: { intensity: 0.3, shimmer: true },
+    },
+    {
+      type: 'particles',
+      parameters: { type: 'hearts', density: 0.4 },
+    },
+    {
+      type: 'bloom',
+      parameters: { strength: 0.8, threshold: 0.7 },
+    },
+  ],
+  shaders: [
+    {
+      name: 'heartSparkle',
+      vertexShader: `
+        attribute vec3 position;
+        attribute vec2 uv;
+        uniform mat4 worldViewProjection;
+        varying vec2 vUV;
+        void main() {
+          gl_Position = worldViewProjection * vec4(position, 1.0);
+          vUV = uv;
+        }
+      `,
+      fragmentShader: `
+        precision highp float;
+        varying vec2 vUV;
+        uniform float time;
+        uniform vec3 tintColor;
+        void main() {
+          vec2 center = vec2(0.5, 0.5);
+          float dist = distance(vUV, center);
+          float sparkle = sin(time * 2.0 + dist * 10.0) * 0.5 + 0.5;
+          vec3 color = tintColor * sparkle;
+          gl_FragColor = vec4(color, 0.6);
+        }
+      `,
+      uniforms: {
+        time: 0.0,
+        tintColor: [0.77, 0.07, 0.23], // Deep rose
+      },
+    },
+  ],
+};
+
+// Style 7: Ramadan Lantern Glow
+const ramadanLanternGlowStyle: ArtStyleConfig = {
+  id: 'ramadan-lantern-glow',
+  name: 'Ramadan Lantern Glow',
+  description: 'Spiritual warm style with floating lanterns and gentle sparkles',
+  colors: {
+    primary: '#D4AF37',
+    secondary: '#F4A460',
+    accent: '#FFE5B4',
+    background: '#0D1B2A',
+    text: '#F5F5DC',
+    custom: ['#D4AF37', '#F4A460', '#DEB887', '#FFE5B4', '#FFF8DC'],
+  },
+  filters: [
+    {
+      type: 'glow',
+      parameters: { color: '#D4AF37', intensity: 0.5, radius: 20 },
+    },
+    {
+      type: 'particles',
+      parameters: { type: 'lanterns', density: 0.3 },
+    },
+    {
+      type: 'ambientLight',
+      parameters: { color: '#F4A460', intensity: 0.4 },
+    },
+  ],
+  shaders: [
+    {
+      name: 'lanternGlow',
+      vertexShader: `
+        attribute vec3 position;
+        attribute vec2 uv;
+        uniform mat4 worldViewProjection;
+        varying vec2 vUV;
+        void main() {
+          gl_Position = worldViewProjection * vec4(position, 1.0);
+          vUV = uv;
+        }
+      `,
+      fragmentShader: `
+        precision highp float;
+        varying vec2 vUV;
+        uniform float time;
+        uniform vec3 glowColor;
+        void main() {
+          vec2 center = vec2(0.5, 0.5);
+          float dist = distance(vUV, center);
+          float pulse = sin(time * 1.5) * 0.3 + 0.7;
+          float glow = (1.0 - dist) * pulse;
+          vec3 color = glowColor * glow;
+          gl_FragColor = vec4(color, glow * 0.8);
+        }
+      `,
+      uniforms: {
+        time: 0.0,
+        glowColor: [0.83, 0.69, 0.22], // Warm gold
+      },
+    },
+  ],
+};
+
 /**
  * Art Style Service
  * Manages art styles and their application
@@ -195,7 +318,11 @@ class ArtStyleService {
     handDrawnStyle,
     neonCyberpunkStyle,
     watercolorStyle,
+    valentineIridescentStyle,
+    ramadanLanternGlowStyle,
   ];
+
+  private activeStyle: ArtStyle | null = null;
 
   getAllStyles(): ArtStyleConfig[] {
     return this.styles;
@@ -208,6 +335,37 @@ class ArtStyleService {
   getStyleColors(id: ArtStyle): ArtStyleConfig['colors'] | undefined {
     const style = this.getStyleById(id);
     return style?.colors;
+  }
+
+  /**
+   * Set the active style (for seasonal switching)
+   */
+  setActiveStyle(styleId: ArtStyle): void {
+    this.activeStyle = styleId;
+  }
+
+  /**
+   * Get the currently active style
+   */
+  getActiveStyle(): ArtStyle | null {
+    return this.activeStyle;
+  }
+
+  /**
+   * Get seasonal style based on occasion
+   */
+  getSeasonalStyle(occasion: string): ArtStyle | null {
+    const occasionLower = occasion.toLowerCase();
+    
+    if (occasionLower.includes('valentine') || occasionLower.includes('romantic')) {
+      return 'valentine-iridescent';
+    }
+    
+    if (occasionLower.includes('ramadan') || occasionLower.includes('eid')) {
+      return 'ramadan-lantern-glow';
+    }
+    
+    return null;
   }
 
   /**
@@ -319,6 +477,18 @@ class ArtStyleService {
         'Soft gradient backgrounds',
         'Gentle sound effects',
         'Classical music',
+      ],
+      'valentine-iridescent': [
+        'Heart-shaped particles',
+        'Iridescent textures',
+        'Romantic music themes',
+        'Soft chime sound effects',
+      ],
+      'ramadan-lantern-glow': [
+        'Lantern models and sprites',
+        'Golden gradient textures',
+        'Traditional instruments',
+        'Gentle ambient sounds',
       ],
     };
 

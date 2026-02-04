@@ -6,27 +6,92 @@ interface GenieResponse {
   codeSnippet?: string;
 }
 
+// API Provider type
+type APIProvider = 'grok' | 'openai';
+
 class GenieService {
-  private apiKey: string = ''; // Set via configuration
+  private apiKey: string = ''; // Grok API key
+  private openaiApiKey: string = ''; // OpenAI API key
   private apiEndpoint: string = 'https://api.x.ai/v1/chat/completions'; // Grok API
+  private openaiEndpoint: string = 'https://api.openai.com/v1/chat/completions'; // OpenAI API
   private model: string = 'grok-beta';
+  private openaiModel: string = 'gpt-4o-mini';
   private useRealAI: boolean = false;
+  private preferredProvider: APIProvider = 'openai';
+
+  constructor() {
+    // Try to load API keys from environment
+    this.loadFromEnvironment();
+  }
 
   /**
-   * Configure the AI service
+   * Load API keys from environment variables
+   */
+  private loadFromEnvironment(): void {
+    const grokKey = process.env.GROK_API_KEY || process.env.EXPO_PUBLIC_GROK_API_KEY || '';
+    const openaiKey = process.env.OPENAI_API_KEY || process.env.EXPO_PUBLIC_OPENAI_API_KEY || '';
+    
+    if (openaiKey) {
+      this.openaiApiKey = openaiKey;
+      this.preferredProvider = 'openai';
+      this.useRealAI = true;
+      console.log('✅ GenieService: OpenAI API configured');
+    }
+    
+    if (grokKey) {
+      this.apiKey = grokKey;
+      if (!openaiKey) {
+        this.preferredProvider = 'grok';
+        this.useRealAI = true;
+        console.log('✅ GenieService: Grok API configured');
+      }
+    }
+  }
+
+  /**
+   * Configure the AI service (legacy method - supports both APIs)
    */
   configure(apiKey: string, endpoint?: string, model?: string): void {
-    this.apiKey = apiKey;
-    if (endpoint) this.apiEndpoint = endpoint;
-    if (model) this.model = model;
+    // Detect if it's OpenAI key (starts with 'sk-')
+    if (apiKey.startsWith('sk-')) {
+      this.openaiApiKey = apiKey;
+      this.preferredProvider = 'openai';
+      if (endpoint) this.openaiEndpoint = endpoint;
+      if (model) this.openaiModel = model;
+    } else {
+      this.apiKey = apiKey;
+      this.preferredProvider = 'grok';
+      if (endpoint) this.apiEndpoint = endpoint;
+      if (model) this.model = model;
+    }
     this.useRealAI = !!apiKey;
+  }
+
+  /**
+   * Configure OpenAI specifically
+   */
+  configureOpenAI(apiKey: string, model?: string): void {
+    this.openaiApiKey = apiKey;
+    this.preferredProvider = 'openai';
+    if (model) this.openaiModel = model;
+    this.useRealAI = true;
+    console.log('✅ GenieService: OpenAI configured');
+  }
+
+  /**
+   * Get active AI provider name
+   */
+  getActiveProvider(): string {
+    if (this.openaiApiKey && this.preferredProvider === 'openai') return 'OpenAI';
+    if (this.apiKey) return 'Grok';
+    return 'Simulation (No API)';
   }
 
   /**
    * Check if real AI is enabled
    */
   isRealAIEnabled(): boolean {
-    return this.useRealAI && !!this.apiKey;
+    return this.useRealAI && !!(this.apiKey || this.openaiApiKey);
   }
 
   /**
@@ -58,7 +123,7 @@ class GenieService {
   }
 
   /**
-   * Process message with real AI API
+   * Process message with real AI API (supports both OpenAI and Grok)
    */
   private async processWithRealAI(
     message: string,
@@ -69,14 +134,20 @@ class GenieService {
       ? `Context: ${contextString}\n\nUser: ${message}`
       : message;
 
-    const response = await fetch(this.apiEndpoint, {
+    // Determine which API to use
+    const useOpenAI = this.openaiApiKey && this.preferredProvider === 'openai';
+    const endpoint = useOpenAI ? this.openaiEndpoint : this.apiEndpoint;
+    const apiKey = useOpenAI ? this.openaiApiKey : this.apiKey;
+    const model = useOpenAI ? this.openaiModel : this.model;
+
+    const response = await fetch(endpoint, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${this.apiKey}`,
+        'Authorization': `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
-        model: this.model,
+        model,
         messages: [
           {
             role: 'system',
