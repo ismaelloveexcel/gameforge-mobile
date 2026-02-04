@@ -1,15 +1,20 @@
 /**
  * AIService - Unified AI integration service
  * Provides AI-powered content generation, personalization, and assistance
+ * Supports multiple AI providers: OpenAI (ChatGPT) and Grok (x.ai)
  */
 
 import { grokService } from './GrokService';
+import { openAIService } from './OpenAIService';
+
+export type AIProvider = 'grok' | 'openai' | 'auto';
 
 export interface AIGenerationOptions {
   temperature?: number;
   maxTokens?: number;
   context?: string;
   style?: 'creative' | 'professional' | 'casual' | 'technical';
+  provider?: AIProvider;
 }
 
 export interface PersonalizedContent {
@@ -28,6 +33,63 @@ export interface AIInsight {
 }
 
 class AIService {
+  private preferredProvider: AIProvider = 'auto';
+
+  /**
+   * Set the preferred AI provider
+   */
+  setProvider(provider: AIProvider): void {
+    this.preferredProvider = provider;
+  }
+
+  /**
+   * Get the current active provider based on configuration
+   */
+  getActiveProvider(): 'grok' | 'openai' | 'fallback' {
+    if (this.preferredProvider === 'openai' && openAIService.isConfigured()) {
+      return 'openai';
+    }
+    if (this.preferredProvider === 'grok') {
+      return 'grok';
+    }
+    // Auto mode: prefer OpenAI if configured, fallback to Grok
+    if (this.preferredProvider === 'auto') {
+      if (openAIService.isConfigured()) {
+        return 'openai';
+      }
+      return 'grok';
+    }
+    return 'fallback';
+  }
+
+  /**
+   * Internal method to call the appropriate AI provider
+   */
+  private async callAI(prompt: string, options?: AIGenerationOptions): Promise<string> {
+    const provider = options?.provider || this.preferredProvider;
+    
+    // Try OpenAI first if preferred or auto with OpenAI configured
+    if (provider === 'openai' || (provider === 'auto' && openAIService.isConfigured())) {
+      try {
+        return await openAIService.chat(prompt, {
+          temperature: options?.temperature,
+          maxTokens: options?.maxTokens,
+        });
+      } catch (error) {
+        console.warn('OpenAI failed, falling back to Grok:', error);
+        // Fall through to Grok
+      }
+    }
+
+    // Try Grok
+    try {
+      return await grokService.chat(prompt);
+    } catch (error) {
+      console.warn('Grok failed:', error);
+      throw new Error('All AI providers failed');
+    }
+  }
+
   /**
    * Generate personalized game content based on user input
    */
@@ -43,7 +105,7 @@ class AIService {
   ): Promise<PersonalizedContent> {
     try {
       const prompt = this.buildGameContentPrompt(gameType, personalization);
-      const response = await grokService.chat(prompt);
+      const response = await this.callAI(prompt, options);
 
       return this.parseGameContent(response);
     } catch (error) {
@@ -67,7 +129,7 @@ class AIService {
         keywords ? ` Include references to: ${keywords.join(', ')}.` : ''
       } Keep it heartfelt, personal, and under 150 words.`;
 
-      const response = await grokService.chat(prompt);
+      const response = await this.callAI(prompt);
       return response.trim();
     } catch (error) {
       console.error('Error generating gift message:', error);
@@ -99,7 +161,7 @@ class AIService {
         ', '
       )}. Format as: Introduction, 3 chapters with choices, and a conclusion.`;
 
-      const response = await grokService.chat(prompt);
+      const response = await this.callAI(prompt);
       return this.parseStory(response);
     } catch (error) {
       console.error('Error generating story:', error);
@@ -117,7 +179,7 @@ class AIService {
   ): Promise<string[]> {
     try {
       const prompt = `Generate ${count} creative ${category} suggestions for: ${context}. List them as numbered items.`;
-      const response = await grokService.chat(prompt);
+      const response = await this.callAI(prompt);
       
       return this.parseSuggestions(response, count);
     } catch (error) {
@@ -136,7 +198,7 @@ class AIService {
     try {
       const prompt = `Analyze this ${type}: "${input}". Provide 3-5 constructive insights including tips, suggestions, and potential improvements. Format as bullet points.`;
       
-      const response = await grokService.chat(prompt);
+      const response = await this.callAI(prompt);
       return this.parseInsights(response);
     } catch (error) {
       console.error('Error analyzing input:', error);
@@ -157,7 +219,7 @@ class AIService {
       const contextStr = previousContext ? `Previous context: ${previousContext}. ` : '';
       const prompt = `${contextStr}Generate dialogue for ${character} who is ${mood} in this situation: ${situation}. Make it natural and character-appropriate.`;
 
-      const response = await grokService.chat(prompt);
+      const response = await this.callAI(prompt);
       return response.trim();
     } catch (error) {
       console.error('Error generating dialogue:', error);
@@ -180,7 +242,7 @@ class AIService {
         'simplify': `Simplify this text for better clarity: "${text}"`,
       };
 
-      const response = await grokService.chat(prompts[enhancement]);
+      const response = await this.callAI(prompts[enhancement]);
       return response.trim();
     } catch (error) {
       console.error('Error enhancing text:', error);
@@ -204,7 +266,7 @@ class AIService {
     try {
       const prompt = `Create ${count} ${difficulty} quiz questions about ${topic}. For each question, provide 4 options and indicate the correct answer. Format clearly.`;
       
-      const response = await grokService.chat(prompt);
+      const response = await this.callAI(prompt);
       return this.parseQuizQuestions(response);
     } catch (error) {
       console.error('Error generating quiz questions:', error);
