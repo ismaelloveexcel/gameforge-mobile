@@ -744,6 +744,10 @@ export async function generateGiftGameContent(params: GiftGameContentParams): Pr
 }
 
 // Helper parsing functions
+
+// Maximum number of traits to extract from descriptions
+const MAX_PARSED_TRAITS = 3;
+
 function mapOccasion(occasion: string): GiftOccasion {
   // Normalize: lowercase, remove apostrophes, replace spaces/hyphens with underscores
   const normalized = occasion.toLowerCase().replace(/'/g, '').replace(/[\s-]+/g, '_');
@@ -780,7 +784,7 @@ function mapOccasion(occasion: string): GiftOccasion {
 function parseAge(description: string): AgeRange {
   const ageMatch = description.match(/(\d+)\s*years?\s*old/i);
   if (ageMatch) {
-    const age = parseInt(ageMatch[1]);
+    const age = parseInt(ageMatch[1], 10);
     if (age <= 12) return 'child';
     if (age <= 17) return 'teen';
     if (age <= 25) return 'young_adult';
@@ -813,7 +817,7 @@ function parsePersonalities(description: string): PersonalityTrait[] {
   for (const [key, trait] of Object.entries(personalityMap)) {
     if (lowerDesc.includes(key)) {
       personalities.push(trait);
-      if (personalities.length >= 3) break;
+      if (personalities.length >= MAX_PARSED_TRAITS) break;
     }
   }
   
@@ -849,7 +853,7 @@ function parseInterests(description: string): Interest[] {
   for (const [key, interest] of Object.entries(interestMap)) {
     if (lowerDesc.includes(key)) {
       interests.push(interest);
-      if (interests.length >= 3) break;
+      if (interests.length >= MAX_PARSED_TRAITS) break;
     }
   }
   
@@ -934,13 +938,14 @@ function mapVisualStyle(visualStyle: string): GiftVisualStyle {
 function extractRecipientName(description: string): string {
   // Try to extract name from various patterns
   // Pattern 1: "my [relationship], [Name]" - with comma
-  let nameMatch = description.match(/my\s+\w+,\s*([A-Z][\w'-]+)/);
+  // Supports names with multiple capitals (McDonald, O'Brien), hyphens, apostrophes
+  let nameMatch = description.match(/my\s+\w+,\s*([A-Z][\w'-]*(?:\s+[A-Z][\w'-]*)*)/);
   if (nameMatch) {
     return nameMatch[1];
   }
   
   // Pattern 2: "my [relationship] [Name]" - without comma
-  nameMatch = description.match(/my\s+\w+\s+([A-Z][\w'-]+)/);
+  nameMatch = description.match(/my\s+\w+\s+([A-Z][\w'-]*(?:\s+[A-Z][\w'-]*)*)/);
   if (nameMatch) {
     return nameMatch[1];
   }
