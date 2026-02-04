@@ -19,7 +19,8 @@
     "deploy:firebase": "npm run build:web && firebase deploy",
     "eas:build:android": "eas build --platform android --profile production",
     "eas:build:ios": "eas build --platform ios --profile production",
-    "eas:preview": "eas build --platform android --profile preview"
+    "eas:preview": "eas build --platform android --profile preview",
+    "generate-assets": "node scripts/generate-assets.js"
   },
   "keywords": [
     "game",

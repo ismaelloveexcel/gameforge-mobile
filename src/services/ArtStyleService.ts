@@ -184,6 +184,65 @@ const watercolorStyle: ArtStyleConfig = {
   ],
 };
 
+// Style 6: Nocturnal Romance (PlayGift Branding)
+const nocturnalRomanceStyle: ArtStyleConfig = {
+  id: 'nocturnal-romance',
+  name: 'Nocturnal Romance',
+  description: 'Luxurious, emotional aesthetic blending Ramadan and Valentine\'s with sophisticated UAE market appeal',
+  colors: {
+    primary: '#4A1E5A',      // Deep Plum
+    secondary: '#B76E79',    // Rose Gold
+    accent: '#D4AF37',       // Gold
+    background: '#0A1931',   // Dark Midnight Blue
+    text: '#FFFFFF',
+    custom: ['#4A1E5A', '#D4AF37', '#0A1931', '#B76E79', '#1A2F4A'],
+  },
+  shaders: [
+    {
+      name: 'luxuryGlow',
+      vertexShader: `
+        attribute vec3 position;
+        attribute vec2 uv;
+        uniform mat4 worldViewProjection;
+        varying vec2 vUV;
+        void main() {
+          gl_Position = worldViewProjection * vec4(position, 1.0);
+          vUV = uv;
+        }
+      `,
+      fragmentShader: `
+        precision highp float;
+        varying vec2 vUV;
+        uniform vec3 plumColor;
+        uniform vec3 goldColor;
+        uniform float glowIntensity;
+        void main() {
+          vec2 center = vec2(0.5, 0.5);
+          float dist = distance(vUV, center);
+          vec3 color = mix(plumColor, goldColor, dist);
+          float glow = glowIntensity * (1.0 - dist * 0.5);
+          gl_FragColor = vec4(color * glow, 1.0);
+        }
+      `,
+      uniforms: {
+        plumColor: [0.29, 0.12, 0.35],  // #4A1E5A
+        goldColor: [0.83, 0.69, 0.22],  // #D4AF37
+        glowIntensity: 1.5,
+      },
+    },
+  ],
+  filters: [
+    {
+      type: 'bloom',
+      parameters: { strength: 1.2, threshold: 0.6 },
+    },
+    {
+      type: 'vignette',
+      parameters: { intensity: 0.3 },
+    },
+  ],
+};
+
 /**
  * Art Style Service
  * Manages art styles and their application
@@ -195,6 +254,7 @@ class ArtStyleService {
     handDrawnStyle,
     neonCyberpunkStyle,
     watercolorStyle,
+    nocturnalRomanceStyle,
   ];
 
   getAllStyles(): ArtStyleConfig[] {
@@ -319,6 +379,12 @@ class ArtStyleService {
         'Soft gradient backgrounds',
         'Gentle sound effects',
         'Classical music',
+      ],
+      'nocturnal-romance': [
+        'Luxurious 3D materials with metallic sheen',
+        'Romantic gradient overlays',
+        'Elegant UI elements with gold accents',
+        'Ambient orchestral music',
       ],
     };
 
