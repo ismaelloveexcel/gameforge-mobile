@@ -81,8 +81,8 @@ jobs:
             # Attempt auto-fix (proposed script - requires implementation)
             # npm run agent:autofix
             
-            # Exponential backoff
-            sleep $((30 * RETRY_COUNT))
+            # Exponential backoff: 30s, 60s, 120s
+            sleep $((30 * (2 ** (RETRY_COUNT - 1))))
           done
           
           echo "Pipeline failed after $MAX_RETRIES attempts"
