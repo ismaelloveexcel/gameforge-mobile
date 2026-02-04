@@ -86,8 +86,8 @@ export default function HomeScreen() {
       onPress: () => navigation.navigate('Templates'),
     },
     {
-      icon: 'bird',
-      title: 'Dodo Helper',
+      icon: 'flask',
+      title: 'The Alchemist',
       description: '4 specialized personalities',
       onPress: () => navigation.navigate('Genie'),
     },

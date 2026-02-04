@@ -1,4 +1,4 @@
-# 🔥 FORGE-CHIEF PRODUCT ANALYSIS — GameForge Mobile
+# 🔥 FORGE-CHIEF PRODUCT ANALYSIS — PlayGift
 
 **Date**: January 28, 2026  
 **Analyst**: FORGE-CHIEF (Unified Product Authority)  
@@ -9,7 +9,7 @@
 
 ## EXECUTIVE SUMMARY
 
-GameForge Mobile has **strong vision documents** but **fails critically at execution**. The app suffers from a **fatal identity crisis**: trying to be both a professional game engine AND a casual gift creation app. This dilution makes it excellent at neither.
+PlayGift has **strong vision documents** but **fails critically at execution**. The app suffers from a **fatal identity crisis**: trying to be both a professional game engine AND a casual gift creation app. This dilution makes it excellent at neither.
 
 **For a non-technical owner running this as a side hustle in the competitive UAE market:** This will not work.
 
@@ -45,7 +45,7 @@ The app can't decide if it's:
 **Current Home Screen (HomeScreenNew.tsx):**
 ```
 ✅ Hero: "Create a Gift for Someone You Love" — CORRECT
-❌ Below fold: Templates, Dodo Helper, Projects, VR Editor, Marketing Dashboard
+❌ Below fold: Templates, The Alchemist Helper, Projects, VR Editor, Marketing Dashboard
 ❌ 20 different screens competing for attention
 ❌ Zero focus on viral gift loop
 ```
@@ -179,7 +179,7 @@ Build this in 3 phases:
    - Where is the Ramadan/Eid cultural intelligence?
 
 **UAE Benchmark:**
-Apps like **Noon, Talabat, Careem** set the standard. GameForge looks like a US SaaS product ported to React Native.
+Apps like **Noon, Talabat, Careem** set the standard. PlayGift looks like a US SaaS product ported to React Native.
 
 ---
 
@@ -268,7 +268,7 @@ The docs describe a product that would work. The code implements a different pro
 - ❌ AgentDashboardScreen
 - ❌ AssetLibraryScreen
 - ❌ TemplateSelectorScreen (keep templates, kill selector)
-- ❌ GenieAssistantScreen (Dodo is enough)
+- ❌ GenieAssistantScreen (The Alchemist is enough)
 
 **Keep only:**
 - ✅ HomeScreenNew (simplify)
@@ -335,7 +335,7 @@ Home screen hero card:
 - Secondary actions grid
 - Feature cards
 - Stats
-- Dodo speech bubble (keep icon)
+- The Alchemist speech bubble (keep icon)
 
 **KEEP & ENHANCE:**
 - Hero card (make it 70% of screen)
@@ -607,7 +607,7 @@ const initiatePayment = async (priceAED: number) => {
 
 4. **Marketing Dashboard** — Non-technical owner doesn't need campaign tools. Needs revenue/metrics.
 
-5. **4 Genie Personalities** — Confusing. One assistant (Dodo) is enough.
+5. **4 Genie Personalities** — Confusing. One assistant (The Alchemist) is enough.
 
 6. **Educational Games** — Off-brand. This is about gifts, not learning.
 
@@ -782,7 +782,7 @@ This is a demo/prototype, not a product. Launching this in UAE app stores would 
 - Sharalike (social, viral)
 - Tamatem (gaming, cultural fit)
 
-GameForge in current state loses to all of them.
+PlayGift in current state loses to all of them.
 
 ---
 
@@ -839,7 +839,7 @@ You need to:
 **Signed,**  
 **FORGE-CHIEF**  
 *Head of Product, UX, and First-Time Experience*  
-*GameForge Mobile — Unified Product Authority*
+*PlayGift — Unified Product Authority*
 
 ---
 
@@ -850,7 +850,7 @@ You need to:
 
 ---
 
-*This analysis is brutally honest because UAE market is brutally competitive. Average gets ignored. GameForge has the potential to be exceptional — but only after this redesign.*
+*This analysis is brutally honest because UAE market is brutally competitive. Average gets ignored. PlayGift has the potential to be exceptional — but only after this redesign.*
 
 **Document Version:** 1.0  
 **Last Updated:** January 28, 2026  

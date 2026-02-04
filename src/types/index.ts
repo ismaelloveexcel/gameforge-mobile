@@ -162,6 +162,8 @@ export interface GiftQuestionnaire {
   customMessage?: string;
   memories?: string[];
   photos?: string[];
+  voiceNoteUri?: string;
+  voiceNoteDuration?: number;
   gameDuration: string;
   difficultyLevel: string;
   createdAt: Date;
@@ -215,7 +217,9 @@ export type ArtStyle =
   | 'lowpoly'
   | 'handdrawn'
   | 'cyberpunk'
-  | 'watercolor';
+  | 'watercolor'
+  | 'ramadan-lantern-glow'
+  | 'valentine-iridescent';
 
 export interface ArtStyleConfig {
   id: ArtStyle;

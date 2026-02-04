@@ -245,6 +245,6 @@ Set up notifications in GitHub:
 
 ---
 
-**Made with ❤️ for GameForge Mobile**
+**Made with ❤️ for PlayGift**
 
 *Command your deployments.*

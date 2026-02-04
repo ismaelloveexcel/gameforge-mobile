@@ -1,6 +1,6 @@
 # Deployment Guide
 
-Learn how to build and publish your GameForge games to iOS, Android, and Web platforms.
+Learn how to build and publish your PlayGift games to iOS, Android, and Web platforms.
 
 ## Pre-Deployment Checklist
 
@@ -121,7 +121,7 @@ npm run deploy:github
 
 **Option D: Replit**
 
-Replit is a cloud-based development environment that allows you to run, build, and deploy your GameForge app directly from your browser.
+Replit is a cloud-based development environment that allows you to run, build, and deploy your PlayGift app directly from your browser.
 
 1. **Import the Repository**
    - Go to [replit.com](https://replit.com)

@@ -1,6 +1,6 @@
 # API Reference
 
-Complete API documentation for GameForge Mobile.
+Complete API documentation for PlayGift.
 
 ## Core APIs
 

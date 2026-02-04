@@ -14,7 +14,7 @@ import Animated, {
   FadeInUp,
 } from 'react-native-reanimated';
 import { useTheme } from '../contexts/ThemeContext';
-import DodoCompanion from './DodoCompanion';
+import AlchemistCompanion from './AlchemistCompanion';
 import { spacing, typography, radii, forgeColors } from '../design-tokens/theme';
 
 interface EmptyStateProps {
@@ -23,33 +23,33 @@ interface EmptyStateProps {
   actionLabel?: string;
   onAction?: () => void;
   variant?: 'projects' | 'games' | 'search' | 'error' | 'welcome';
-  dodoMessage?: string;
+  alchemistMessage?: string;
 }
 
 const VARIANT_CONFIG = {
   projects: {
     emoji: '📁',
-    dodoMood: 'curious' as const,
+    alchemistMood: 'curious' as const,
     gradientColors: [forgeColors.forge[500], forgeColors.spark[500]],
   },
   games: {
     emoji: '🎮',
-    dodoMood: 'excited' as const,
+    alchemistMood: 'excited' as const,
     gradientColors: [forgeColors.spark[500], forgeColors.ember[500]],
   },
   search: {
     emoji: '🔍',
-    dodoMood: 'thinking' as const,
+    alchemistMood: 'thinking' as const,
     gradientColors: [forgeColors.gold[500], forgeColors.ember[500]],
   },
   error: {
     emoji: '🌧️',
-    dodoMood: 'sleepy' as const,
+    alchemistMood: 'sleepy' as const,
     gradientColors: [forgeColors.stone[500], forgeColors.forge[500]],
   },
   welcome: {
     emoji: '✨',
-    dodoMood: 'waving' as const,
+    alchemistMood: 'waving' as const,
     gradientColors: [forgeColors.moss[500], forgeColors.forge[500]],
   },
 };
@@ -60,7 +60,7 @@ const EmptyState = React.memo(function EmptyState({
   actionLabel,
   onAction,
   variant = 'projects',
-  dodoMessage,
+  alchemistMessage,
 }: EmptyStateProps) {
   const { theme } = useTheme();
   
@@ -153,12 +153,12 @@ const EmptyState = React.memo(function EmptyState({
         </View>
       </Animated.View>
       
-      {/* Dodo companion */}
+      {/* Alchemist companion */}
       <Animated.View entering={FadeInUp.duration(600).delay(300)}>
-        <DodoCompanion
-          mood={config.dodoMood}
+        <AlchemistCompanion
+          mood={config.alchemistMood}
           size="medium"
-          message={dodoMessage || getDefaultDodoMessage(variant)}
+          message={alchemistMessage || getDefaultAlchemistMessage(variant)}
           showBubble
         />
       </Animated.View>
@@ -192,7 +192,7 @@ const EmptyState = React.memo(function EmptyState({
 
 export default EmptyState;
 
-function getDefaultDodoMessage(variant: string): string {
+function getDefaultAlchemistMessage(variant: string): string {
   switch (variant) {
     case 'projects':
       return "Let's create something amazing together! 🌟";
@@ -203,7 +203,7 @@ function getDefaultDodoMessage(variant: string): string {
     case 'error':
       return "Oops! Let me help you sort this out 💪";
     case 'welcome':
-      return "Welcome to the forge! I'm Dodo, your guide! 🦤";
+      return "Welcome to the forge! I'm The Alchemist, your guide! 🧪";
     default:
       return "What shall we create today?";
   }

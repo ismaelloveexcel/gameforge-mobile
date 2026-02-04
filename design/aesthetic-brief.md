@@ -1,15 +1,15 @@
-# 🎨 GameForge Mobile - Aesthetic Transformation Brief
+# 🎨 PlayGift - Aesthetic Transformation Brief
 
 ## The Vision: "Forge Your Dreams"
 
-GameForge Mobile has been transformed from a functional app into an **emotional, magical experience** that makes game creation feel like crafting enchanted artifacts rather than using software.
+PlayGift has been transformed from a functional app into an **emotional, magical experience** that makes game creation feel like crafting enchanted artifacts rather than using software.
 
 ---
 
-## 🦤 Meet Dodo - Your Magical Companion
+## 🦤 Meet The Alchemist - Your Magical Companion
 
 ### Character Identity
-**Dodo** is a friendly, extinct-but-reimagined bird who serves as your guide through the creative process. Dodo is:
+**The Alchemist** is a friendly, extinct-but-reimagined bird who serves as your guide through the creative process. The Alchemist is:
 - **Cute & Expressive** - Big eyes, wobbly waddle, flapping wings
 - **Encouraging** - Always cheering you on with personality
 - **Magical** - No "AI" vibes; feels like a helpful spirit
@@ -26,7 +26,7 @@ GameForge Mobile has been transformed from a functional app into an **emotional,
 | `sleepy` | Late night usage | Droopy eyes, slow movements |
 | `happy` | After completing tasks | Smile, gentle bounce |
 
-### Dodo's Specialties (replaces "AI Modes")
+### The Alchemist's Specialties (replaces "AI Modes")
 - **Creative Spark** 🎨 - Ideas & storytelling
 - **Code Wizard** ✨ - Logic & mechanics  
 - **Hype Bird** 📢 - Marketing tips
@@ -98,12 +98,12 @@ Achievements trigger **magical celebrations**:
 ### The App Responds to Context
 1. **Creation Mode**: Warmer colors, energetic animations
 2. **Review Mode**: Cooler colors, calmer animations
-3. **Late Night**: Dimmer backgrounds, sleepy Dodo
-4. **Achievement**: Celebration overlays, excited Dodo
+3. **Late Night**: Dimmer backgrounds, sleepy The Alchemist
+4. **Achievement**: Celebration overlays, excited The Alchemist
 
 ### Empty States Have Personality
 Instead of "No projects yet", users see:
-- Dodo looking curious
+- The Alchemist looking curious
 - Encouraging message
 - Animated invitation to create
 - Contextual illustration
@@ -166,25 +166,25 @@ full: 9999px
 ### Home Screen
 - Living gradient background
 - Floating particles (ambient magic)
-- Dodo waving in header
+- The Alchemist waving in header
 - Glowing feature cards
 - Time-aware greeting
 
-### Dodo Assistant (was Genie)
+### The Alchemist Assistant (was Genie)
 - Specialty selector with personality
-- Chat with Dodo (not "AI chat")
+- Chat with The Alchemist (not "AI chat")
 - Thinking animation during "magic"
 - Quick suggestion chips
 
 ### Project List
-- Empty state with curious Dodo
+- Empty state with curious The Alchemist
 - ForgeCards with hover glow
 - Celebration on project creation
 
 ### Template Selector
 - Category chips with brand colors
 - Engine badges (Pixi, Babylon, etc.)
-- Dodo guidance in header
+- The Alchemist guidance in header
 
 ---
 
@@ -197,7 +197,8 @@ full: 9999px
 /src/components/
   ├── index.ts              # Exports
   ├── LivingGradient.tsx    # Animated backgrounds
-  ├── DodoCompanion.tsx     # The mascot 🦤
+  ├── AlchemistCompanion.tsx     # The Alchemist mascot 🦤
+  ├── AlchemistSVG.tsx           # SVG mascot rendering
   ├── ForgeCard.tsx         # Glowing cards
   ├── ForgeButton.tsx       # Glowing buttons
   ├── ParticleField.tsx     # Ambient particles
@@ -205,11 +206,11 @@ full: 9999px
   └── EmptyState.tsx        # Beautiful empty states
 
 /src/contexts/
-  └── DodoContext.tsx       # Replaces GenieContext
+  └── AlchemistContext.tsx       # The Alchemist companion context (replaces GenieContext)
 
 /src/screens/
   ├── HomeScreenNew.tsx     # Redesigned home
-  └── DodoAssistantScreen.tsx # Replaces GenieAssistantScreen
+  └── AlchemistAssistantScreen.tsx # The Alchemist assistant (replaces GenieAssistantScreen)
 ```
 
 ---
@@ -225,7 +226,7 @@ full: 9999px
 ### Future Enhancements
 - [ ] Seasonal themes (winter/summer skins)
 - [ ] User preference for signature color
-- [ ] Dodo accessories/customization
+- [ ] The Alchemist accessories/customization
 - [ ] Sound effects for celebrations
 - [ ] Achievement badges system
 
@@ -253,7 +254,7 @@ full: 9999px
 
 > **"Every creator deserves a magical companion who believes in their vision."**
 
-GameForge Mobile isn't software—it's a **creative sanctuary** where ideas come to life with the help of a friendly Dodo who never lets you create alone.
+PlayGift isn't software—it's a **creative sanctuary** where ideas come to life with the help of a friendly The Alchemist who never lets you create alone.
 
 ---
 

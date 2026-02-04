@@ -52,7 +52,7 @@ Your GitHub repository needs the following secrets configured:
 
 1. Go to [vercel.com/account/tokens](https://vercel.com/account/tokens)
 2. Click "Create Token"
-3. Name it: `GitHub Actions - GameForge`
+3. Name it: `GitHub Actions - PlayGift`
 4. Scope: Select your account/team
 5. Expiration: Never (or set custom duration)
 6. Click "Create Token"
@@ -140,7 +140,7 @@ This ensures your project is linked to your Expo account.
 2. Click your profile icon → "Access Tokens"
 3. Or direct link: `https://expo.dev/accounts/[your-username]/settings/access-tokens`
 4. Click "Create Token"
-5. Name it: `GitHub Actions - GameForge`
+5. Name it: `GitHub Actions - PlayGift`
 6. Select scope: `Full access` (or customize as needed)
 7. Click "Create Token"
 8. **Copy the token immediately** (you won't see it again!)
@@ -307,6 +307,6 @@ Once secrets are configured:
 
 ---
 
-**Made with ❤️ for GameForge Mobile**
+**Made with ❤️ for PlayGift**
 
 *Secure your secrets, automate your deployments.*

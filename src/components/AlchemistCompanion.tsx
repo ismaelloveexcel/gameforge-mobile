@@ -1,6 +1,6 @@
 /**
- * Dodo - Your friendly forge companion! 🦤
- * A cute, funny dodo bird that helps you create games
+ * The Alchemist - Your friendly forge companion! 🧪
+ * A quirky, nerdy creator who helps you craft magical gifts
  * No "AI" vibes - just a magical, helpful friend
  */
 import React, { useEffect, useState, useCallback } from 'react';
@@ -22,15 +22,15 @@ import Animated, {
   withDelay,
   Easing,
   interpolate,
-  runOnJS,
 } from 'react-native-reanimated';
 import { useTheme } from '../contexts/ThemeContext';
 import { spacing, radii, typography, motion } from '../design-tokens/theme';
+import { PlayGiftConsumerMode } from '../config/flags';
 
 // Screen dimensions available if needed
 const _dimensions = Dimensions.get('window');
 
-export type DodoMood = 
+export type AlchemistMood = 
   | 'idle' 
   | 'happy' 
   | 'thinking' 
@@ -40,11 +40,11 @@ export type DodoMood =
   | 'curious'
   | 'waving';
 
-export type DodoSize = 'mini' | 'small' | 'medium' | 'large';
+export type AlchemistSize = 'mini' | 'small' | 'medium' | 'large';
 
-interface DodoCompanionProps {
-  mood?: DodoMood;
-  size?: DodoSize;
+interface AlchemistCompanionProps {
+  mood?: AlchemistMood;
+  size?: AlchemistSize;
   message?: string;
   onPress?: () => void;
   floating?: boolean;
@@ -59,33 +59,33 @@ const SIZE_MAP = {
   large: 120,
 };
 
-// Dodo's personality phrases
+// The Alchemist's personality phrases
 const IDLE_PHRASES = [
-  "What shall we create today? ✨",
+  "What shall we brew today? ✨",
   "I smell adventure brewing! 🌟",
   "Ooh, this is going to be fun!",
-  "*happy dodo noises* 🦤",
+  "*happy alchemist noises* 🧪",
   "Ready when you are, friend!",
   "Let's make something magical!",
 ];
 
 const THINKING_PHRASES = [
   "Hmm, let me ponder this...",
-  "*scratches head with wing*",
+  "*adjusts glasses*",
   "The gears are turning! ⚙️",
-  "Consulting my feathers...",
+  "Mixing just the right ingredients...",
   "One moment, brewing magic! ✨",
 ];
 
 const CELEBRATING_PHRASES = [
   "WOOHOO! You did it! 🎉",
-  "*does happy dance*",
+  "*does happy victory wiggle*",
   "That's absolutely brilliant!",
   "I knew you could do it! 🌟",
-  "Time for a victory waddle! 🦤",
+  "Time for a victory spark! 🧪",
 ];
 
-export default function DodoCompanion({
+export default function AlchemistCompanion({
   mood = 'idle',
   size = 'medium',
   message,
@@ -93,9 +93,11 @@ export default function DodoCompanion({
   floating = false,
   position = 'right',
   showBubble = true,
-}: DodoCompanionProps) {
+}: AlchemistCompanionProps) {
   const { theme, isDark } = useTheme();
   const [currentPhrase, setCurrentPhrase] = useState('');
+  const effectiveMood = PlayGiftConsumerMode ? mood : 'idle';
+  const effectiveShowBubble = PlayGiftConsumerMode ? showBubble : false;
   
   // Animation values
   const bounce = useSharedValue(0);
@@ -104,10 +106,17 @@ export default function DodoCompanion({
   const wingFlap = useSharedValue(0);
   const bubbleScale = useSharedValue(0);
   
-  const dodoSize = SIZE_MAP[size];
+  const alchemistSize = SIZE_MAP[size];
   
   // Mood-based animations
   useEffect(() => {
+    if (!PlayGiftConsumerMode) {
+      bounce.value = 0;
+      wiggle.value = 0;
+      wingFlap.value = 0;
+      blink.value = 1;
+      return;
+    }
     // Blinking animation
     blink.value = withRepeat(
       withSequence(
@@ -119,7 +128,7 @@ export default function DodoCompanion({
       false
     );
     
-    switch (mood) {
+    switch (effectiveMood) {
       case 'idle':
         bounce.value = withRepeat(
           withSequence(
@@ -220,7 +229,7 @@ export default function DodoCompanion({
     }
     
     // Show bubble with delay
-    if (showBubble && (message || mood !== 'idle')) {
+    if (effectiveShowBubble && (message || effectiveMood !== 'idle')) {
       bubbleScale.value = withDelay(
         300,
         withSpring(1, motion.easing.bounce)
@@ -232,7 +241,7 @@ export default function DodoCompanion({
       wiggle.value = 0;
       wingFlap.value = 0;
     };
-  }, [mood, message, showBubble]);
+  }, [effectiveMood, message, effectiveShowBubble]);
   
   // Set phrase based on mood
   useEffect(() => {
@@ -241,12 +250,12 @@ export default function DodoCompanion({
       return;
     }
     
-    const phrases = mood === 'thinking' ? THINKING_PHRASES 
-      : mood === 'celebrating' ? CELEBRATING_PHRASES 
+    const phrases = effectiveMood === 'thinking' ? THINKING_PHRASES 
+      : effectiveMood === 'celebrating' ? CELEBRATING_PHRASES 
       : IDLE_PHRASES;
     
     setCurrentPhrase(phrases[Math.floor(Math.random() * phrases.length)]);
-  }, [mood, message]);
+  }, [effectiveMood, message]);
   
   // Animated styles
   const bodyStyle = useAnimatedStyle(() => ({
@@ -281,7 +290,7 @@ export default function DodoCompanion({
     onPress?.();
   }, [onPress, wiggle]);
   
-  // Dodo colors
+  // Companion colors
   const bodyColor = isDark ? '#4A5568' : '#718096';
   const beakColor = '#F6AD55';
   const eyeColor = isDark ? '#F7FAFC' : '#1A202C';
@@ -298,7 +307,7 @@ export default function DodoCompanion({
   return (
     <View style={containerStyle}>
       {/* Speech bubble */}
-      {showBubble && currentPhrase && (
+      {effectiveShowBubble && currentPhrase && (
         <Animated.View 
           style={[
             styles.bubble,
@@ -318,22 +327,22 @@ export default function DodoCompanion({
         </Animated.View>
       )}
       
-      {/* The Dodo! */}
+      {/* The Alchemist */}
       <TouchableOpacity
         onPress={handlePress}
         activeOpacity={0.9}
         disabled={!onPress}
       >
-        <Animated.View style={[styles.dodo, { width: dodoSize, height: dodoSize }, bodyStyle]}>
+        <Animated.View style={[styles.dodo, { width: alchemistSize, height: alchemistSize }, bodyStyle]}>
           {/* Body */}
           <View 
             style={[
               styles.body,
               {
-                width: dodoSize * 0.8,
-                height: dodoSize * 0.7,
+                width: alchemistSize * 0.8,
+                height: alchemistSize * 0.7,
                 backgroundColor: bodyColor,
-                borderRadius: dodoSize * 0.35,
+                borderRadius: alchemistSize * 0.35,
               },
             ]}
           >
@@ -342,11 +351,11 @@ export default function DodoCompanion({
               style={[
                 styles.belly,
                 {
-                  width: dodoSize * 0.5,
-                  height: dodoSize * 0.4,
+                  width: alchemistSize * 0.5,
+                  height: alchemistSize * 0.4,
                   backgroundColor: isDark ? '#5A6578' : '#A0AEC0',
-                  borderRadius: dodoSize * 0.25,
-                  bottom: dodoSize * 0.05,
+                  borderRadius: alchemistSize * 0.25,
+                  bottom: alchemistSize * 0.05,
                 },
               ]}
             />
@@ -357,11 +366,11 @@ export default function DodoCompanion({
             style={[
               styles.head,
               {
-                width: dodoSize * 0.55,
-                height: dodoSize * 0.5,
+                width: alchemistSize * 0.55,
+                height: alchemistSize * 0.5,
                 backgroundColor: bodyColor,
-                borderRadius: dodoSize * 0.275,
-                top: -dodoSize * 0.15,
+                borderRadius: alchemistSize * 0.275,
+                top: -alchemistSize * 0.15,
               },
             ]}
           >
@@ -371,10 +380,10 @@ export default function DodoCompanion({
                 style={[
                   styles.eye,
                   {
-                    width: dodoSize * 0.12,
-                    height: dodoSize * 0.12,
+                    width: alchemistSize * 0.12,
+                    height: alchemistSize * 0.12,
                     backgroundColor: '#fff',
-                    borderRadius: dodoSize * 0.06,
+                    borderRadius: alchemistSize * 0.06,
                   },
                   eyeStyle,
                 ]}
@@ -383,10 +392,10 @@ export default function DodoCompanion({
                   style={[
                     styles.pupil,
                     {
-                      width: dodoSize * 0.06,
-                      height: dodoSize * 0.06,
+                      width: alchemistSize * 0.06,
+                      height: alchemistSize * 0.06,
                       backgroundColor: eyeColor,
-                      borderRadius: dodoSize * 0.03,
+                      borderRadius: alchemistSize * 0.03,
                     },
                   ]}
                 />
@@ -395,11 +404,11 @@ export default function DodoCompanion({
                 style={[
                   styles.eye,
                   {
-                    width: dodoSize * 0.12,
-                    height: dodoSize * 0.12,
+                    width: alchemistSize * 0.12,
+                    height: alchemistSize * 0.12,
                     backgroundColor: '#fff',
-                    borderRadius: dodoSize * 0.06,
-                    marginLeft: dodoSize * 0.08,
+                    borderRadius: alchemistSize * 0.06,
+                    marginLeft: alchemistSize * 0.08,
                   },
                   eyeStyle,
                 ]}
@@ -408,10 +417,10 @@ export default function DodoCompanion({
                   style={[
                     styles.pupil,
                     {
-                      width: dodoSize * 0.06,
-                      height: dodoSize * 0.06,
+                      width: alchemistSize * 0.06,
+                      height: alchemistSize * 0.06,
                       backgroundColor: eyeColor,
-                      borderRadius: dodoSize * 0.03,
+                      borderRadius: alchemistSize * 0.03,
                     },
                   ]}
                 />
@@ -424,10 +433,10 @@ export default function DodoCompanion({
                 style={[
                   styles.blush,
                   {
-                    width: dodoSize * 0.08,
-                    height: dodoSize * 0.04,
+                    width: alchemistSize * 0.08,
+                    height: alchemistSize * 0.04,
                     backgroundColor: blushColor,
-                    borderRadius: dodoSize * 0.02,
+                    borderRadius: alchemistSize * 0.02,
                     opacity: 0.6,
                   },
                 ]}
@@ -436,12 +445,12 @@ export default function DodoCompanion({
                 style={[
                   styles.blush,
                   {
-                    width: dodoSize * 0.08,
-                    height: dodoSize * 0.04,
+                    width: alchemistSize * 0.08,
+                    height: alchemistSize * 0.04,
                     backgroundColor: blushColor,
-                    borderRadius: dodoSize * 0.02,
+                    borderRadius: alchemistSize * 0.02,
                     opacity: 0.6,
-                    marginLeft: dodoSize * 0.2,
+                    marginLeft: alchemistSize * 0.2,
                   },
                 ]}
               />
@@ -452,11 +461,11 @@ export default function DodoCompanion({
               style={[
                 styles.beak,
                 {
-                  width: dodoSize * 0.25,
-                  height: dodoSize * 0.15,
+                  width: alchemistSize * 0.25,
+                  height: alchemistSize * 0.15,
                   backgroundColor: beakColor,
-                  borderRadius: dodoSize * 0.05,
-                  top: dodoSize * 0.18,
+                  borderRadius: alchemistSize * 0.05,
+                  top: alchemistSize * 0.18,
                 },
               ]}
             >
@@ -464,11 +473,11 @@ export default function DodoCompanion({
                 style={[
                   styles.beakTip,
                   {
-                    width: dodoSize * 0.08,
-                    height: dodoSize * 0.08,
+                    width: alchemistSize * 0.08,
+                    height: alchemistSize * 0.08,
                     backgroundColor: '#DD6B20',
-                    borderRadius: dodoSize * 0.04,
-                    right: -dodoSize * 0.02,
+                    borderRadius: alchemistSize * 0.04,
+                    right: -alchemistSize * 0.02,
                   },
                 ]}
               />
@@ -479,7 +488,7 @@ export default function DodoCompanion({
               style={[
                 styles.tuft,
                 {
-                  top: -dodoSize * 0.08,
+                  top: -alchemistSize * 0.08,
                 },
               ]}
             >
@@ -489,10 +498,10 @@ export default function DodoCompanion({
                   style={[
                     styles.feather,
                     {
-                      width: dodoSize * 0.03,
-                      height: dodoSize * 0.1,
+                      width: alchemistSize * 0.03,
+                      height: alchemistSize * 0.1,
                       backgroundColor: isDark ? '#6B7280' : '#9CA3AF',
-                      borderRadius: dodoSize * 0.015,
+                      borderRadius: alchemistSize * 0.015,
                       transform: [{ rotate: `${(i - 1) * 15}deg` }],
                       marginHorizontal: 1,
                     },
@@ -508,11 +517,11 @@ export default function DodoCompanion({
               styles.wing,
               styles.leftWing,
               {
-                width: dodoSize * 0.25,
-                height: dodoSize * 0.35,
+                width: alchemistSize * 0.25,
+                height: alchemistSize * 0.35,
                 backgroundColor: isDark ? '#5A6578' : '#A0AEC0',
-                borderRadius: dodoSize * 0.125,
-                left: -dodoSize * 0.08,
+                borderRadius: alchemistSize * 0.125,
+                left: -alchemistSize * 0.08,
               },
               wingStyle,
             ]}
@@ -522,11 +531,11 @@ export default function DodoCompanion({
               styles.wing,
               styles.rightWing,
               {
-                width: dodoSize * 0.25,
-                height: dodoSize * 0.35,
+                width: alchemistSize * 0.25,
+                height: alchemistSize * 0.35,
                 backgroundColor: isDark ? '#5A6578' : '#A0AEC0',
-                borderRadius: dodoSize * 0.125,
-                right: -dodoSize * 0.08,
+                borderRadius: alchemistSize * 0.125,
+                right: -alchemistSize * 0.08,
                 transform: [{ scaleX: -1 }],
               },
             ]}
@@ -538,10 +547,10 @@ export default function DodoCompanion({
               style={[
                 styles.foot,
                 {
-                  width: dodoSize * 0.15,
-                  height: dodoSize * 0.08,
+                  width: alchemistSize * 0.15,
+                  height: alchemistSize * 0.08,
                   backgroundColor: beakColor,
-                  borderRadius: dodoSize * 0.04,
+                  borderRadius: alchemistSize * 0.04,
                 },
               ]}
             />
@@ -549,11 +558,11 @@ export default function DodoCompanion({
               style={[
                 styles.foot,
                 {
-                  width: dodoSize * 0.15,
-                  height: dodoSize * 0.08,
+                  width: alchemistSize * 0.15,
+                  height: alchemistSize * 0.08,
                   backgroundColor: beakColor,
-                  borderRadius: dodoSize * 0.04,
-                  marginLeft: dodoSize * 0.1,
+                  borderRadius: alchemistSize * 0.04,
+                  marginLeft: alchemistSize * 0.1,
                 },
               ]}
             />
@@ -561,18 +570,18 @@ export default function DodoCompanion({
           
           {/* Mood indicators */}
           {mood === 'thinking' && (
-            <View style={[styles.thinkingDots, { top: -dodoSize * 0.3 }]}>
+            <View style={[styles.thinkingDots, { top: -alchemistSize * 0.3 }]}>
               {[0, 1, 2].map((i) => (
                 <Animated.View
                   key={i}
                   style={[
                     styles.dot,
                     {
-                      width: dodoSize * 0.06,
-                      height: dodoSize * 0.06,
+                      width: alchemistSize * 0.06,
+                      height: alchemistSize * 0.06,
                       backgroundColor: theme.colors.primary,
-                      borderRadius: dodoSize * 0.03,
-                      marginLeft: i * dodoSize * 0.08,
+                      borderRadius: alchemistSize * 0.03,
+                      marginLeft: i * alchemistSize * 0.08,
                       opacity: 0.4 + i * 0.2,
                     },
                   ]}
@@ -582,16 +591,16 @@ export default function DodoCompanion({
           )}
           
           {mood === 'sleepy' && (
-            <Text style={[styles.sleepyZ, { top: -dodoSize * 0.25, fontSize: dodoSize * 0.15 }]}>
+            <Text style={[styles.sleepyZ, { top: -alchemistSize * 0.25, fontSize: alchemistSize * 0.15 }]}>
               💤
             </Text>
           )}
           
           {(mood === 'celebrating' || mood === 'excited') && (
-            <View style={[styles.sparkles, { top: -dodoSize * 0.3 }]}>
-              <Text style={{ fontSize: dodoSize * 0.12 }}>✨</Text>
-              <Text style={{ fontSize: dodoSize * 0.1, marginLeft: dodoSize * 0.1 }}>🌟</Text>
-              <Text style={{ fontSize: dodoSize * 0.08 }}>✨</Text>
+            <View style={[styles.sparkles, { top: -alchemistSize * 0.3 }]}>
+              <Text style={{ fontSize: alchemistSize * 0.12 }}>✨</Text>
+              <Text style={{ fontSize: alchemistSize * 0.1, marginLeft: alchemistSize * 0.1 }}>🌟</Text>
+              <Text style={{ fontSize: alchemistSize * 0.08 }}>✨</Text>
             </View>
           )}
         </Animated.View>

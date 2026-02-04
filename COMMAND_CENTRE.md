@@ -1,6 +1,6 @@
-# GameForge Command Centre
+# PlayGift Command Centre
 
-> A unified dashboard for non-technical operators to monitor and manage the entire GameForge ecosystem.
+> A unified dashboard for non-technical operators to monitor and manage the entire PlayGift ecosystem.
 
 ---
 
@@ -30,7 +30,7 @@
 │ • Templates       │◄─────────────────► │ • Market Research │
 │ • Theming         │    Syncs           │ • Game Validation │
 │ • Share Engine    │    Templates       │ • Monetization    │
-│ • Dodo Companion  │                    │ • Kill-Switch     │
+│ • The Alchemist Companion  │                    │ • Kill-Switch     │
 └───────────────────┘                    └───────────────────┘
 ```
 

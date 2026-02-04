@@ -1,0 +1,1 @@
+export const PlayGiftConsumerMode = false;

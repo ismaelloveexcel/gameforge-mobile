@@ -39,10 +39,13 @@ import { useTheme, THEME_OPTIONS, ThemeChoice } from '../contexts/ThemeContext';
 import { RootStackParamList } from '../types';
 import { 
   LivingGradient, 
-  DodoCompanion, 
+  AlchemistCompanion, 
   ForgeCard, 
   ParticleField,
+  PressableScale,
+  ShimmerOverlay,
 } from '../components';
+import { PlayGiftConsumerMode } from '../config/flags';
 import { spacing, typography, radii } from '../design-tokens/theme';
 import { 
   featuredGamesService, 
@@ -96,12 +99,12 @@ const getThemeGreeting = (themeId: string) => {
 export default function HomeScreen() {
   const navigation = useNavigation<NavigationProp>();
   const { theme, isDark, seasonalTheme, themeChoice, setThemeChoice } = useTheme();
-  const [dodoMood, setDodoMood] = useState<'idle' | 'waving' | 'excited' | 'curious'>('waving');
+  const [alchemistMood, setAlchemistMood] = useState<'idle' | 'waving' | 'excited' | 'curious'>('waving');
   const [showThemePicker, setShowThemePicker] = useState(false);
   const greeting = getThemeGreeting(seasonalTheme.id);
   
   // Use ref to track timeout for cleanup
-  const dodoTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const alchemistTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   
   // Featured games from agents
   const [seasonalDrop, setSeasonalDrop] = useState<SeasonalDrop | null>(null);
@@ -155,8 +158,8 @@ export default function HomeScreen() {
       false
     );
     
-    // Dodo waves, then relaxes
-    const timeout = setTimeout(() => setDodoMood('idle'), 2500);
+    // Alchemist waves, then relaxes
+    const timeout = setTimeout(() => setAlchemistMood('idle'), 2500);
     return () => clearTimeout(timeout);
   }, [glow, heroFloat, pulseScale, shimmer]);
   
@@ -180,11 +183,11 @@ export default function HomeScreen() {
     loadGames();
   }, []);
   
-  // Cleanup dodo timeout on unmount
+  // Cleanup alchemist timeout on unmount
   useEffect(() => {
     return () => {
-      if (dodoTimeoutRef.current) {
-        clearTimeout(dodoTimeoutRef.current);
+      if (alchemistTimeoutRef.current) {
+        clearTimeout(alchemistTimeoutRef.current);
       }
     };
   }, []);
@@ -201,14 +204,14 @@ export default function HomeScreen() {
     transform: [{ scale: pulseScale.value }],
   }));
 
-  const handleDodoPress = useCallback(() => {
+  const handleAlchemistPress = useCallback(() => {
     // Clear any existing timeout
-    if (dodoTimeoutRef.current) {
-      clearTimeout(dodoTimeoutRef.current);
+    if (alchemistTimeoutRef.current) {
+      clearTimeout(alchemistTimeoutRef.current);
     }
     
-    setDodoMood('excited');
-    dodoTimeoutRef.current = setTimeout(() => setDodoMood('idle'), 2000);
+    setAlchemistMood('excited');
+    alchemistTimeoutRef.current = setTimeout(() => setAlchemistMood('idle'), 2000);
   }, []);
 
   const handleCreateGift = useCallback(() => {
@@ -230,10 +233,10 @@ export default function HomeScreen() {
       color: themeColors.primary,
     },
     {
-      icon: 'bird',
-      title: 'Dodo Helper',
+      icon: 'flask',
+      title: 'The Alchemist',
       onPress: () => {
-        setDodoMood('excited');
+        setAlchemistMood('excited');
         navigation.navigate('Genie');
       },
       color: themeColors.accent,
@@ -251,7 +254,7 @@ export default function HomeScreen() {
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.scrollContent}
         >
-          {/* Minimal Header with Dodo */}
+          {/* Minimal Header with The Alchemist */}
           <Animated.View 
             entering={FadeInDown.duration(600).delay(100)}
             style={styles.header}
@@ -273,11 +276,11 @@ export default function HomeScreen() {
             </View>
             
             <Animated.View style={heroFloatStyle}>
-              <DodoCompanion
-                mood={dodoMood}
+              <AlchemistCompanion
+                mood={alchemistMood}
                 size="small"
                 message={greeting}
-                onPress={handleDodoPress}
+                onPress={handleAlchemistPress}
                 showBubble={true}
               />
             </Animated.View>
@@ -289,11 +292,10 @@ export default function HomeScreen() {
             ONE thing to do: Create a Gift
           */}
           <Animated.View 
-            entering={SlideInUp.duration(800).delay(200)}
+            entering={SlideInUp.springify().damping(14).stiffness(120)}
             style={[styles.heroSection, heroFloatStyle]}
           >
-            <TouchableOpacity 
-              activeOpacity={0.95}
+            <PressableScale
               onPress={handleCreateGift}
               style={styles.heroTouchable}
             >
@@ -313,6 +315,7 @@ export default function HomeScreen() {
                   borderColor: themeColors.accent + '40',
                 }
               ]}>
+                {PlayGiftConsumerMode && <ShimmerOverlay />}
                 {/* Decorative corner accents */}
                 <View style={[styles.cornerAccent, styles.cornerTopLeft, { backgroundColor: themeColors.accent }]} />
                 <View style={[styles.cornerAccent, styles.cornerTopRight, { backgroundColor: themeColors.accent }]} />
@@ -355,7 +358,7 @@ export default function HomeScreen() {
                   Takes 60 seconds
                 </Text>
               </View>
-            </TouchableOpacity>
+            </PressableScale>
           </Animated.View>
 
           {/* Seasonal Drop (if active) */}

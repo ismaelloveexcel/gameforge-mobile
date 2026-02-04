@@ -1,4 +1,4 @@
-# Deployment Platform Comparison for GameForge Mobile
+# Deployment Platform Comparison for PlayGift
 
 A detailed comparison of free deployment platforms suitable for React Native + Expo apps.
 
@@ -399,7 +399,7 @@ vercel --prod
 
 ## 🚀 Final Recommendation
 
-**For GameForge Mobile:**
+**For PlayGift:**
 
 ### Use This Combo:
 ```

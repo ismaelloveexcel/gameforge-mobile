@@ -1,6 +1,6 @@
 # Game Templates Documentation
 
-GameForge Mobile includes 15 complete, production-ready game templates. Each template is fully functional and can be customized to create your unique game.
+PlayGift includes 15 complete, production-ready game templates. Each template is fully functional and can be customized to create your unique game.
 
 ## Template Categories
 

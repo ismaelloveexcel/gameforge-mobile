@@ -1,4 +1,4 @@
-# FIRST-TIME FLOW — GameForge Mobile
+# FIRST-TIME FLOW — PlayGift
 
 ## The 30-Second Rule
 
@@ -21,7 +21,7 @@ If any step fails, the UI has failed.
 **NOT THIS (Generic SaaS):**
 ```
 ┌─────────────────────────────────┐
-│  GameForge                      │
+│  PlayGift                       │
 │  ─────────────────────────────  │
 │  Welcome! Here's what you can   │
 │  do with our platform...        │
@@ -72,7 +72,7 @@ If any step fails, the UI has failed.
    - Trust signal: "Takes 60 seconds"
    - Seasonal visual treatment (Winter Majlis glow)
 
-2. **Companion:** Dodo in corner, waving, contextual greeting
+2. **Companion:** The Alchemist in corner, waving, contextual greeting
 
 ### Below the Fold (Scroll to See)
 
@@ -111,7 +111,7 @@ Q5: "Choose game style"
 
 ### Step 3: Generation
 - Premium loading animation (5-8 seconds)
-- Dodo "working magic" animation
+- The Alchemist "working magic" animation
 - Progress indicators with encouraging messages
 
 ### Step 4: Result
@@ -163,7 +163,7 @@ Q5: "Choose game style"
 ✅ One dominant action, others below fold
 
 ### 2. The Welcome Modal
-❌ "Welcome to GameForge! Let us show you around..."
+❌ "Welcome to PlayGift! Let us show you around..."
 ✅ The UI itself is the tutorial
 
 ### 3. The Choice Paralysis
@@ -210,7 +210,7 @@ Before any release, verify:
 - [ ] Share button works on all platforms
 - [ ] Loading states have premium animation
 - [ ] Seasonal theme is correctly applied
-- [ ] Dodo companion enhances, doesn't distract
+- [ ] The Alchemist companion enhances, doesn't distract
 
 ---
 

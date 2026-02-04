@@ -1,5 +1,5 @@
 # Repository Management Strategy
-## Managing GameForge Mobile + GameDevelopmentHub (Automation Brain)
+## Managing PlayGift + GameDevelopmentHub (Automation Brain)
 
 > **Goal:** Run both repos as a unified, automated side hustle requiring <5 hours/week oversight from a non-technical owner.
 
@@ -9,7 +9,7 @@
 
 ### What Exists Today
 
-**GameForge Mobile** ✅ EXISTS
+**PlayGift** ✅ EXISTS
 - **Purpose:** User-facing app (iOS/Android/Web)
 - **Location:** `github.com/ismaelloveexcel/gameforge-mobile`
 - **Status:** Code complete but needs redesign
@@ -70,7 +70,7 @@
 
 ### Separation of Concerns
 
-| Aspect | GameForge Mobile | GameDevelopmentHub |
+| Aspect | PlayGift | GameDevelopmentHub |
 |--------|-----------------|-------------------|
 | **Language** | TypeScript/JavaScript | Python |
 | **Purpose** | User experience | Automation & intelligence |
@@ -261,7 +261,7 @@ TABLE app_config {
                           │
                           ▼
 ┌─────────────────────────────────────────────────────────┐
-│  MOBILE APP (GameForge Mobile)                          │
+│  MOBILE APP (PlayGift)                                  │
 ├─────────────────────────────────────────────────────────┤
 │                                                          │
 │  1. Home screen queries featured_games WHERE status='live'│
@@ -279,7 +279,7 @@ TABLE app_config {
                           │
                           ▼
 ┌─────────────────────────────────────────────────────────┐
-│  COMMAND CENTRE (GameForge Mobile - Admin Screen)       │
+│  COMMAND CENTRE (PlayGift - Admin Screen)               │
 ├─────────────────────────────────────────────────────────┤
 │                                                          │
 │  1. Dashboard queries analytics_events                  │
@@ -345,7 +345,7 @@ firebase init firestore
 
 ---
 
-### Step 2: Setup GameForge Mobile Backend Connection (Week 1)
+### Step 2: Setup PlayGift Backend Connection (Week 1)
 
 ```bash
 cd gameforge-mobile
@@ -634,7 +634,7 @@ export function CommandCentreScreen() {
 
 ### Environment Variables
 
-**GameForge Mobile (.env):**
+**PlayGift (.env):**
 ```bash
 # Backend
 SUPABASE_URL=https://your-project.supabase.co
@@ -651,7 +651,7 @@ PAYTABS_PROFILE_ID=xxx
 MIXPANEL_TOKEN=xxx
 ```
 
-**GameForge Automation (.env):**
+**PlayGift Automation (.env):**
 ```bash
 # Backend (needs admin access)
 SUPABASE_URL=https://your-project.supabase.co
@@ -820,7 +820,7 @@ SELECT * FROM pg_policies WHERE tablename = 'gift_instances';
 - [ ] Test connection from local machine
 - [ ] Add secrets to GitHub
 
-### Week 2: Connect GameForge Mobile
+### Week 2: Connect PlayGift
 - [ ] Install `@supabase/supabase-js`
 - [ ] Create `SupabaseService.ts`
 - [ ] Update Command Centre to fetch real data
@@ -847,7 +847,7 @@ SELECT * FROM pg_policies WHERE tablename = 'gift_instances';
 
 You'll know the two-repo system is working when:
 
-1. **GameForge Mobile:**
+1. **PlayGift:**
    - ✅ Command Centre shows real-time metrics (not mock)
    - ✅ Featured games appear from database
    - ✅ Gift creation saves to database

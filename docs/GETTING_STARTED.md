@@ -1,6 +1,6 @@
-# Getting Started with GameForge Mobile
+# Getting Started with PlayGift
 
-Welcome to GameForge Mobile! This guide will help you create your first game in minutes.
+Welcome to PlayGift! This guide will help you create your first game in minutes.
 
 ## Table of Contents
 - [Installation](#installation)
@@ -59,7 +59,7 @@ This will open the Expo Developer Tools in your browser.
 
 ### 1. Choose a Template
 
-When you first launch GameForge, you'll see 15 game templates to choose from:
+When you first launch PlayGift, you'll see 15 game templates to choose from:
 
 **Beginner-Friendly:**
 - Puzzle Match-3
@@ -214,10 +214,10 @@ Now that you've created your first game, explore these topics:
 ## Video Tutorials
 
 🎥 Watch our video series:
-- [GameForge Basics (10 min)](https://example.com/basics)
+- [PlayGift Basics (10 min)](https://example.com/basics)
 - [Creating Your First Game (20 min)](https://example.com/first-game)
 - [Advanced Techniques (30 min)](https://example.com/advanced)
 
 ---
 
-**Ready to create?** Open GameForge and start building your dream game!
+**Ready to create?** Open PlayGift and start building your dream game!

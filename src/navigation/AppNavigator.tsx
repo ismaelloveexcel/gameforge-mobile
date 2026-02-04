@@ -9,7 +9,7 @@ import ProjectListScreen from '../screens/ProjectListScreen';
 import ProjectEditorScreen from '../screens/ProjectEditorScreen';
 import TemplateSelectorScreen from '../screens/TemplateSelectorScreen';
 import TemplatePreviewScreen from '../screens/TemplatePreviewScreen';
-import DodoAssistantScreen from '../screens/DodoAssistantScreen';
+import AlchemistAssistantScreen from '../screens/AlchemistAssistantScreen';
 import AssetLibraryScreen from '../screens/AssetLibraryScreen';
 import MarketingDashboardScreen from '../screens/MarketingDashboardScreen';
 import VREditorScreen from '../screens/VREditorScreen';
@@ -52,7 +52,7 @@ function MainTabs() {
               iconName = focused ? 'view-grid' : 'view-grid-outline';
               break;
             case 'Genie': // Keep route name for compatibility
-              iconName = 'bird'; // Dodo icon!
+              iconName = 'flask'; // Alchemist icon
               break;
             default:
               iconName = 'help-circle-outline';
@@ -82,8 +82,8 @@ function MainTabs() {
       <Tab.Screen name="Templates" component={TemplateSelectorScreen} />
       <Tab.Screen 
         name="Genie" 
-        component={DodoAssistantScreen} 
-        options={{ tabBarLabel: 'Dodo' }}
+        component={AlchemistAssistantScreen} 
+        options={{ tabBarLabel: 'Alchemist' }}
       />
     </Tab.Navigator>
   );

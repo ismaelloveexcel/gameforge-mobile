@@ -4,7 +4,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import AppNavigator from './src/navigation/AppNavigator';
 import { ThemeProvider } from './src/contexts/ThemeContext';
-import { DodoProvider } from './src/contexts/DodoContext';
+import { AlchemistProvider } from './src/contexts/AlchemistContext';
 
 const queryClient = new QueryClient();
 
@@ -13,11 +13,11 @@ export default function App() {
     <SafeAreaProvider>
       <QueryClientProvider client={queryClient}>
         <ThemeProvider>
-          <DodoProvider>
+          <AlchemistProvider>
             <NavigationContainer>
               <AppNavigator />
             </NavigationContainer>
-          </DodoProvider>
+          </AlchemistProvider>
         </ThemeProvider>
       </QueryClientProvider>
     </SafeAreaProvider>

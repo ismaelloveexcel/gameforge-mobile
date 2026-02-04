@@ -1,10 +1,10 @@
 # VR Development Guide
 
-Create immersive VR experiences with GameForge Mobile.
+Create immersive VR experiences with PlayGift.
 
 ## VR Templates
 
-GameForge includes 4 VR templates:
+PlayGift includes 4 VR templates:
 1. VR Escape Room
 2. AR Treasure Hunt
 3. Virtual Museum

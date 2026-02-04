@@ -47,6 +47,7 @@
     "babylonjs-loaders": "^6.33.1",
     "date-fns": "^2.30.0",
     "expo": "~49.0.15",
+    "expo-blur": "^15.0.8",
     "expo-build-properties": "~1.0.10",
     "expo-gl": "~13.0.1",
     "expo-linear-gradient": "^15.0.8",

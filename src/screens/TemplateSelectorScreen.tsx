@@ -1,6 +1,6 @@
 /**
  * TemplateSelectorScreen - Choose your game blueprint! 🎮
- * Enhanced with ForgeCard design and Dodo encouragement
+ * Enhanced with ForgeCard design and Alchemist encouragement
  */
 import React, { useState } from 'react';
 import {
@@ -18,7 +18,7 @@ import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { templateLibrary } from '../services/TemplateLibrary';
 import { GameTemplate, RootStackParamList } from '../types';
-import { LivingGradient, ForgeCard, DodoCompanion } from '../components';
+import { LivingGradient, ForgeCard, AlchemistCompanion } from '../components';
 import { spacing, typography, radii, forgeColors } from '../design-tokens/theme';
 
 type NavigationProp = StackNavigationProp<RootStackParamList>;
@@ -68,7 +68,7 @@ export default function TemplateSelectorScreen() {
   return (
     <LivingGradient intensity="subtle">
       <View style={styles.container}>
-        {/* Header with Dodo */}
+        {/* Header with The Alchemist */}
         <Animated.View entering={FadeInDown.duration(500)} style={styles.header}>
           <View style={styles.headerContent}>
             <Text style={[styles.title, { color: theme.colors.text }]}>Game Templates</Text>
@@ -76,7 +76,7 @@ export default function TemplateSelectorScreen() {
               Choose from 15 ready-to-forge blueprints
             </Text>
           </View>
-          <DodoCompanion
+          <AlchemistCompanion
             mood="curious"
             size="mini"
             message="Pick a template to start creating! 🎮"

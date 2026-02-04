@@ -1,6 +1,6 @@
 /**
  * ProjectListScreen - Your creations live here! 📁
- * Beautiful empty states with Dodo encouragement
+ * Beautiful empty states with Alchemist encouragement
  */
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
@@ -64,7 +64,7 @@ export default function ProjectListScreen() {
             actionLabel="Start Creating"
             onAction={() => navigation.navigate('Templates')}
             variant="projects"
-            dodoMessage="Your first project is waiting to be born! ✨"
+            alchemistMessage="Your first project is waiting to be born! ✨"
           />
         ) : (
           <FlatList

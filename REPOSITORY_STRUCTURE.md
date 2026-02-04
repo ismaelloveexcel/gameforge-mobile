@@ -8,7 +8,7 @@ This document clarifies the relationship between related repositories and their 
 
 ### Primary Repository
 **[gameforge-mobile](https://github.com/ismaelloveexcel/gameforge-mobile)**
-- **Purpose**: Main development repository for the GameForge Mobile application
+- **Purpose**: Main development repository for the PlayGift application
 - **Contains**: Core application code, GiftForge features, and active development
 - **Target for**: Feature PRs, bug fixes, and GiftForge pivot development
 

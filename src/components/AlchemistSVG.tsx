@@ -1,8 +1,8 @@
 /**
- * DodoCompanion - A beautifully illustrated, animated Dodo mascot 🦤
+ * The Alchemist SVG - A beautifully illustrated, animated mascot 🧪
  * Features smooth SVG graphics with expressive animations
  */
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect } from 'react';
 import { View, StyleSheet, Text, Platform } from 'react-native';
 import Svg, {
   G,
@@ -13,12 +13,10 @@ import Svg, {
   LinearGradient,
   RadialGradient,
   Stop,
-  ClipPath,
 } from 'react-native-svg';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
-  useAnimatedProps,
   withTiming,
   withRepeat,
   withSequence,
@@ -31,11 +29,8 @@ import { useTheme } from '../contexts/ThemeContext';
 import { forgeColors } from '../design-tokens/theme';
 
 const AnimatedG = Animated.createAnimatedComponent(G);
-const AnimatedPath = Animated.createAnimatedComponent(Path);
-const AnimatedEllipse = Animated.createAnimatedComponent(Ellipse);
-const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 
-export type DodoMood = 
+export type AlchemistMood = 
   | 'idle' 
   | 'happy' 
   | 'thinking' 
@@ -45,8 +40,8 @@ export type DodoMood =
   | 'curious'
   | 'waving';
 
-interface DodoCompanionProps {
-  mood?: DodoMood;
+interface AlchemistSVGProps {
+  mood?: AlchemistMood;
   size?: 'mini' | 'small' | 'medium' | 'large' | 'hero';
   message?: string;
   showBubble?: boolean;
@@ -61,8 +56,8 @@ const SIZE_MAP = {
   hero: 200,
 };
 
-// Beautiful color palette for Dodo
-const DODO_COLORS = {
+// Beautiful color palette for The Alchemist
+const ALCHEMIST_COLORS = {
   // Body - soft blue-grey with warmth
   bodyMain: '#5B7C99',
   bodyLight: '#7A9BB8',
@@ -101,15 +96,22 @@ const DODO_COLORS = {
   
   // Feather details
   featherAccent: '#89A4B8',
+
+  // Alchemist accessories
+  glasses: '#2D2A2E',
+  coat: '#F8FAFC',
+  coatShadow: '#E2E8F0',
+  potionGlass: '#C7F9F2',
+  potionLiquid: '#F59E0B',
+  potionLiquidAlt: '#A78BFA',
 };
 
-const DodoCompanion = React.memo(function DodoCompanion({
+const AlchemistSVG = React.memo(function AlchemistSVG({
   mood = 'idle',
   size = 'medium',
   message,
   showBubble = true,
-  color,
-}: DodoCompanionProps) {
+}: AlchemistSVGProps) {
   const { isDark } = useTheme();
   const dimensions = SIZE_MAP[size];
   
@@ -399,8 +401,6 @@ const DodoCompanion = React.memo(function DodoCompanion({
     ],
   }));
   
-  const scale = dimensions / 100; // Base design is 100px
-  
   return (
     <View style={[styles.container, { width: dimensions, height: dimensions + 40 }]}>
       {/* Speech Bubble */}
@@ -424,7 +424,7 @@ const DodoCompanion = React.memo(function DodoCompanion({
         </Animated.View>
       )}
       
-      {/* The Dodo SVG */}
+      {/* The Alchemist SVG */}
       <Animated.View style={bodyAnimatedStyle}>
         <Svg
           width={dimensions}
@@ -434,61 +434,67 @@ const DodoCompanion = React.memo(function DodoCompanion({
           <Defs>
             {/* Body gradient */}
             <LinearGradient id="bodyGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-              <Stop offset="0%" stopColor={DODO_COLORS.bodyLight} />
-              <Stop offset="50%" stopColor={DODO_COLORS.bodyMain} />
-              <Stop offset="100%" stopColor={DODO_COLORS.bodyDark} />
+              <Stop offset="0%" stopColor={ALCHEMIST_COLORS.bodyLight} />
+              <Stop offset="50%" stopColor={ALCHEMIST_COLORS.bodyMain} />
+              <Stop offset="100%" stopColor={ALCHEMIST_COLORS.bodyDark} />
             </LinearGradient>
             
             {/* Belly gradient */}
             <RadialGradient id="bellyGradient" cx="50%" cy="40%" r="50%">
-              <Stop offset="0%" stopColor={DODO_COLORS.bellyLight} />
-              <Stop offset="70%" stopColor={DODO_COLORS.belly} />
-              <Stop offset="100%" stopColor={DODO_COLORS.bellyShade} />
+              <Stop offset="0%" stopColor={ALCHEMIST_COLORS.bellyLight} />
+              <Stop offset="70%" stopColor={ALCHEMIST_COLORS.belly} />
+              <Stop offset="100%" stopColor={ALCHEMIST_COLORS.bellyShade} />
             </RadialGradient>
             
             {/* Beak gradient */}
             <LinearGradient id="beakGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-              <Stop offset="0%" stopColor={DODO_COLORS.beakLight} />
-              <Stop offset="50%" stopColor={DODO_COLORS.beakMain} />
-              <Stop offset="100%" stopColor={DODO_COLORS.beakDark} />
+              <Stop offset="0%" stopColor={ALCHEMIST_COLORS.beakLight} />
+              <Stop offset="50%" stopColor={ALCHEMIST_COLORS.beakMain} />
+              <Stop offset="100%" stopColor={ALCHEMIST_COLORS.beakDark} />
             </LinearGradient>
             
             {/* Wing gradient */}
             <LinearGradient id="wingGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-              <Stop offset="0%" stopColor={DODO_COLORS.wingLight} />
-              <Stop offset="100%" stopColor={DODO_COLORS.wingDark} />
+              <Stop offset="0%" stopColor={ALCHEMIST_COLORS.wingLight} />
+              <Stop offset="100%" stopColor={ALCHEMIST_COLORS.wingDark} />
             </LinearGradient>
             
             {/* Eye shine */}
             <RadialGradient id="eyeShine" cx="30%" cy="30%" r="50%">
-              <Stop offset="0%" stopColor={DODO_COLORS.eyeShine} stopOpacity="0.9" />
-              <Stop offset="100%" stopColor={DODO_COLORS.eyeShine} stopOpacity="0" />
+              <Stop offset="0%" stopColor={ALCHEMIST_COLORS.eyeShine} stopOpacity="0.9" />
+              <Stop offset="100%" stopColor={ALCHEMIST_COLORS.eyeShine} stopOpacity="0" />
             </RadialGradient>
+
+            {/* Potion liquid gradient */}
+            <LinearGradient id="potionGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+              <Stop offset="0%" stopColor={ALCHEMIST_COLORS.potionLiquid} />
+              <Stop offset="100%" stopColor={ALCHEMIST_COLORS.potionLiquidAlt} />
+            </LinearGradient>
           </Defs>
           
           {/* Tail feathers */}
-          <G transform="translate(70, 55)">
+          <AnimatedG transform="translate(70, 55)" style={tailStyle}>
             <Path
               d="M0,0 Q15,-8 12,5 Q8,15 0,10 Z"
-              fill={DODO_COLORS.bodyMain}
+              fill={ALCHEMIST_COLORS.bodyMain}
             />
             <Path
               d="M2,2 Q18,-5 15,8 Q10,18 2,12 Z"
-              fill={DODO_COLORS.bodyLight}
+              fill={ALCHEMIST_COLORS.bodyLight}
               opacity={0.7}
             />
             <Path
               d="M0,5 Q12,0 10,10 Q5,18 0,12 Z"
-              fill={DODO_COLORS.featherAccent}
+              fill={ALCHEMIST_COLORS.featherAccent}
               opacity={0.5}
             />
-          </G>
+          </AnimatedG>
           
           {/* Left leg */}
           <G>
             <Path
               d="M38,75 L35,88 L30,90 M35,88 L35,92 M35,88 L40,90"
-              stroke={DODO_COLORS.feet}
+              stroke={ALCHEMIST_COLORS.feet}
               strokeWidth={3}
               strokeLinecap="round"
               fill="none"
@@ -499,7 +505,7 @@ const DodoCompanion = React.memo(function DodoCompanion({
           <G>
             <Path
               d="M55,75 L58,88 L53,90 M58,88 L58,92 M58,88 L63,90"
-              stroke={DODO_COLORS.feet}
+              stroke={ALCHEMIST_COLORS.feet}
               strokeWidth={3}
               strokeLinecap="round"
               fill="none"
@@ -521,7 +527,7 @@ const DodoCompanion = React.memo(function DodoCompanion({
             cy={48}
             rx={12}
             ry={10}
-            fill={DODO_COLORS.bodyHighlight}
+            fill={ALCHEMIST_COLORS.bodyHighlight}
             opacity={0.3}
           />
           
@@ -533,9 +539,47 @@ const DodoCompanion = React.memo(function DodoCompanion({
             ry={15}
             fill="url(#bellyGradient)"
           />
+
+          {/* Lab coat */}
+          <Path
+            d="M25,55 Q48,45 71,55 L67,80 Q52,88 33,80 Z"
+            fill={ALCHEMIST_COLORS.coat}
+          />
+          <Path
+            d="M32,60 Q48,52 64,60"
+            stroke={ALCHEMIST_COLORS.coatShadow}
+            strokeWidth={2}
+            strokeLinecap="round"
+            fill="none"
+          />
+          <Path
+            d="M38,64 L38,77"
+            stroke={ALCHEMIST_COLORS.coatShadow}
+            strokeWidth={2}
+            strokeLinecap="round"
+          />
+          <Path
+            d="M58,64 L58,77"
+            stroke={ALCHEMIST_COLORS.coatShadow}
+            strokeWidth={2}
+            strokeLinecap="round"
+          />
+          <Path
+            d="M44,72 L52,72"
+            stroke={ALCHEMIST_COLORS.coatShadow}
+            strokeWidth={2}
+            strokeLinecap="round"
+          />
+          <Path
+            d="M52,70 Q58,70 60,75 Q60,80 54,80"
+            stroke={ALCHEMIST_COLORS.coatShadow}
+            strokeWidth={2}
+            strokeLinecap="round"
+            fill="none"
+          />
           
           {/* Left wing */}
-          <G transform="translate(22, 45)" originX={10} originY={10}>
+          <AnimatedG transform="translate(22, 45)" originX={10} originY={10} style={leftWingStyle}>
             <Path
               d="M10,0 Q-5,10 0,25 Q5,30 15,25 Q25,15 20,5 Q15,-5 10,0 Z"
               fill="url(#wingGradient)"
@@ -543,37 +587,37 @@ const DodoCompanion = React.memo(function DodoCompanion({
             {/* Wing feather details */}
             <Path
               d="M8,8 Q2,15 5,22"
-              stroke={DODO_COLORS.wingLight}
+              stroke={ALCHEMIST_COLORS.wingLight}
               strokeWidth={1.5}
               fill="none"
               opacity={0.6}
             />
             <Path
               d="M12,6 Q8,14 10,20"
-              stroke={DODO_COLORS.wingLight}
+              stroke={ALCHEMIST_COLORS.wingLight}
               strokeWidth={1.5}
               fill="none"
               opacity={0.6}
             />
-          </G>
+          </AnimatedG>
           
           {/* Right wing */}
-          <G transform="translate(60, 45)" originX={10} originY={10}>
+          <AnimatedG transform="translate(60, 45)" originX={10} originY={10} style={rightWingStyle}>
             <Path
               d="M10,0 Q25,10 20,25 Q15,30 5,25 Q-5,15 0,5 Q5,-5 10,0 Z"
               fill="url(#wingGradient)"
             />
             <Path
               d="M12,8 Q18,15 15,22"
-              stroke={DODO_COLORS.wingLight}
+              stroke={ALCHEMIST_COLORS.wingLight}
               strokeWidth={1.5}
               fill="none"
               opacity={0.6}
             />
-          </G>
+          </AnimatedG>
           
           {/* Head */}
-          <G>
+          <AnimatedG style={headAnimatedStyle}>
             {/* Main head shape */}
             <Circle
               cx={48}
@@ -588,15 +632,15 @@ const DodoCompanion = React.memo(function DodoCompanion({
               cy={22}
               rx={8}
               ry={6}
-              fill={DODO_COLORS.bodyHighlight}
+              fill={ALCHEMIST_COLORS.bodyHighlight}
               opacity={0.4}
             />
             
             {/* Fluffy head tuft */}
             <G transform="translate(48, 8)">
-              <Ellipse cx={0} cy={0} rx={4} ry={6} fill={DODO_COLORS.bodyLight} />
-              <Ellipse cx={-4} cy={2} rx={3} ry={5} fill={DODO_COLORS.bodyMain} />
-              <Ellipse cx={4} cy={2} rx={3} ry={5} fill={DODO_COLORS.bodyMain} />
+              <Ellipse cx={0} cy={0} rx={4} ry={6} fill={ALCHEMIST_COLORS.bodyLight} />
+              <Ellipse cx={-4} cy={2} rx={3} ry={5} fill={ALCHEMIST_COLORS.bodyMain} />
+              <Ellipse cx={4} cy={2} rx={3} ry={5} fill={ALCHEMIST_COLORS.bodyMain} />
             </G>
             
             {/* Left eye white */}
@@ -605,7 +649,7 @@ const DodoCompanion = React.memo(function DodoCompanion({
               cy={26}
               rx={8}
               ry={9}
-              fill={DODO_COLORS.eyeWhite}
+              fill={ALCHEMIST_COLORS.eyeWhite}
             />
             
             {/* Right eye white */}
@@ -614,7 +658,7 @@ const DodoCompanion = React.memo(function DodoCompanion({
               cy={26}
               rx={8}
               ry={9}
-              fill={DODO_COLORS.eyeWhite}
+              fill={ALCHEMIST_COLORS.eyeWhite}
             />
             
             {/* Left eye iris */}
@@ -622,7 +666,7 @@ const DodoCompanion = React.memo(function DodoCompanion({
               cx={39}
               cy={27}
               r={5}
-              fill={DODO_COLORS.eyeIris}
+              fill={ALCHEMIST_COLORS.eyeIris}
             />
             
             {/* Right eye iris */}
@@ -630,7 +674,7 @@ const DodoCompanion = React.memo(function DodoCompanion({
               cx={57}
               cy={27}
               r={5}
-              fill={DODO_COLORS.eyeIris}
+              fill={ALCHEMIST_COLORS.eyeIris}
             />
             
             {/* Left pupil */}
@@ -638,7 +682,7 @@ const DodoCompanion = React.memo(function DodoCompanion({
               cx={40}
               cy={27}
               r={2.5}
-              fill={DODO_COLORS.eyePupil}
+              fill={ALCHEMIST_COLORS.eyePupil}
             />
             
             {/* Right pupil */}
@@ -646,14 +690,50 @@ const DodoCompanion = React.memo(function DodoCompanion({
               cx={56}
               cy={27}
               r={2.5}
-              fill={DODO_COLORS.eyePupil}
+              fill={ALCHEMIST_COLORS.eyePupil}
             />
             
             {/* Eye shines */}
-            <Circle cx={37} cy={24} r={2} fill={DODO_COLORS.eyeShine} />
-            <Circle cx={55} cy={24} r={2} fill={DODO_COLORS.eyeShine} />
-            <Circle cx={41} cy={29} r={1} fill={DODO_COLORS.eyeShine} opacity={0.6} />
-            <Circle cx={59} cy={29} r={1} fill={DODO_COLORS.eyeShine} opacity={0.6} />
+            <Circle cx={37} cy={24} r={2} fill={ALCHEMIST_COLORS.eyeShine} />
+            <Circle cx={55} cy={24} r={2} fill={ALCHEMIST_COLORS.eyeShine} />
+            <Circle cx={41} cy={29} r={1} fill={ALCHEMIST_COLORS.eyeShine} opacity={0.6} />
+            <Circle cx={59} cy={29} r={1} fill={ALCHEMIST_COLORS.eyeShine} opacity={0.6} />
+
+            {/* Glasses */}
+            <Circle
+              cx={38}
+              cy={26}
+              r={9}
+              stroke={ALCHEMIST_COLORS.glasses}
+              strokeWidth={2}
+              fill="none"
+            />
+            <Circle
+              cx={58}
+              cy={26}
+              r={9}
+              stroke={ALCHEMIST_COLORS.glasses}
+              strokeWidth={2}
+              fill="none"
+            />
+            <Path
+              d="M47,26 L49,26"
+              stroke={ALCHEMIST_COLORS.glasses}
+              strokeWidth={2}
+              strokeLinecap="round"
+            />
+            <Path
+              d="M29,24 L20,22"
+              stroke={ALCHEMIST_COLORS.glasses}
+              strokeWidth={2}
+              strokeLinecap="round"
+            />
+            <Path
+              d="M67,24 L76,22"
+              stroke={ALCHEMIST_COLORS.glasses}
+              strokeWidth={2}
+              strokeLinecap="round"
+            />
             
             {/* Cheeks */}
             <Ellipse
@@ -661,7 +741,7 @@ const DodoCompanion = React.memo(function DodoCompanion({
               cy={32}
               rx={5}
               ry={3}
-              fill={DODO_COLORS.cheek}
+              fill={ALCHEMIST_COLORS.cheek}
               opacity={0.6}
             />
             <Ellipse
@@ -669,7 +749,7 @@ const DodoCompanion = React.memo(function DodoCompanion({
               cy={32}
               rx={5}
               ry={3}
-              fill={DODO_COLORS.cheek}
+              fill={ALCHEMIST_COLORS.cheek}
               opacity={0.6}
             />
             
@@ -683,14 +763,23 @@ const DodoCompanion = React.memo(function DodoCompanion({
               {/* Beak curve/hook */}
               <Path
                 d="M5,0 Q10,3 8,8 Q6,10 4,8 Q3,5 5,0 Z"
-                fill={DODO_COLORS.beakDark}
+                fill={ALCHEMIST_COLORS.beakDark}
+              />
+              {/* Quirky grin */}
+              <Path
+                d="M-4,6 Q0,9 4,6"
+                stroke={ALCHEMIST_COLORS.beakTip}
+                strokeWidth={1.5}
+                strokeLinecap="round"
+                fill="none"
+                opacity={0.8}
               />
               {/* Nostril */}
-              <Ellipse cx={-2} cy={0} rx={1.5} ry={1} fill={DODO_COLORS.beakDark} opacity={0.5} />
+              <Ellipse cx={-2} cy={0} rx={1.5} ry={1} fill={ALCHEMIST_COLORS.beakDark} opacity={0.5} />
               {/* Beak highlight */}
               <Path
                 d="M-6,-1 Q-2,-5 4,-1"
-                stroke={DODO_COLORS.beakLight}
+                stroke={ALCHEMIST_COLORS.beakLight}
                 strokeWidth={1.5}
                 fill="none"
                 opacity={0.6}
@@ -702,14 +791,14 @@ const DodoCompanion = React.memo(function DodoCompanion({
               <>
                 <Path
                   d="M32,18 Q38,15 44,18"
-                  stroke={DODO_COLORS.bodyDark}
+                  stroke={ALCHEMIST_COLORS.bodyDark}
                   strokeWidth={2}
                   fill="none"
                   strokeLinecap="round"
                 />
                 <Path
                   d="M52,18 Q58,15 64,18"
-                  stroke={DODO_COLORS.bodyDark}
+                  stroke={ALCHEMIST_COLORS.bodyDark}
                   strokeWidth={2}
                   fill="none"
                   strokeLinecap="round"
@@ -722,14 +811,14 @@ const DodoCompanion = React.memo(function DodoCompanion({
               <>
                 <Path
                   d="M30,26 Q38,22 46,26"
-                  stroke={DODO_COLORS.eyeIris}
+                  stroke={ALCHEMIST_COLORS.eyeIris}
                   strokeWidth={3}
                   fill="none"
                   strokeLinecap="round"
                 />
                 <Path
                   d="M50,26 Q58,22 66,26"
-                  stroke={DODO_COLORS.eyeIris}
+                  stroke={ALCHEMIST_COLORS.eyeIris}
                   strokeWidth={3}
                   fill="none"
                   strokeLinecap="round"
@@ -742,14 +831,14 @@ const DodoCompanion = React.memo(function DodoCompanion({
               <>
                 <Path
                   d="M30,27 L46,27"
-                  stroke={DODO_COLORS.eyeIris}
+                  stroke={ALCHEMIST_COLORS.eyeIris}
                   strokeWidth={2}
                   fill="none"
                   strokeLinecap="round"
                 />
                 <Path
                   d="M50,27 L66,27"
-                  stroke={DODO_COLORS.eyeIris}
+                  stroke={ALCHEMIST_COLORS.eyeIris}
                   strokeWidth={2}
                   fill="none"
                   strokeLinecap="round"
@@ -759,7 +848,7 @@ const DodoCompanion = React.memo(function DodoCompanion({
                   x={70}
                   y={15}
                   fontSize={8}
-                  fill={DODO_COLORS.bodyDark}
+                  fill={ALCHEMIST_COLORS.bodyDark}
                   opacity={0.6}
                 >
                   z
@@ -768,14 +857,42 @@ const DodoCompanion = React.memo(function DodoCompanion({
                   x={75}
                   y={10}
                   fontSize={6}
-                  fill={DODO_COLORS.bodyDark}
+                  fill={ALCHEMIST_COLORS.bodyDark}
                   opacity={0.4}
                 >
                   z
                 </Text>
               </>
             )}
-          </G>
+          </AnimatedG>
+          
+          {/* Potion vials */}
+          <AnimatedG transform="translate(70, 70)" style={tailStyle}>
+            <Path
+              d="M0,0 L6,0 L5,10 Q5,14 3,14 Q1,14 1,10 Z"
+              fill={ALCHEMIST_COLORS.potionGlass}
+              opacity={0.7}
+              stroke={ALCHEMIST_COLORS.glasses}
+              strokeWidth={0.8}
+            />
+            <Path
+              d="M2,6 L4,6 L4,11 Q4,12 3,12 Q2,12 2,11 Z"
+              fill="url(#potionGradient)"
+            />
+          </AnimatedG>
+          <AnimatedG transform="translate(16, 68)" style={tailStyle}>
+            <Path
+              d="M0,0 L5,0 L6,9 Q6,12 3,12 Q0,12 0,9 Z"
+              fill={ALCHEMIST_COLORS.potionGlass}
+              opacity={0.7}
+              stroke={ALCHEMIST_COLORS.glasses}
+              strokeWidth={0.8}
+            />
+            <Path
+              d="M1.5,5 L4,5 L4,9 Q4,10 2.8,10 Q1.5,10 1.5,9 Z"
+              fill="url(#potionGradient)"
+            />
+          </AnimatedG>
           
           {/* Sparkles for excited/celebrating */}
           {(mood === 'excited' || mood === 'celebrating') && (
@@ -894,4 +1011,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default DodoCompanion;
+export default AlchemistSVG;

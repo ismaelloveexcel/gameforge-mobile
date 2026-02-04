@@ -45,6 +45,8 @@ export interface GiftQuestionnaire {
   customMessage?: string;
   memories?: string[]; // Key memories or inside jokes
   photos?: string[]; // Optional photo URLs
+  voiceNoteUri?: string;
+  voiceNoteDuration?: number;
 
   // Step 6: Preferences
   gameDuration: '5-min' | '10-min' | '15-min';
@@ -88,6 +90,11 @@ export interface PersonalizationParams {
     difficulty: number; // 1-5
     mechanics: Record<string, any>;
   };
+  memoryWeave?: {
+    photoUri?: string;
+    voiceNoteUri?: string;
+    voiceNoteDuration?: number;
+  };
 }
 
 class GiftGameService {
@@ -108,6 +115,7 @@ class GiftGameService {
       emotionalTone: 'warm-heartfelt',
       gameStyle: 'runner',
       senderName: '',
+      photos: [],
       gameDuration: '10-min',
       difficultyLevel: 'easy',
       createdAt: new Date(),
@@ -190,6 +198,11 @@ class GiftGameService {
         difficulty: difficultyMap[questionnaire.difficultyLevel],
         mechanics: this.generateGameMechanics(questionnaire),
       },
+      memoryWeave: {
+        photoUri: questionnaire.photos?.[0],
+        voiceNoteUri: questionnaire.voiceNoteUri,
+        voiceNoteDuration: questionnaire.voiceNoteDuration,
+      },
     };
   }
 
@@ -240,6 +253,15 @@ class GiftGameService {
   private determineArtStyle(questionnaire: GiftQuestionnaire): string {
     const { interests, recipientTraits, emotionalTone } = questionnaire;
 
+    if (questionnaire.occasion.includes('ramadan')) {
+      return 'ramadan-lantern-glow';
+    }
+    if (questionnaire.occasion.includes('valentines')) {
+      return 'valentine-iridescent';
+    }
+    if (questionnaire.occasion.includes('anniversary') || emotionalTone === 'warm-heartfelt') {
+      return 'valentine-iridescent';
+    }
     // Simple logic - in production, use AI
     if (interests.includes('retro') || interests.includes('gaming')) {
       return 'pixel';
@@ -398,9 +420,12 @@ class GiftGameService {
     const recipientName = questionnaire.recipientName || '[Name]';
     const senderName = questionnaire.senderName || '[Your Name]';
     const tone = questionnaire.emotionalTone || 'warm-heartfelt';
+    const memoryHint =
+      (questionnaire.photos?.length ? ' + Memory Photo' : '') +
+      (questionnaire.voiceNoteUri ? ' + Voice Note' : '');
 
     return {
-      visualPreview: `Art Style: ${questionnaire.gameStyle || 'runner'} with ${tone} theme`,
+      visualPreview: `Art Style: ${questionnaire.gameStyle || 'runner'} with ${tone} theme${memoryHint}`,
       messagePreview: `"Dear ${recipientName}, ${senderName} created something special just for you..."`,
       gameplayPreview: `A ${questionnaire.gameDuration || '10-min'} ${
         questionnaire.gameStyle || 'runner'

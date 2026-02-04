@@ -1,4 +1,4 @@
-# THEMING SYSTEM — GameForge Mobile
+# THEMING SYSTEM — PlayGift
 
 ## Seasonal Theme Calendar (UAE)
 

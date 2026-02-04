@@ -53,21 +53,6 @@ You can:
 
 ---
 
-## Automated Workflow Integration
-
-**When working on GiftForge features:**
-1. Reference `src/services/GrokService.ts` for AI generation patterns
-2. Use `src/services/AgentOrchestrator.ts` for multi-agent coordination
-3. Follow design tokens in `src/design-tokens/` for consistency
-4. Apply theming from `src/contexts/ThemeContext.tsx`
-
-**When evaluating screens:**
-1. Check against `UNIFIED_ECOSYSTEM.md` flywheel metrics
-2. Validate against `COMMAND_CENTRE.md` dashboard requirements
-3. Ensure `REPO_MANAGEMENT_STRATEGY.md` data flow compliance
-
----
-
 ## Auto-Block Patterns
 
 These trigger immediate BLOCK:
@@ -78,9 +63,6 @@ These trigger immediate BLOCK:
 - "AI-powered" language
 - Childish emojis in premium contexts
 - Feature lists before value
-- Placeholder data or mock states
-- Generic error messages
-- Loading states without delight
 
 ---
 
@@ -90,27 +72,8 @@ These trigger immediate BLOCK:
 COLD START → What do I see in 3 seconds?
 ONE ACTION → What should I tap?
 MAGIC → What happens in 30 seconds?
-VIRAL CHECK → Would user share this?
-MONETIZATION → Clear path to conversion?
-VERDICT → SHIP / CONDITIONAL / BLOCK
+VERDICT → SHIP / BLOCK
 ```
-
-### Verdict Definitions
-- **SHIP**: Ready for production. Meets all criteria, no blockers.
-- **CONDITIONAL**: Has minor issues that don't block launch but need tracking. Approved with follow-up tasks.
-- **BLOCK**: Fundamental problems that prevent launch. Must be resolved before shipping.
-
----
-
-## GiftForge-Specific Checks
-
-| Metric | Requirement | How to Verify |
-|--------|-------------|---------------|
-| Gift Completion Rate | >70% | Wizard flow analysis |
-| Share Rate | >60% | Share button prominence |
-| Recipient Play Rate | >80% | Preview clarity |
-| Gift Back Rate | >15% | Post-game prompts |
-| Paid Conversion | >8% | Pricing visibility |
 
 ---
 
@@ -139,6 +102,5 @@ Match or exceed:
 - **Notion** (clarity)
 - **Canva** (immediate value)
 - **Duolingo** (momentum)
-- **Superhuman** (confidence)
 
-If GameForge doesn't match → **BLOCK AND REDESIGN**.
+If PlayGift doesn't match → **BLOCK AND REDESIGN**.

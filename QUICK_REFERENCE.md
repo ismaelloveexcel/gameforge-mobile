@@ -1,5 +1,5 @@
 # 📋 QUICK REFERENCE CARD
-## GameForge Mobile Review - At a Glance
+## PlayGift Review - At a Glance
 
 **Date:** January 28, 2026  
 **Reviewed By:** FORGE-CHIEF (Product Authority)  

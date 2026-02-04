@@ -1,4 +1,4 @@
-# 🎯 Deployment Recommendation for GameForge Mobile
+# 🎯 Deployment Recommendation for PlayGift
 
 ## TL;DR - Quick Answer
 
@@ -14,7 +14,7 @@
 
 ## 📊 Why This Recommendation?
 
-After analyzing your GameForge Mobile repository, here's why Expo EAS + Vercel is the perfect match:
+After analyzing your PlayGift repository, here's why Expo EAS + Vercel is the perfect match:
 
 ### Your App Technology Stack:
 - ✅ React Native 0.72.6
@@ -303,6 +303,6 @@ npm run eas:build:android
 
 **Questions?** Check out the detailed guides in the `docs/` folder!
 
-**Made with ❤️ for GameForge Mobile**
+**Made with ❤️ for PlayGift**
 
 *Deploy once, run everywhere.* 🚀

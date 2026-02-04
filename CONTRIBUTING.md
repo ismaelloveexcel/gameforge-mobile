@@ -1,6 +1,6 @@
-# Contributing to GameForge Mobile
+# Contributing to PlayGift
 
-Thank you for your interest in contributing to GameForge Mobile! This document provides guidelines for contributing to the project.
+Thank you for your interest in contributing to PlayGift! This document provides guidelines for contributing to the project.
 
 ## Code of Conduct
 

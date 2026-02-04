@@ -1,7 +1,7 @@
-# 🚀 GAMEFORGE REDESIGN — 8-WEEK ACTION PLAN
+# 🚀 PLAYGIFT REDESIGN — 8-WEEK ACTION PLAN
 
 **Start Date:** Week of January 28, 2026  
-**Goal:** Transform GameForge from demo to working side hustle  
+**Goal:** Transform PlayGift from demo to working side hustle  
 **Owner:** Non-Technical Product Owner  
 **Authority:** FORGE-CHIEF Product Mandate
 
@@ -33,7 +33,7 @@ git mv src/screens/AssetLibraryScreen.tsx archive/
 git mv src/screens/ProjectEditorScreen.tsx archive/
 git mv src/screens/TemplateSelectorScreen.tsx archive/
 git mv src/screens/GenieAssistantScreen.tsx archive/
-git mv src/screens/DodoAssistantScreen.tsx archive/
+git mv src/screens/AlchemistAssistantScreen.tsx archive/
 git mv src/screens/ProjectListScreen.tsx archive/
 git mv src/screens/PublishScreen.tsx archive/
 
@@ -51,7 +51,7 @@ Edit `src/screens/HomeScreenNew.tsx`:
 
 ```typescript
 // DELETE these sections:
-- Secondary actions grid (Templates, Projects, Dodo Helper)
+- Secondary actions grid (Templates, Projects, The Alchemist Helper)
 - Feature cards below fold
 - Stats/social proof (not real yet)
 
@@ -341,7 +341,7 @@ Create `src/utils/ShareHelper.ts`:
 import Share from 'react-native-share';
 
 export const shareToWhatsApp = async (giftUrl: string, recipientName: string, senderName: string) => {
-  const message = `🎁 ${senderName} made something special for you!\n\nIt's a personalized mini-game just for you 🎮\n\nOpen your gift: ${giftUrl}\n\n✨ Made with GameForge`;
+  const message = `🎁 ${senderName} made something special for you!\n\nIt's a personalized mini-game just for you 🎮\n\nOpen your gift: ${giftUrl}\n\n✨ Made with PlayGift`;
   
   try {
     await Share.shareSingle({
@@ -809,7 +809,7 @@ vercel --prod
 
 **Day 3: Create Beta Landing Page**
 Simple one-pager:
-- "GameForge Beta — Gift games to people you love"
+- "PlayGift Beta — Gift games to people you love"
 - TestFlight link (iOS)
 - APK download (Android)
 - Email signup for updates

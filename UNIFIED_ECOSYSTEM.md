@@ -1,4 +1,4 @@
-# The GameForge Unified Ecosystem
+# The PlayGift Unified Ecosystem
 
 > From AI Research → To User's Hands → To Your Bank Account
 
@@ -50,7 +50,7 @@
 ```
 ┌─────────────────────────────────────────────────────────┐
 │                                                          │
-│  GameForge                              [👤] [⚙️]       │
+│  PlayGift                               [👤] [⚙️]       │
 │  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━   │
 │                                                          │
 │  ╔════════════════════════════════════════════════════╗ │
@@ -170,7 +170,7 @@
 ### Step 2: Games Appear in App
 
 ```typescript
-// GameForge Mobile pulls from shared content API
+// PlayGift pulls from shared content API
 interface FeaturedGame {
   id: string;
   name: string;
@@ -321,7 +321,7 @@ Viral coefficient: 1.3+ (every gift generates 1.3 new gifts)
 ### Shared Content Database
 
 ```
-GameDevelopmentHub              GameForge Mobile
+GameDevelopmentHub              PlayGift
        │                              │
        │    ┌──────────────────┐      │
        └───▶│  CONTENT API     │◀─────┘
@@ -422,7 +422,7 @@ jobs:
 ### Phase 1: Foundation (Week 1-2)
 - [ ] Create shared content database (Supabase)
 - [ ] Build Content API endpoints
-- [ ] Modify GameForge to fetch featured games
+- [ ] Modify PlayGift to fetch featured games
 - [ ] Add "Featured" section to home screen
 
 ### Phase 2: Monetization (Week 3-4)

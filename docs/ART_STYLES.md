@@ -1,6 +1,6 @@
 # Art Styles Guide
 
-GameForge includes 5 signature art styles, each with complete color palettes, shaders, and filters.
+PlayGift includes 5 signature art styles, each with complete color palettes, shaders, and filters.
 
 ## The 5 Art Styles
 

@@ -1,30 +1,30 @@
 /**
- * DodoContext - Your magical companion's brain! 🦤
- * Manages Dodo's personality, conversations, and mood
+ * AlchemistContext - Your magical companion's brain! 🧪
+ * Manages The Alchemist's personality, conversations, and mood
  * Note: No "AI" terminology - this is magic, not machines!
  */
 import React, { createContext, useContext, useState, useCallback, ReactNode } from 'react';
 import { genieService } from '../services/GenieService';
 
-// Dodo has different "specialties" (not "AI modes")
-export type DodoSpecialty = 'creative' | 'technical' | 'marketing' | 'educator';
+// The Alchemist has different "specialties" (not "AI modes")
+export type AlchemistSpecialty = 'creative' | 'technical' | 'marketing' | 'educator';
 
-// Dodo's moods affect how it responds
-export type DodoMood = 'idle' | 'thinking' | 'excited' | 'celebrating' | 'curious';
+// The Alchemist's moods affect how it responds
+export type AlchemistMood = 'idle' | 'thinking' | 'excited' | 'celebrating' | 'curious';
 
 // Messages in conversations
-export interface DodoMessage {
+export interface AlchemistMessage {
   id: string;
-  role: 'user' | 'dodo';
+  role: 'user' | 'alchemist';
   content: string;
   timestamp: Date;
-  specialty: DodoSpecialty;
+  specialty: AlchemistSpecialty;
   suggestions?: string[];
   codeSnippet?: string;
 }
 
 // Specialty configurations - personality-driven, not robot-like
-export const DODO_SPECIALTIES = {
+export const ALCHEMIST_SPECIALTIES = {
   creative: {
     name: 'Creative Spark',
     icon: 'palette',
@@ -75,27 +75,27 @@ export const DODO_SPECIALTIES = {
   },
 };
 
-interface DodoContextValue {
-  specialty: DodoSpecialty;
-  setSpecialty: (specialty: DodoSpecialty) => void;
-  mood: DodoMood;
-  messages: DodoMessage[];
+interface AlchemistContextValue {
+  specialty: AlchemistSpecialty;
+  setSpecialty: (specialty: AlchemistSpecialty) => void;
+  mood: AlchemistMood;
+  messages: AlchemistMessage[];
   sendMessage: (content: string, context?: any) => Promise<void>;
   clearMessages: () => void;
   isThinking: boolean;
-  getSpecialtyConfig: () => typeof DODO_SPECIALTIES.creative;
+  getSpecialtyConfig: () => typeof ALCHEMIST_SPECIALTIES.creative;
 }
 
-const DodoContext = createContext<DodoContextValue | undefined>(undefined);
+const AlchemistContext = createContext<AlchemistContextValue | undefined>(undefined);
 
-export const DodoProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [specialty, setSpecialty] = useState<DodoSpecialty>('creative');
-  const [mood, setMood] = useState<DodoMood>('idle');
-  const [messages, setMessages] = useState<DodoMessage[]>([]);
+export const AlchemistProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  const [specialty, setSpecialty] = useState<AlchemistSpecialty>('creative');
+  const [mood, setMood] = useState<AlchemistMood>('idle');
+  const [messages, setMessages] = useState<AlchemistMessage[]>([]);
   const [isThinking, setIsThinking] = useState(false);
 
   const getSpecialtyConfig = useCallback(() => {
-    return DODO_SPECIALTIES[specialty];
+    return ALCHEMIST_SPECIALTIES[specialty];
   }, [specialty]);
 
   const sendMessage = useCallback(async (content: string, context?: any) => {
@@ -103,7 +103,7 @@ export const DodoProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setMood('thinking');
 
     // Add user message
-    const userMessage: DodoMessage = {
+    const userMessage: AlchemistMessage = {
       id: Date.now().toString(),
       specialty,
       role: 'user',
@@ -116,41 +116,41 @@ export const DodoProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       // Get response (using existing service under the hood)
       const response = await genieService.processMessage(content, specialty, context);
 
-      // Transform response to be more Dodo-like
-      const config = DODO_SPECIALTIES[specialty];
+      // Transform response to be more Alchemist-like
+      const config = ALCHEMIST_SPECIALTIES[specialty];
       const personalityTouch = config.personality[Math.floor(Math.random() * config.personality.length)];
       
       // Make the response feel more personal
-      let dodoContent = response.content;
+      let alchemistContent = response.content;
       
-      // Add Dodo's personality touch occasionally
-      if (Math.random() > 0.5 && !dodoContent.includes('!')) {
-        dodoContent = `${personalityTouch}\n\n${dodoContent}`;
+      // Add The Alchemist's personality touch occasionally
+      if (Math.random() > 0.5 && !alchemistContent.includes('!')) {
+        alchemistContent = `${personalityTouch}\n\n${alchemistContent}`;
       }
 
-      // Add Dodo message
-      const dodoMessage: DodoMessage = {
+      // Add Alchemist message
+      const alchemistMessage: AlchemistMessage = {
         id: (Date.now() + 1).toString(),
         specialty,
-        role: 'dodo',
-        content: dodoContent,
+        role: 'alchemist',
+        content: alchemistContent,
         timestamp: new Date(),
         suggestions: response.suggestions,
         codeSnippet: response.codeSnippet,
       };
-      setMessages((prev) => [...prev, dodoMessage]);
+      setMessages((prev) => [...prev, alchemistMessage]);
       setMood('excited');
       
       // Return to idle after a moment
       setTimeout(() => setMood('idle'), 2000);
       
     } catch (error) {
-      console.error('Dodo got confused:', error);
-      const errorMessage: DodoMessage = {
+      console.error('The Alchemist got confused:', error);
+      const errorMessage: AlchemistMessage = {
         id: (Date.now() + 1).toString(),
         specialty,
-        role: 'dodo',
-        content: "Whoops! I got a bit tangled up there. 🦤💫 Can you try asking again? Sometimes I need a second to gather my feathers!",
+        role: 'alchemist',
+        content: "Whoops! I got a bit tangled up there. 🧪💫 Can you try asking again? Sometimes I need a second to gather my ingredients!",
         timestamp: new Date(),
       };
       setMessages((prev) => [...prev, errorMessage]);
@@ -166,7 +166,7 @@ export const DodoProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   }, []);
 
   return (
-    <DodoContext.Provider
+    <AlchemistContext.Provider
       value={{
         specialty,
         setSpecialty,
@@ -179,18 +179,18 @@ export const DodoProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       }}
     >
       {children}
-    </DodoContext.Provider>
+    </AlchemistContext.Provider>
   );
 };
 
-export const useDodo = () => {
-  const context = useContext(DodoContext);
+export const useAlchemist = () => {
+  const context = useContext(AlchemistContext);
   if (context === undefined) {
-    throw new Error('useDodo must be used within a DodoProvider');
+    throw new Error('useAlchemist must be used within an AlchemistProvider');
   }
   return context;
 };
 
 // Keep old export for backwards compatibility during migration
-export const useGenie = useDodo;
-export const GenieProvider = DodoProvider;
+export const useGenie = useAlchemist;
+export const GenieProvider = AlchemistProvider;

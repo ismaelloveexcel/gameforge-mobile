@@ -1,4 +1,4 @@
-# PRODUCT INTENT — GameForge Mobile
+# PRODUCT INTENT — PlayGift
 
 ## The One-Line Promise
 **Create a shareable mini-game for someone you love — in 60 seconds.**
@@ -11,7 +11,7 @@ People want to give memorable, personal gifts.
 Physical gifts are forgettable. Generic e-cards are soulless.
 A playable game with their name, your message, their favorite things? **That gets shared.**
 
-GameForge exists so non-technical people can create something that feels magical and personal — without learning anything.
+PlayGift exists so non-technical people can create something that feels magical and personal — without learning anything.
 
 ---
 
@@ -27,7 +27,7 @@ That's it. Everything else is secondary.
 
 ---
 
-## What GameForge Is NOT
+## What PlayGift Is NOT
 
 - ❌ A game engine for developers
 - ❌ A no-code platform requiring learning

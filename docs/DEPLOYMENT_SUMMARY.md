@@ -2,7 +2,7 @@
 
 ## Quick Answer
 
-**Best FREE deployment solution for GameForge Mobile:**
+**Best FREE deployment solution for PlayGift:**
 
 ```
 🎯 Expo EAS (Mobile) + Vercel (Web)

@@ -7,12 +7,22 @@ import {
   TouchableOpacity,
   Share,
   Alert,
+  Image,
 } from 'react-native';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList, GiftGame } from '../types';
 import { giftGameService } from '../services/GiftGameService';
 import { LinearGradient } from 'expo-linear-gradient';
+import { GiftBoxUnwrap, PressableScale, ShimmerOverlay } from '../components';
+import { PlayGiftConsumerMode } from '../config/flags';
+
+let ExpoAV: any = null;
+try {
+  ExpoAV = require('expo-av');
+} catch (error) {
+  ExpoAV = null;
+}
 
 type GiftPreviewScreenNavigationProp = StackNavigationProp<RootStackParamList, 'GiftPreview'>;
 type GiftPreviewScreenRouteProp = RouteProp<RootStackParamList, 'GiftPreview'>;
@@ -23,6 +33,8 @@ export const GiftPreviewScreen: React.FC = () => {
 
   const [giftGame, setGiftGame] = useState<GiftGame | null>(null);
   const [copied, setCopied] = useState(false);
+  const [unwrapped, setUnwrapped] = useState(false);
+  const [playingVoice, setPlayingVoice] = useState(false);
 
   useEffect(() => {
     if (route.params?.giftGameId) {
@@ -35,6 +47,24 @@ export const GiftPreviewScreen: React.FC = () => {
       }
     }
   }, [route.params?.giftGameId]);
+
+  useEffect(() => {
+    const voiceUri = giftGame?.gameData?.params?.memoryWeave?.voiceNoteUri;
+    if (!unwrapped || !voiceUri || !ExpoAV?.Audio || playingVoice) return;
+    const playVoice = async () => {
+      try {
+        setPlayingVoice(true);
+        const sound = new ExpoAV.Audio.Sound();
+        await sound.loadAsync({ uri: voiceUri });
+        await sound.playAsync();
+      } catch (error) {
+        console.warn('Failed to play voice memory', error);
+      } finally {
+        setPlayingVoice(false);
+      }
+    };
+    playVoice();
+  }, [unwrapped, giftGame, playingVoice]);
 
   const handleCopyLink = () => {
     if (giftGame) {
@@ -164,10 +194,41 @@ export const GiftPreviewScreen: React.FC = () => {
             </View>
           )}
 
-          {/* Demo Button */}
-          <TouchableOpacity style={styles.demoButton} onPress={handlePlayDemo}>
-            <Text style={styles.demoButtonText}>▶️ Play Demo</Text>
-          </TouchableOpacity>
+          {/* Digital Unboxing */}
+          {PlayGiftConsumerMode && (
+            <View style={styles.unboxSection}>
+              <Text style={styles.unboxTitle}>Digital Unboxing</Text>
+              <Text style={styles.unboxSubtitle}>Tap or drag the box to reveal the magic</Text>
+              <GiftBoxUnwrap onUnwrap={() => setUnwrapped(true)} />
+              {unwrapped && params?.memoryWeave?.photoUri && (
+                <View style={styles.memoryReveal}>
+                  <Text style={styles.memoryRevealTitle}>Memory Reveal</Text>
+                  <View style={styles.memoryRevealCard}>
+                    <Text style={styles.memoryRevealLabel}>A photo from the heart</Text>
+                    <View style={styles.memoryRevealFrame}>
+                      <Image
+                        source={{ uri: params.memoryWeave.photoUri }}
+                        style={styles.memoryRevealImage}
+                      />
+                    </View>
+                    {params?.memoryWeave?.voiceNoteUri && (
+                      <Text style={styles.memoryRevealLabel}>
+                        Voice note plays on unwrap
+                      </Text>
+                    )}
+                  </View>
+                </View>
+              )}
+              <PressableScale style={styles.unwrapButton} onPress={handlePlayDemo}>
+                <View style={styles.unwrapButtonInner}>
+                  <Text style={styles.unwrapButtonText}>
+                    {unwrapped ? '✨ Unwrapped!' : '🎁 Unwrap Gift'}
+                  </Text>
+                  <ShimmerOverlay />
+                </View>
+              </PressableScale>
+            </View>
+          )}
         </View>
 
         {/* Share Section */}
@@ -409,6 +470,68 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '700',
     color: '#fff',
+  },
+  unboxSection: {
+    marginTop: 20,
+    backgroundColor: 'rgba(255,255,255,0.08)',
+    borderRadius: 16,
+    padding: 16,
+  },
+  unboxTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#fff',
+    marginBottom: 6,
+  },
+  unboxSubtitle: {
+    fontSize: 13,
+    color: 'rgba(255,255,255,0.75)',
+    marginBottom: 12,
+  },
+  unwrapButton: {
+    marginTop: 12,
+    borderRadius: 14,
+    overflow: 'hidden',
+    backgroundColor: 'rgba(255,255,255,0.9)',
+  },
+  unwrapButtonInner: {
+    paddingVertical: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  unwrapButtonText: {
+    color: '#3D2A7A',
+    fontWeight: '700',
+    fontSize: 15,
+  },
+  memoryReveal: {
+    marginTop: 16,
+  },
+  memoryRevealTitle: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#fff',
+    marginBottom: 8,
+  },
+  memoryRevealCard: {
+    backgroundColor: 'rgba(255,255,255,0.12)',
+    borderRadius: 14,
+    padding: 12,
+  },
+  memoryRevealLabel: {
+    color: 'rgba(255,255,255,0.8)',
+    fontSize: 12,
+    marginBottom: 8,
+  },
+  memoryRevealFrame: {
+    borderRadius: 12,
+    overflow: 'hidden',
+    backgroundColor: 'rgba(0,0,0,0.2)',
+  },
+  memoryRevealImage: {
+    width: '100%',
+    height: 160,
+    resizeMode: 'cover',
   },
   shareSection: {
     backgroundColor: '#fff',

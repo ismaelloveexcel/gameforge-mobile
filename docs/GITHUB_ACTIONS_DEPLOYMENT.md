@@ -2,7 +2,7 @@
 
 ## Overview
 
-GameForge Mobile uses **GitHub Actions** as the free portal for automated deployment within GitHub. This provides CI/CD automation for:
+PlayGift uses **GitHub Actions** as the free portal for automated deployment within GitHub. This provides CI/CD automation for:
 
 - ✅ **Web Deployment** - Automatic deployment to Vercel
 - ✅ **Mobile Builds** - Automatic EAS builds for Android/iOS
@@ -373,6 +373,6 @@ on:
 
 ---
 
-**Made with ❤️ for GameForge Mobile**
+**Made with ❤️ for PlayGift**
 
 *Automate once, deploy everywhere.*

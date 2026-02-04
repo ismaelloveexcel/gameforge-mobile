@@ -1,6 +1,6 @@
 # Quick Deploy Guide 🚀
 
-Get your GameForge Mobile app deployed in under 10 minutes!
+Get your PlayGift app deployed in under 10 minutes!
 
 ## 🌐 Deploy Web Version (Fastest)
 

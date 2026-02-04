@@ -1,10 +1,10 @@
 # AI Integration Guide
 
-This guide explains how to set up and configure real AI integration for GameForge Mobile's Genie Assistant.
+This guide explains how to set up and configure real AI integration for PlayGift's Genie Assistant.
 
 ## Overview
 
-GameForge Mobile's Genie AI assistant supports two modes:
+PlayGift's Genie AI assistant supports two modes:
 1. **Simulation Mode** (Default) - Uses hardcoded responses, requires no API keys
 2. **Real AI Mode** - Connects to Grok AI (x.ai) or OpenAI-compatible APIs
 
@@ -89,7 +89,7 @@ if (response.codeSnippet) {
 
 ## Alternative: OpenAI Integration
 
-GameForge's Genie service is compatible with OpenAI and other OpenAI-compatible APIs:
+PlayGift's Genie service is compatible with OpenAI and other OpenAI-compatible APIs:
 
 ```typescript
 import { genieService } from './services/GenieService';

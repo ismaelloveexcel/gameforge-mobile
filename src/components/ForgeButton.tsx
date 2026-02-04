@@ -149,7 +149,7 @@ export default function ForgeButton({
     const scale = interpolate(
       pressed.value,
       [0, 1],
-      [pulse.value, 0.96],
+      [pulse.value, 0.92],
       Extrapolate.CLAMP
     );
     

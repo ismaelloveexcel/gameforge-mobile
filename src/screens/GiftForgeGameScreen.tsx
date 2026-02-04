@@ -25,6 +25,7 @@ import {
   GiftVisualStyle,
 } from '../types/giftforge';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { PressableScale } from '../components';
 
 type NavigationProp = StackNavigationProp<RootStackParamList>;
 type GameRouteProp = RouteProp<RootStackParamList, 'GiftForgeGame'>;
@@ -88,6 +89,8 @@ export default function GiftForgeGameScreen() {
   const [score, setScore] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
   const [showFeedback, setShowFeedback] = useState(false);
+  const [failCount, setFailCount] = useState(0);
+  const [autoReveal, setAutoReveal] = useState(false);
   
   // Animation values
   const fadeAnim = useSharedValue(0);
@@ -185,6 +188,17 @@ export default function GiftForgeGameScreen() {
     const question = game?.gameContent.questions?.[currentQuestionIndex];
     if (question && answerIndex === question.correctAnswer) {
       setScore(prev => prev + 20);
+      setFailCount(0);
+    } else if (question) {
+      setFailCount((prev) => {
+        const next = prev + 1;
+        if (next >= 2) {
+          setAutoReveal(true);
+          goToEnd();
+          return 0;
+        }
+        return next;
+      });
     }
     
     // Move to next question after delay
@@ -237,14 +251,14 @@ export default function GiftForgeGameScreen() {
             {game.introScreen.subtext}
           </Text>
           
-          <TouchableOpacity
+          <PressableScale
             style={[styles.startButton, { backgroundColor: visualTheme.primary }]}
             onPress={handleStart}
           >
             <Text style={styles.startButtonText}>
               {game.introScreen.buttonText}
             </Text>
-          </TouchableOpacity>
+          </PressableScale>
         </View>
       </Animated.View>
     );
@@ -473,6 +487,13 @@ export default function GiftForgeGameScreen() {
           <Text style={[styles.endHeadline, { color: visualTheme.primary }]}>
             {game.endScreen.headline}
           </Text>
+          {autoReveal && (
+            <View style={styles.successEngineBadge}>
+              <Text style={styles.successEngineText}>
+                Success Engine activated · You reached the reveal 💫
+              </Text>
+            </View>
+          )}
           
           <View style={[styles.messageCard, { backgroundColor: visualTheme.primary + '10' }]}>
             <Text style={[styles.personalMessage, { color: visualTheme.primary }]}>
@@ -493,12 +514,12 @@ export default function GiftForgeGameScreen() {
             </Text>
           </View>
           
-          <TouchableOpacity
+          <PressableScale
             style={[styles.homeButton, { backgroundColor: visualTheme.primary }]}
             onPress={() => navigation.navigate('MainTabs')}
           >
             <Text style={styles.homeButtonText}>Back to Home</Text>
-          </TouchableOpacity>
+          </PressableScale>
         </ScrollView>
       </Animated.View>
     );
@@ -784,6 +805,19 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
     marginBottom: 24,
+  },
+  successEngineBadge: {
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    borderRadius: 12,
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    alignSelf: 'center',
+    marginBottom: 16,
+  },
+  successEngineText: {
+    color: '#fff',
+    fontSize: 12,
+    fontWeight: '600',
   },
   messageCard: {
     padding: 24,

@@ -1,6 +1,8 @@
-# GameForge Mobile 🎮✨
+# PlayGift 🎮✨
 
 > AI-powered game creation platform - Create professional mobile games, VR experiences, and educational content with **zero coding required**.
+
+Set `PlayGiftConsumerMode = true` in `src/config/flags.ts` to enable full consumer-facing enchanted mode; keep it false for clean portal/minimal UI.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![React Native](https://img.shields.io/badge/React%20Native-0.72-61DAFB.svg)](https://reactnative.dev/)
@@ -268,7 +270,7 @@ npm run build:android
 
 ### ⭐ NEW: Automated Deployment with GitHub Actions
 
-GameForge Mobile now includes **automated CI/CD pipelines** using GitHub Actions - the free portal within GitHub!
+PlayGift now includes **automated CI/CD pipelines** using GitHub Actions - the free portal within GitHub!
 
 **What you get:**
 - ✅ **Automatic web deployment** to Vercel on every push to `main`
@@ -346,6 +348,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-**Made with ❤️ by the GameForge Team**
+**Made with ❤️ by the PlayGift Team**
 
 *Create games, not code.*

@@ -2,11 +2,11 @@
 
 ## Overview
 
-This document outlines the current GameForge Mobile architecture and the roadmap toward the full vision of an AI-powered, agent-orchestrated game creation platform.
+This document outlines the current PlayGift architecture and the roadmap toward the full vision of an AI-powered, agent-orchestrated game creation platform.
 
 ## Product Vision
 
-GameForge aims to be a system where:
+PlayGift aims to be a system where:
 1. **Autonomous agents** (supervised by Grok AI) research markets, generate game ideas, and run promotional campaigns
 2. **The public portal** markets personalized game creation for special occasions (birthdays, anniversaries, etc.)
 3. **Creators** can build professional games with zero coding using templates, AI assistance, and multiple engines
@@ -378,4 +378,4 @@ The mobile app provides a solid foundation. The next phase requires significant 
 
 **Document Version**: 1.0  
 **Last Updated**: January 2026  
-**Author**: GameForge Team
+**Author**: PlayGift Team

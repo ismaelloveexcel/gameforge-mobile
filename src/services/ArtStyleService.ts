@@ -184,6 +184,56 @@ const watercolorStyle: ArtStyleConfig = {
   ],
 };
 
+// Style 6: Ramadan Lantern Glow
+const ramadanLanternGlowStyle: ArtStyleConfig = {
+  id: 'ramadan-lantern-glow',
+  name: 'Ramadan Lantern Glow',
+  description: 'Deep jewel tones with warm lantern glows and golden highlights',
+  colors: {
+    primary: '#1B6F6A',
+    secondary: '#2B3A67',
+    accent: '#F5C56B',
+    background: '#0B1220',
+    text: '#F9E3B5',
+    custom: ['#0F2A44', '#123A2F', '#3A2E6B', '#C89B3C', '#E7C98A'],
+  },
+  filters: [
+    {
+      type: 'bloom',
+      parameters: { strength: 1.4, threshold: 0.45 },
+    },
+    {
+      type: 'vignette',
+      parameters: { strength: 0.35 },
+    },
+  ],
+};
+
+// Style 7: Valentine Iridescent
+const valentineIridescentStyle: ArtStyleConfig = {
+  id: 'valentine-iridescent',
+  name: 'Valentine Iridescent',
+  description: 'Soft pastels with shimmering iridescent highlights and dreamy glow',
+  colors: {
+    primary: '#FF7FB0',
+    secondary: '#B794F6',
+    accent: '#FFD1EC',
+    background: '#FFF1F7',
+    text: '#5A2246',
+    custom: ['#FFC4DA', '#E6C7FF', '#BDEBFF', '#FFE3F1', '#FFD9A8'],
+  },
+  filters: [
+    {
+      type: 'bloom',
+      parameters: { strength: 1.2, threshold: 0.5 },
+    },
+    {
+      type: 'softGlow',
+      parameters: { amount: 0.6 },
+    },
+  ],
+};
+
 /**
  * Art Style Service
  * Manages art styles and their application
@@ -195,10 +245,21 @@ class ArtStyleService {
     handDrawnStyle,
     neonCyberpunkStyle,
     watercolorStyle,
+    ramadanLanternGlowStyle,
+    valentineIridescentStyle,
   ];
+  private activeStyle: ArtStyle = 'lowpoly';
 
   getAllStyles(): ArtStyleConfig[] {
     return this.styles;
+  }
+
+  setActiveStyle(styleId: ArtStyle): void {
+    this.activeStyle = styleId;
+  }
+
+  getActiveStyle(): ArtStyle {
+    return this.activeStyle;
   }
 
   getStyleById(id: ArtStyle): ArtStyleConfig | undefined {
@@ -319,6 +380,18 @@ class ArtStyleService {
         'Soft gradient backgrounds',
         'Gentle sound effects',
         'Classical music',
+      ],
+      'ramadan-lantern-glow': [
+        'Lantern and crescent moon assets',
+        'Warm gold particle effects',
+        'Soft oud or ambient music',
+        'Jewel-toned gradients',
+      ],
+      'valentine-iridescent': [
+        'Iridescent heart textures',
+        'Soft shimmer overlays',
+        'Dreamy pastel gradients',
+        'Gentle chimes or sparkly SFX',
       ],
     };
 
