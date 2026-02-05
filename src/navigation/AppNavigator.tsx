@@ -24,6 +24,9 @@ import GiftForgeGameScreen from '../screens/GiftForgeGameScreen';
 import { AgentDashboardScreen } from '../screens/AgentDashboardScreen';
 // Command Centre (admin dashboard)
 import CommandCentreScreen from '../screens/CommandCentreScreen';
+// Instant Gift & Gift Memories
+import InstantGiftScreen from '../screens/InstantGiftScreen';
+import GiftMemoriesScreen from '../screens/GiftMemoriesScreen';
 
 import { useTheme } from '../contexts/ThemeContext';
 import { RootStackParamList } from '../types';
@@ -176,6 +179,18 @@ export default function AppNavigator() {
       <Stack.Screen 
         name="CommandCentre" 
         component={CommandCentreScreen}
+        options={{ headerShown: false }}
+      />
+      {/* Instant Gift flow */}
+      <Stack.Screen 
+        name="InstantGift" 
+        component={InstantGiftScreen}
+        options={{ headerShown: false, presentation: 'modal' }}
+      />
+      {/* Gift Memories */}
+      <Stack.Screen 
+        name="GiftMemories" 
+        component={GiftMemoriesScreen}
         options={{ headerShown: false }}
       />
     </Stack.Navigator>

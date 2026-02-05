@@ -230,12 +230,9 @@ export default function HomeScreen() {
       color: themeColors.primary,
     },
     {
-      icon: 'bird',
-      title: 'Dodo Helper',
-      onPress: () => {
-        setDodoMood('excited');
-        navigation.navigate('Genie');
-      },
+      icon: 'heart-multiple-outline',
+      title: 'Gift Memories',
+      onPress: () => navigation.navigate('GiftMemories'),
       color: themeColors.accent,
     },
   ], [navigation, themeColors.secondary, themeColors.primary, themeColors.accent]);
@@ -398,8 +395,8 @@ export default function HomeScreen() {
                         { backgroundColor: themeColors.surface, borderColor: themeColors.accent + '30' }
                       ]}
                       onPress={() => {
-                        // Navigate to instant gift flow
-                        navigation.navigate('GiftForgeWizard');
+                        // Navigate to instant gift flow with game data
+                        navigation.navigate('InstantGift', { game });
                       }}
                     >
                       <View style={[styles.gameIconCircle, { backgroundColor: themeColors.accent + '20' }]}>
@@ -460,7 +457,7 @@ export default function HomeScreen() {
                       styles.trendingCard,
                       { backgroundColor: themeColors.surface, borderColor: themeColors.muted + '20' }
                     ]}
-                    onPress={() => navigation.navigate('GiftForgeWizard')}
+                    onPress={() => navigation.navigate('InstantGift', { game })}
                   >
                     <View style={[styles.trendingIcon, { backgroundColor: themeColors.accent + '15' }]}>
                       <Icon 

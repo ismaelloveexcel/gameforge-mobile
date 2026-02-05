@@ -14,6 +14,7 @@ export { default as RouletteWheel } from './RouletteWheel';
 export { default as StyleCarousel } from './StyleCarousel';
 export { TactileButton } from './TactileButton';
 export { AlchemistCompanion } from './AlchemistCompanion';
+export { default as GiftChainPrompt } from './GiftChainPrompt';
 
 // Export types
 export type { DodoMood } from './DodoCompanionSVG';

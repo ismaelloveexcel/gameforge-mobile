@@ -24,6 +24,10 @@ export type RootStackParamList = {
   AgentDashboard: undefined;
   // Admin routes
   CommandCentre: undefined;
+  // Instant Gift flow
+  InstantGift: { game: import('../services/FeaturedGamesService').FeaturedGame };
+  // Gift Memories
+  GiftMemories: undefined;
 };
 
 // Project types
