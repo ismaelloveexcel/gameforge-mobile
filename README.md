@@ -9,6 +9,24 @@
 [![Build Mobile](https://github.com/ismaelloveexcel/gameforge-mobile/actions/workflows/build-mobile.yml/badge.svg)](https://github.com/ismaelloveexcel/gameforge-mobile/actions/workflows/build-mobile.yml)
 [![CI](https://github.com/ismaelloveexcel/gameforge-mobile/actions/workflows/ci.yml/badge.svg)](https://github.com/ismaelloveexcel/gameforge-mobile/actions/workflows/ci.yml)
 
+---
+
+## 🤖 Repository Supervisor - Automated Management
+
+This repository is managed by an **AI-powered Repository Supervisor** that:
+- ✅ **Monitors 24/7** - Tracks PRs, branches, workflows, and agent activity
+- ✅ **Intervenes Proactively** - Auto-comments on stale PRs (>24h) with specific fixes
+- ✅ **Cleans Automatically** - Identifies and removes obsolete branches (>30d)
+- ✅ **Delegates to Experts** - Routes tasks to specialized agents based on expertise
+- ✅ **Reports Health** - Generates real-time health scores and actionable insights
+- ✅ **Minimizes Manual Work** - Handles 90% of routine repo management
+
+**Check Repository Health:** `npm run health`
+
+📖 **[Full Supervisor Guide](./REPOSITORY_SUPERVISOR_GUIDE.md)** | 📋 **[Quick Reference](./SUPERVISOR_QUICK_REF.md)** | 🔧 **[Integration Guide](./SUPERVISOR_INTEGRATION_GUIDE.md)**
+
+---
+
 ## 🌟 Features
 
 ### 🎁 GiftForge – Personalized Gift Mini-Games
