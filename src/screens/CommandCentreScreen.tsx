@@ -26,6 +26,9 @@ import Animated, {
 } from 'react-native-reanimated';
 import { useTheme, THEME_OPTIONS } from '../contexts/ThemeContext';
 import { spacing, typography, radii } from '../design-tokens/theme';
+import { contentDatabase } from '../services/ContentDatabase';
+import { paymentService } from '../services/PaymentService';
+import { featuredGamesService } from '../services/FeaturedGamesService';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -100,12 +103,66 @@ export default function CommandCentreScreen() {
   
   const colors = seasonalTheme.colors;
 
+  // Load real data from services
+  const loadData = useCallback(async () => {
+    try {
+      // Get featured games for pipeline data
+      const games = await featuredGamesService.getFeaturedGames();
+      const liveGames = games.filter(g => g.stats.gifted > 0);
+      
+      // Update pipeline with real game data
+      if (games.length > 0) {
+        setPipeline(games.slice(0, 3).map((game, index) => ({
+          id: game.id,
+          name: game.name,
+          stage: index === 0 ? 'live' : index === 1 ? 'testing' : 'validation',
+          score: game.stats.avgRating,
+          revenueEstimate: game.stats.gifted * game.priceAED * 30, // Monthly estimate
+        })));
+      }
+      
+      // Get receipts for revenue data
+      const receipts = await paymentService.getReceipts();
+      const today = new Date().toDateString();
+      const todayReceipts = receipts.filter(r => 
+        new Date(r.date).toDateString() === today
+      );
+      
+      // Calculate real metrics where available
+      const totalRevenue = todayReceipts.reduce((sum, r) => sum + r.amount, 0);
+      const giftMemories = await contentDatabase.getGiftMemories();
+      const totalGifts = giftMemories.sent.length;
+      
+      if (totalGifts > 0 || totalRevenue > 0) {
+        setMetrics(prev => ({
+          ...prev,
+          gamesCreated: Math.max(totalGifts, prev.gamesCreated),
+          estimatedRevenue: totalRevenue || prev.estimatedRevenue,
+        }));
+      }
+      
+      // Check system health
+      const paymentProvider = paymentService.getProvider();
+      setSystemStatus(prev => ({
+        ...prev,
+        app: 'online',
+        agents: paymentProvider !== 'mock' ? 'running' : 'idle',
+      }));
+      
+    } catch (error) {
+      console.warn('Failed to load Command Centre data:', error);
+    }
+  }, []);
+  
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
+
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
-    // In production, fetch real data here
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    await loadData();
     setRefreshing(false);
-  }, []);
+  }, [loadData]);
 
   const getStatusColor = (status: string) => {
     switch (status) {

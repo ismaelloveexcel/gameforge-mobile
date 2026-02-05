@@ -32,6 +32,7 @@ import { useTheme } from '../contexts/ThemeContext';
 import { spacing, typography, radii } from '../design-tokens/theme';
 import { FeaturedGame, GiftOrder } from '../services/FeaturedGamesService';
 import { contentDatabase } from '../services/ContentDatabase';
+import { paymentService } from '../services/PaymentService';
 
 type InstantGiftParams = {
   game: FeaturedGame;
@@ -96,14 +97,30 @@ export default function InstantGiftScreen() {
         );
         
         // For free games, go straight to success
-        // For paid games, would integrate payment here
         if (game.priceAED === 0) {
           setStep('success');
         } else {
-          // TODO: Integrate PayTabs/Stripe payment flow
-          // For now, simulate payment success
-          await contentDatabase.updateOrderStatus(newOrder.id, 'paid');
-          setStep('success');
+          // Process payment for paid games
+          const paymentResult = await paymentService.processPayment({
+            orderId: newOrder.id,
+            amount: game.priceAED,
+            currency: 'AED',
+            description: game.name,
+            metadata: {
+              recipientName: recipientName.trim(),
+              senderName: senderName.trim(),
+            },
+          });
+          
+          if (paymentResult.success) {
+            await contentDatabase.updateOrderStatus(newOrder.id, 'paid');
+            setStep('success');
+          } else {
+            // Payment failed - show error state
+            console.error('Payment failed:', paymentResult.message);
+            // Could add error state handling here
+            await contentDatabase.updateOrderStatus(newOrder.id, 'pending');
+          }
         }
       } catch (error) {
         console.error('Gift creation failed:', error);
