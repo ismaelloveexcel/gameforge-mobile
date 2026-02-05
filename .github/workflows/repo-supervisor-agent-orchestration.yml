@@ -156,7 +156,7 @@ jobs:
               AGENT_EXPERTISE="Game templates and Content automation"
               ;;
             deployment-guardian)
-              AGENT_NAME="DEPLOY-GUARDIAN"
+              AGENT_NAME="DEPLOYMENT-GUARDIAN"
               AGENT_EXPERTISE="Deployment validation and CI/CD"
               ;;
           esac

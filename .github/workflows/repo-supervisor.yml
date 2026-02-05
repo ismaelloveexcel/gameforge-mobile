@@ -96,7 +96,7 @@ This PR has been open for ${AGE_HOURS} hours and has **merge conflicts**.
 2. Resolve conflicts
 3. Push updated branch
 
-Need help? Tag @code-sentinel for automated conflict resolution assistance."
+For automated help, add the \`code-quality\` label to delegate to CODE-SENTINEL."
               
             elif [ "$CHECK_STATE" = "FAILURE" ]; then
               INTERVENTION_MESSAGE="🚨 **Repository Supervisor Alert**
@@ -108,9 +108,9 @@ This PR has been open for ${AGE_HOURS} hours with **failing CI checks**.
 2. Fix failing tests or linting errors
 3. Push fixes
 
-For complex issues, I can delegate to:
-- @code-sentinel for code quality issues
-- @deployment-guardian for deployment/CI issues"
+For complex issues, add labels to auto-delegate:
+- Add \`quality\` or \`testing\` label → Routes to CODE-SENTINEL
+- Add \`deployment\` or \`ci\` label → Routes to DEPLOYMENT-GUARDIAN"
               
             elif [ "$REVIEW_DECISION" = "" ] || [ "$REVIEW_DECISION" = "null" ]; then
               INTERVENTION_MESSAGE="⏰ **Repository Supervisor Notice**

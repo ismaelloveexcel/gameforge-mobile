@@ -130,7 +130,7 @@ Shows active agent tasks and their status.
 - PR open >24 hours → Comment with guidance
 - Branch inactive >30 days → Create cleanup issue
 - Workflow fails repeatedly → Investigation report
-- Agent task overdue →Escalation issue
+- Agent task overdue → Escalation issue
 
 ### Human Approval Required
 - Security vulnerabilities
