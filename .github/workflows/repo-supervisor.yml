@@ -1,0 +1,309 @@
+name: Repository Supervisor - Health & Monitoring
+
+on:
+  # Run every 6 hours to monitor repo health
+  schedule:
+    - cron: '0 */6 * * *'
+  # Allow manual trigger
+  workflow_dispatch:
+  # Run on PR events
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+jobs:
+  health-check:
+    name: Repository Health Check
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Fetch all history for branch analysis
+          
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      
+      - name: Check stale PRs
+        id: check-prs
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          echo "Checking for stale PRs..."
+          
+          # Get all open PRs with age > 24 hours
+          STALE_PRS=$(gh pr list --state open --json number,title,createdAt,author --jq '
+            [.[] | select(
+              (now - (.createdAt | fromdateiso8601)) > 86400
+            )] | map({
+              number: .number,
+              title: .title,
+              age_hours: ((now - (.createdAt | fromdateiso8601)) / 3600 | floor),
+              author: .author.login
+            })
+          ')
+          
+          echo "stale_prs<<EOF" >> $GITHUB_OUTPUT
+          echo "$STALE_PRS" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+          
+          STALE_COUNT=$(echo "$STALE_PRS" | jq 'length')
+          echo "stale_count=$STALE_COUNT" >> $GITHUB_OUTPUT
+          
+          echo "Found $STALE_COUNT stale PRs"
+          
+      - name: Intervene on stale PRs
+        if: steps.check-prs.outputs.stale_count > 0
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          echo "Intervening on stale PRs..."
+          
+          STALE_PRS='${{ steps.check-prs.outputs.stale_prs }}'
+          
+          echo "$STALE_PRS" | jq -r '.[] | @json' | while read -r pr; do
+            PR_NUM=$(echo "$pr" | jq -r '.number')
+            PR_TITLE=$(echo "$pr" | jq -r '.title')
+            AGE_HOURS=$(echo "$pr" | jq -r '.age_hours')
+            
+            echo "Analyzing PR #$PR_NUM: $PR_TITLE (age: ${AGE_HOURS}h)"
+            
+            # Check PR status
+            PR_STATUS=$(gh pr view "$PR_NUM" --json statusCheckRollup,mergeable,reviewDecision)
+            
+            MERGEABLE=$(echo "$PR_STATUS" | jq -r '.mergeable')
+            REVIEW_DECISION=$(echo "$PR_STATUS" | jq -r '.reviewDecision')
+            CHECK_STATE=$(echo "$PR_STATUS" | jq -r '.statusCheckRollup[0].state // "PENDING"')
+            
+            # Determine intervention action
+            INTERVENTION_MESSAGE=""
+            
+            if [ "$MERGEABLE" = "CONFLICTING" ]; then
+              INTERVENTION_MESSAGE="🚨 **Repository Supervisor Alert**
+
+This PR has been open for ${AGE_HOURS} hours and has **merge conflicts**.
+
+**Recommended Actions:**
+1. Rebase against main: \`git rebase origin/main\`
+2. Resolve conflicts
+3. Push updated branch
+
+Need help? Tag @code-sentinel for automated conflict resolution assistance."
+              
+            elif [ "$CHECK_STATE" = "FAILURE" ]; then
+              INTERVENTION_MESSAGE="🚨 **Repository Supervisor Alert**
+
+This PR has been open for ${AGE_HOURS} hours with **failing CI checks**.
+
+**Recommended Actions:**
+1. Review workflow logs: [View Runs](https://github.com/${{ github.repository }}/actions)
+2. Fix failing tests or linting errors
+3. Push fixes
+
+For complex issues, I can delegate to:
+- @code-sentinel for code quality issues
+- @deployment-guardian for deployment/CI issues"
+              
+            elif [ "$REVIEW_DECISION" = "" ] || [ "$REVIEW_DECISION" = "null" ]; then
+              INTERVENTION_MESSAGE="⏰ **Repository Supervisor Notice**
+
+This PR has been open for ${AGE_HOURS} hours and is awaiting review.
+
+**Status:**
+- ✅ No merge conflicts
+- ✅ CI checks passing
+- ⏳ Awaiting review
+
+I'm monitoring this PR. If no review within 6 hours, I'll escalate for priority review."
+              
+            fi
+            
+            # Post intervention comment if needed
+            if [ -n "$INTERVENTION_MESSAGE" ]; then
+              gh pr comment "$PR_NUM" --body "$INTERVENTION_MESSAGE"
+              echo "Posted intervention comment to PR #$PR_NUM"
+            fi
+          done
+          
+      - name: Check obsolete branches
+        id: check-branches
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          echo "Checking for obsolete branches..."
+          
+          # Get branches older than 30 days (not main/develop)
+          CURRENT_TIME=$(date +%s)
+          THIRTY_DAYS_AGO=$((CURRENT_TIME - 2592000))
+          
+          git fetch --all --prune
+          
+          OBSOLETE_BRANCHES=$(git for-each-ref --format='%(refname:short) %(committerdate:unix) %(authorname)' refs/remotes/origin | \
+            grep -v 'origin/main' | \
+            grep -v 'origin/develop' | \
+            grep -v 'origin/HEAD' | \
+            awk -v cutoff="$THIRTY_DAYS_AGO" '$2 < cutoff {print $1 "," $2 "," $3}' || echo "")
+          
+          if [ -n "$OBSOLETE_BRANCHES" ]; then
+            echo "obsolete_branches<<EOF" >> $GITHUB_OUTPUT
+            echo "$OBSOLETE_BRANCHES" >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
+            
+            BRANCH_COUNT=$(echo "$OBSOLETE_BRANCHES" | wc -l)
+            echo "obsolete_count=$BRANCH_COUNT" >> $GITHUB_OUTPUT
+            echo "Found $BRANCH_COUNT obsolete branches"
+          else
+            echo "obsolete_count=0" >> $GITHUB_OUTPUT
+            echo "No obsolete branches found"
+          fi
+          
+      - name: Report obsolete branches
+        if: steps.check-branches.outputs.obsolete_count > 0
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          echo "Creating issue for obsolete branches..."
+          
+          OBSOLETE_BRANCHES='${{ steps.check-branches.outputs.obsolete_branches }}'
+          
+          ISSUE_BODY="## 🧹 Repository Supervisor: Obsolete Branch Cleanup
+
+The Repository Supervisor has detected **${{ steps.check-branches.outputs.obsolete_count }}** obsolete branches that haven't been updated in over 30 days.
+
+### Branches for Review:
+
+| Branch | Last Activity | Author |
+|--------|---------------|--------|
+"
+          
+          echo "$OBSOLETE_BRANCHES" | while IFS=',' read -r branch timestamp author; do
+            DAYS_AGO=$(( ($(date +%s) - timestamp) / 86400 ))
+            BRANCH_NAME=$(echo "$branch" | sed 's/origin\///')
+            ISSUE_BODY="${ISSUE_BODY}
+| \`${BRANCH_NAME}\` | ${DAYS_AGO} days ago | ${author} |"
+          done
+          
+          ISSUE_BODY="${ISSUE_BODY}
+
+### Recommended Actions:
+
+1. **Review each branch** to ensure no valuable unmerged work
+2. **Delete obsolete branches**: \`git push origin --delete <branch-name>\`
+3. **Merge if needed**: Create PR for any valuable work before deletion
+
+**Note:** I can automate cleanup for branches with merged/closed PRs. Reply with 'auto-cleanup approved' to proceed.
+
+---
+*Automated by Repository Supervisor | Next check in 6 hours*"
+          
+          # Check if similar issue already exists
+          EXISTING_ISSUE=$(gh issue list --label "repo-health" --state open --json number,title --jq '.[] | select(.title | contains("Obsolete Branch Cleanup")) | .number' | head -1)
+          
+          if [ -n "$EXISTING_ISSUE" ]; then
+            echo "Updating existing issue #$EXISTING_ISSUE"
+            gh issue comment "$EXISTING_ISSUE" --body "$ISSUE_BODY"
+          else
+            echo "Creating new issue"
+            gh issue create \
+              --title "🧹 Repository Supervisor: Obsolete Branch Cleanup" \
+              --body "$ISSUE_BODY" \
+              --label "repo-health,automated"
+          fi
+          
+      - name: Check workflow health
+        id: check-workflows
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          echo "Checking workflow health..."
+          
+          # Get recent workflow runs
+          FAILED_WORKFLOWS=$(gh run list --limit 20 --json conclusion,name,workflowName,createdAt,number --jq '
+            [.[] | select(.conclusion == "failure")] | 
+            group_by(.workflowName) | 
+            map({
+              workflow: .[0].workflowName,
+              failures: length,
+              latest_run: .[0].number
+            })
+          ')
+          
+          echo "failed_workflows<<EOF" >> $GITHUB_OUTPUT
+          echo "$FAILED_WORKFLOWS" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+          
+          FAILED_COUNT=$(echo "$FAILED_WORKFLOWS" | jq 'length')
+          echo "failed_count=$FAILED_COUNT" >> $GITHUB_OUTPUT
+          
+          if [ "$FAILED_COUNT" -gt 0 ]; then
+            echo "⚠️ Found $FAILED_COUNT workflows with recent failures"
+          else
+            echo "✅ All workflows healthy"
+          fi
+          
+      - name: Generate health report
+        run: |
+          echo "## 🏥 Repository Health Report" > health-report.md
+          echo "" >> health-report.md
+          echo "**Generated:** $(date -u '+%Y-%m-%d %H:%M:%S UTC')" >> health-report.md
+          echo "" >> health-report.md
+          
+          # PR Health
+          echo "### 📋 Pull Request Health" >> health-report.md
+          TOTAL_OPEN_PRS=$(gh pr list --state open --json number | jq 'length')
+          echo "- Total Open PRs: $TOTAL_OPEN_PRS" >> health-report.md
+          echo "- Stale PRs (>24h): ${{ steps.check-prs.outputs.stale_count }}" >> health-report.md
+          echo "" >> health-report.md
+          
+          # Branch Health
+          echo "### 🌿 Branch Health" >> health-report.md
+          TOTAL_BRANCHES=$(git branch -r | grep -v HEAD | wc -l)
+          echo "- Total Remote Branches: $TOTAL_BRANCHES" >> health-report.md
+          echo "- Obsolete Branches (>30d): ${{ steps.check-branches.outputs.obsolete_count }}" >> health-report.md
+          echo "" >> health-report.md
+          
+          # Workflow Health
+          echo "### ⚙️ Workflow Health" >> health-report.md
+          echo "- Workflows with Recent Failures: ${{ steps.check-workflows.outputs.failed_count }}" >> health-report.md
+          echo "" >> health-report.md
+          
+          # Overall Health Score
+          HEALTH_SCORE=100
+          HEALTH_SCORE=$((HEALTH_SCORE - ${{ steps.check-prs.outputs.stale_count }} * 5))
+          HEALTH_SCORE=$((HEALTH_SCORE - ${{ steps.check-branches.outputs.obsolete_count }} * 2))
+          HEALTH_SCORE=$((HEALTH_SCORE - ${{ steps.check-workflows.outputs.failed_count }} * 10))
+          if [ $HEALTH_SCORE -lt 0 ]; then HEALTH_SCORE=0; fi
+          
+          echo "### 🎯 Overall Health Score: ${HEALTH_SCORE}/100" >> health-report.md
+          echo "" >> health-report.md
+          
+          if [ $HEALTH_SCORE -ge 90 ]; then
+            echo "**Status:** 🟢 Excellent" >> health-report.md
+          elif [ $HEALTH_SCORE -ge 70 ]; then
+            echo "**Status:** 🟡 Good (minor attention needed)" >> health-report.md
+          elif [ $HEALTH_SCORE -ge 50 ]; then
+            echo "**Status:** 🟠 Fair (action required)" >> health-report.md
+          else
+            echo "**Status:** 🔴 Needs Attention (immediate action required)" >> health-report.md
+          fi
+          
+          echo "" >> health-report.md
+          echo "---" >> health-report.md
+          echo "*Automated by Repository Supervisor | Next check in 6 hours*" >> health-report.md
+          
+          cat health-report.md
+          
+      - name: Upload health report
+        uses: actions/upload-artifact@v4
+        with:
+          name: repo-health-report-${{ github.run_number }}
+          path: health-report.md
+          retention-days: 30
