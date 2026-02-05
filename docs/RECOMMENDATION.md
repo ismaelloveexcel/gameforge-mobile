@@ -36,14 +36,14 @@ After analyzing your GameForge Mobile repository, here's why Expo EAS + Vercel i
 
 I've created **4 comprehensive guides** for you:
 
-### 1. 📄 [DEPLOYMENT_SUMMARY.md](./docs/DEPLOYMENT_SUMMARY.md)
+### 1. 📄 [DEPLOYMENT_SUMMARY.md](../docs/DEPLOYMENT_SUMMARY.md)
 **Quick overview** - Read this first!
 - Key takeaways
 - Cost breakdown
 - Platform scores
 - Next steps
 
-### 2. 📘 [FREE_DEPLOYMENT_RECOMMENDATION.md](./docs/FREE_DEPLOYMENT_RECOMMENDATION.md)
+### 2. 📘 [FREE_DEPLOYMENT_RECOMMENDATION.md](../docs/FREE_DEPLOYMENT_RECOMMENDATION.md)
 **Complete guide** (15-min read)
 - Detailed setup instructions for EAS
 - Detailed setup instructions for Vercel
@@ -51,14 +51,14 @@ I've created **4 comprehensive guides** for you:
 - Troubleshooting section
 - Alternative platforms overview
 
-### 3. ⚡ [QUICK_DEPLOY_GUIDE.md](./docs/QUICK_DEPLOY_GUIDE.md)
+### 3. ⚡ [QUICK_DEPLOY_GUIDE.md](../docs/QUICK_DEPLOY_GUIDE.md)
 **Fast-track deployment** (5-min read)
 - Deploy web in 2 minutes
 - Deploy Android in 10 minutes
 - One-line deployment commands
 - Common issues and fixes
 
-### 4. 📊 [DEPLOYMENT_COMPARISON.md](./docs/DEPLOYMENT_COMPARISON.md)
+### 4. 📊 [DEPLOYMENT_COMPARISON.md](../docs/DEPLOYMENT_COMPARISON.md)
 **Platform analysis** (20-min read)
 - 8 platforms compared in detail
 - Pros and cons for each
@@ -228,8 +228,8 @@ I analyzed 8 different deployment platforms:
 ## 🎯 Next Steps
 
 1. ✅ **Read this document** ← You are here!
-2. 📖 **Read** [DEPLOYMENT_SUMMARY.md](./docs/DEPLOYMENT_SUMMARY.md) for quick overview
-3. ⚡ **Read** [QUICK_DEPLOY_GUIDE.md](./docs/QUICK_DEPLOY_GUIDE.md) for fast deployment
+2. 📖 **Read** [DEPLOYMENT_SUMMARY.md](../docs/DEPLOYMENT_SUMMARY.md) for quick overview
+3. ⚡ **Read** [QUICK_DEPLOY_GUIDE.md](../docs/QUICK_DEPLOY_GUIDE.md) for fast deployment
 4. 🚀 **Deploy web**: `npm run deploy:vercel`
 5. 📱 **Build Android**: `npm run eas:build:android`
 6. 📢 **Share your app** with the world!
@@ -239,10 +239,10 @@ I analyzed 8 different deployment platforms:
 ## 🆘 Need Help?
 
 ### Documentation
-- [FREE_DEPLOYMENT_RECOMMENDATION.md](./docs/FREE_DEPLOYMENT_RECOMMENDATION.md) - Complete guide
-- [QUICK_DEPLOY_GUIDE.md](./docs/QUICK_DEPLOY_GUIDE.md) - Fast track
-- [DEPLOYMENT_COMPARISON.md](./docs/DEPLOYMENT_COMPARISON.md) - Platform analysis
-- [DEPLOYMENT.md](./docs/DEPLOYMENT.md) - Full deployment guide
+- [FREE_DEPLOYMENT_RECOMMENDATION.md](../docs/FREE_DEPLOYMENT_RECOMMENDATION.md) - Complete guide
+- [QUICK_DEPLOY_GUIDE.md](../docs/QUICK_DEPLOY_GUIDE.md) - Fast track
+- [DEPLOYMENT_COMPARISON.md](../docs/DEPLOYMENT_COMPARISON.md) - Platform analysis
+- [DEPLOYMENT.md](../docs/DEPLOYMENT.md) - Full deployment guide
 
 ### Official Resources
 - [Expo EAS Documentation](https://docs.expo.dev/eas/)
@@ -251,7 +251,7 @@ I analyzed 8 different deployment platforms:
 - [Expo Discord](https://chat.expo.dev/)
 
 ### Common Issues
-See the [QUICK_DEPLOY_GUIDE.md](./docs/QUICK_DEPLOY_GUIDE.md) troubleshooting section.
+See the [QUICK_DEPLOY_GUIDE.md](../docs/QUICK_DEPLOY_GUIDE.md) troubleshooting section.
 
 ---
 
@@ -288,7 +288,7 @@ See the [QUICK_DEPLOY_GUIDE.md](./docs/QUICK_DEPLOY_GUIDE.md) troubleshooting se
 
 ## 🎉 Ready to Deploy?
 
-Start here: [QUICK_DEPLOY_GUIDE.md](./docs/QUICK_DEPLOY_GUIDE.md)
+Start here: [QUICK_DEPLOY_GUIDE.md](../docs/QUICK_DEPLOY_GUIDE.md)
 
 Or deploy now:
 ```bash

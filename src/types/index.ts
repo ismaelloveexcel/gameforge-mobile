@@ -20,6 +20,8 @@ export type RootStackParamList = {
   GiftForgeWizard: undefined;
   GiftForgeGame: { gameId: string };
   GiftForgeResult: { gameId: string };
+  GiftQuestionnaire: { questionnaireId?: string };
+  GiftPreview: { giftGameId: string };
   // Agent routes
   AgentDashboard: undefined;
   // Admin routes
