@@ -46,6 +46,11 @@ import {
   GeneratedGiftGame,
 } from '../types/giftforge';
 import { grokService } from '../services/GrokService';
+import { artStyleService } from '../services/ArtStyleService';
+import { AlchemistCompanion, AlchemistOccasion } from '../components/AlchemistCompanion';
+import { TactileButton } from '../components/TactileButton';
+import { glassCard, GlassTheme } from '../styles/glassmorphism';
+import { enableWowFeatures } from '../config/flags';
 
 type NavigationProp = StackNavigationProp<RootStackParamList>;
 
@@ -118,8 +123,44 @@ export default function GiftForgeWizardScreen() {
   // Animation values
   const progress = useSharedValue(0);
   const cardScale = useSharedValue(1);
+  const backgroundOpacity = useSharedValue(1);
   
   const currentStep = WIZARD_STEPS[currentStepIndex];
+  
+  // Determine Alchemist occasion and glass theme based on selected occasion
+  const alchemistOccasion: AlchemistOccasion = useMemo(() => {
+    const occasion = questionnaire.occasion?.toLowerCase() || '';
+    if (occasion.includes('valentine') || occasion === 'romantic') return 'valentine';
+    if (occasion.includes('ramadan') || occasion === 'eid') return 'ramadan';
+    if (occasion.includes('birthday')) return 'birthday';
+    if (occasion.includes('anniversary')) return 'anniversary';
+    return 'generic';
+  }, [questionnaire.occasion]);
+  
+  const glassTheme: GlassTheme = useMemo(() => {
+    const occasion = questionnaire.occasion?.toLowerCase() || '';
+    if (occasion.includes('valentine') || occasion === 'romantic') return 'valentine';
+    if (occasion.includes('ramadan') || occasion === 'eid') return 'ramadan';
+    return theme.dark ? 'dark' : 'light';
+  }, [questionnaire.occasion, theme.dark]);
+  
+  // Set seasonal art style when occasion is selected
+  useEffect(() => {
+    if (questionnaire.occasion) {
+      const seasonalStyle = artStyleService.getSeasonalStyle(questionnaire.occasion);
+      if (seasonalStyle) {
+        artStyleService.setActiveStyle(seasonalStyle);
+        
+        // Smooth background transition (only if wow features enabled)
+        if (enableWowFeatures()) {
+          backgroundOpacity.value = withSequence(
+            withTiming(0, { duration: 600 }),
+            withTiming(1, { duration: 600 })
+          );
+        }
+      }
+    }
+  }, [questionnaire.occasion]);
   
   // Memoize encouraging message to prevent changes on re-render
   const encouragingMessage = useMemo(() => {
@@ -250,33 +291,37 @@ export default function GiftForgeWizardScreen() {
     
     return (
       <View style={[styles.selectionGrid, { flexWrap: 'wrap' }]}>
-        {entries.map(([key, label]) => (
+        {entries.map(([key, label], index) => (
           <Animated.View
             key={key}
-            entering={FadeIn.delay(100)}
+            entering={FadeIn.delay(50 * index)}
             style={{ width: `${100 / columns - 2}%`, margin: '1%' }}
           >
-            <TouchableOpacity
+            <TactileButton
+              onPress={() => onSelect(key)}
               style={[
                 styles.selectionItem,
-                { backgroundColor: theme.colors.card },
+                glassCard(glassTheme),
                 selectedValue === key && { 
-                  backgroundColor: theme.colors.primary,
+                  backgroundColor: theme.colors.primary + '40',
                   borderColor: theme.colors.primary,
+                  borderWidth: 2,
                 },
               ]}
-              onPress={() => onSelect(key)}
             >
               <Text
                 style={[
                   styles.selectionItemText,
                   { color: theme.colors.text },
-                  selectedValue === key && { color: '#fff' },
+                  selectedValue === key && { 
+                    color: '#fff',
+                    fontWeight: '600',
+                  },
                 ]}
               >
                 {label}
               </Text>
-            </TouchableOpacity>
+            </TactileButton>
           </Animated.View>
         ))}
       </View>
@@ -299,35 +344,39 @@ export default function GiftForgeWizardScreen() {
           Select up to {maxItems} ({selectedValues.length}/{maxItems})
         </Text>
         <View style={[styles.selectionGrid, { flexWrap: 'wrap' }]}>
-          {entries.map(([key, label]) => {
+          {entries.map(([key, label], index) => {
             const isSelected = selectedValues.includes(key);
             return (
               <Animated.View
                 key={key}
-                entering={FadeIn.delay(100)}
+                entering={FadeIn.delay(50 * index)}
                 style={{ width: `${100 / columns - 2}%`, margin: '1%' }}
               >
-                <TouchableOpacity
+                <TactileButton
+                  onPress={() => onToggle(key)}
                   style={[
                     styles.selectionItem,
-                    { backgroundColor: theme.colors.card },
+                    glassCard(glassTheme),
                     isSelected && { 
-                      backgroundColor: theme.colors.primary,
+                      backgroundColor: theme.colors.primary + '40',
                       borderColor: theme.colors.primary,
+                      borderWidth: 2,
                     },
                   ]}
-                  onPress={() => onToggle(key)}
                 >
                   <Text
                     style={[
                       styles.selectionItemText,
                       { color: theme.colors.text },
-                      isSelected && { color: '#fff' },
+                      isSelected && { 
+                        color: '#fff',
+                        fontWeight: '600',
+                      },
                     ]}
                   >
                     {label}
                   </Text>
-                </TouchableOpacity>
+                </TactileButton>
               </Animated.View>
             );
           })}
@@ -763,6 +812,18 @@ export default function GiftForgeWizardScreen() {
         </Text>
       </Animated.View>
       
+      {/* Alchemist Companion */}
+      {questionnaire.occasion && (
+        <Animated.View entering={FadeIn.duration(600).delay(300)}>
+          <AlchemistCompanion
+            occasion={alchemistOccasion}
+            mood={isGenerating ? 'brewing' : 'idle'}
+            size="medium"
+            floating={true}
+          />
+        </Animated.View>
+      )}
+      
       {/* Content */}
       <ScrollView 
         style={styles.content}
@@ -801,17 +862,17 @@ export default function GiftForgeWizardScreen() {
           default: { elevation: 8 }
         })
       }]}>
-        {currentStep !== 'confirmation' ? (
-          <TouchableOpacity
+        {currentStepIndex < WIZARD_STEPS.length - 1 ? (
+          <TactileButton
             style={[
               styles.nextButton,
+              glassCard(glassTheme),
               { 
-                backgroundColor: canProceed() ? theme.colors.primary : theme.colors.card,
+                backgroundColor: canProceed() ? theme.colors.primary : theme.colors.card + '50',
               },
             ]}
             onPress={handleNext}
             disabled={!canProceed()}
-            activeOpacity={0.8}
           >
             <Text style={[
               styles.nextButtonText,
@@ -822,19 +883,19 @@ export default function GiftForgeWizardScreen() {
             <View style={[styles.nextButtonIcon, { backgroundColor: canProceed() ? 'rgba(255,255,255,0.2)' : 'transparent' }]}>
               <Icon name="arrow-right" size={18} color={canProceed() ? '#fff' : theme.colors.text + '50'} />
             </View>
-          </TouchableOpacity>
+          </TactileButton>
         ) : (
-          <TouchableOpacity
-            style={[styles.generateButton, { backgroundColor: theme.colors.success }]}
+          <TactileButton
+            style={[styles.generateButton, glassCard(glassTheme), { backgroundColor: theme.colors.success }]}
             onPress={handleGenerate}
-            activeOpacity={0.8}
+            disabled={!canProceed()}
           >
             <View style={styles.generateButtonInner}>
               <Icon name="creation" size={24} color="#fff" />
               <Text style={styles.generateButtonText}>Create My Gift!</Text>
             </View>
             <View style={styles.generateButtonShimmer} />
-          </TouchableOpacity>
+          </TactileButton>
         )}
       </View>
       
