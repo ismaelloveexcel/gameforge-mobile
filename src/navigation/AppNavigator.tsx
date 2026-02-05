@@ -92,6 +92,10 @@ function MainTabs() {
 export default function AppNavigator() {
   const { theme, isDark } = useTheme();
   
+  // FORGE-CHIEF MANDATE: First-time users go directly to HomeScreen
+  // Onboarding is optional - accessible from Settings if needed
+  // Recognition in ≤3s, Action in ≤10s, Delight in ≤30s
+  
   return (
     <Stack.Navigator
       screenOptions={{
@@ -106,13 +110,13 @@ export default function AppNavigator() {
       }}
     >
       <Stack.Screen 
-        name="Onboarding" 
-        component={OnboardingScreen}
+        name="MainTabs" 
+        component={MainTabs} 
         options={{ headerShown: false }}
       />
       <Stack.Screen 
-        name="MainTabs" 
-        component={MainTabs} 
+        name="Onboarding" 
+        component={OnboardingScreen}
         options={{ headerShown: false }}
       />
       <Stack.Screen 

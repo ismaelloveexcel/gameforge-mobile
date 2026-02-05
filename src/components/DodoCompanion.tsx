@@ -59,30 +59,29 @@ const SIZE_MAP = {
   large: 120,
 };
 
-// Dodo's personality phrases
+// Dodo's personality phrases - warm and inviting, no childish emojis
 const IDLE_PHRASES = [
-  "What shall we create today? ✨",
-  "I smell adventure brewing! 🌟",
-  "Ooh, this is going to be fun!",
-  "*happy dodo noises* 🦤",
+  "What shall we create today?",
+  "Something special is brewing...",
+  "Ooh, this is going to be good!",
   "Ready when you are, friend!",
-  "Let's make something magical!",
+  "Let's make something magical",
 ];
 
 const THINKING_PHRASES = [
   "Hmm, let me ponder this...",
-  "*scratches head with wing*",
-  "The gears are turning! ⚙️",
+  "Just a moment...",
+  "The gears are turning",
   "Consulting my feathers...",
-  "One moment, brewing magic! ✨",
+  "One moment, brewing magic",
 ];
 
 const CELEBRATING_PHRASES = [
-  "WOOHOO! You did it! 🎉",
-  "*does happy dance*",
+  "Wonderful! You did it!",
   "That's absolutely brilliant!",
-  "I knew you could do it! 🌟",
-  "Time for a victory waddle! 🦤",
+  "I knew you could do it!",
+  "Beautifully done",
+  "Time for a victory waddle!",
 ];
 
 export default function DodoCompanion({
@@ -581,17 +580,50 @@ export default function DodoCompanion({
             </View>
           )}
           
+          {/* Mood indicators now use visual elements instead of emojis for premium feel */}
           {mood === 'sleepy' && (
-            <Text style={[styles.sleepyZ, { top: -dodoSize * 0.25, fontSize: dodoSize * 0.15 }]}>
-              💤
-            </Text>
+            <View 
+              style={[styles.sleepyIndicator, { top: -dodoSize * 0.25 }]}
+              accessibilityLabel="Dodo is feeling sleepy"
+              accessibilityRole="image"
+            >
+              <View style={[styles.sleepyDot, { 
+                width: dodoSize * 0.08, 
+                height: dodoSize * 0.08, 
+                backgroundColor: theme.colors.primary + '60',
+                borderRadius: dodoSize * 0.04,
+              }]} />
+            </View>
           )}
           
           {(mood === 'celebrating' || mood === 'excited') && (
-            <View style={[styles.sparkles, { top: -dodoSize * 0.3 }]}>
-              <Text style={{ fontSize: dodoSize * 0.12 }}>✨</Text>
-              <Text style={{ fontSize: dodoSize * 0.1, marginLeft: dodoSize * 0.1 }}>🌟</Text>
-              <Text style={{ fontSize: dodoSize * 0.08 }}>✨</Text>
+            <View 
+              style={[styles.sparkles, { top: -dodoSize * 0.3 }]}
+              accessibilityLabel={mood === 'celebrating' ? 'Dodo is celebrating' : 'Dodo is excited'}
+              accessibilityRole="image"
+            >
+              {/* Premium sparkle dots instead of emojis */}
+              <View style={[styles.sparkleDot, { 
+                width: dodoSize * 0.06, 
+                height: dodoSize * 0.06, 
+                backgroundColor: theme.colors.accent,
+                borderRadius: dodoSize * 0.03,
+              }]} />
+              <View style={[styles.sparkleDot, { 
+                width: dodoSize * 0.05, 
+                height: dodoSize * 0.05, 
+                backgroundColor: theme.colors.primary,
+                borderRadius: dodoSize * 0.025,
+                marginLeft: dodoSize * 0.08,
+                marginTop: -dodoSize * 0.04,
+              }]} />
+              <View style={[styles.sparkleDot, { 
+                width: dodoSize * 0.04, 
+                height: dodoSize * 0.04, 
+                backgroundColor: theme.colors.accent + '80',
+                borderRadius: dodoSize * 0.02,
+                marginLeft: dodoSize * 0.06,
+              }]} />
             </View>
           )}
         </Animated.View>
@@ -721,11 +753,19 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   dot: {},
-  sleepyZ: {
+  sleepyIndicator: {
     position: 'absolute',
+    alignItems: 'center',
+  },
+  sleepyDot: {
+    opacity: 0.6,
   },
   sparkles: {
     position: 'absolute',
     flexDirection: 'row',
+    alignItems: 'center',
+  },
+  sparkleDot: {
+    // Dynamic styles applied inline
   },
 });

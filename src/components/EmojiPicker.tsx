@@ -266,7 +266,7 @@ const styles = StyleSheet.create({
     flex: 1,
     marginLeft: spacing.sm,
     fontSize: typography.size.md,
-    fontFamily: typography.fontFamily.regular,
+    fontWeight: typography.weight.regular,
   },
   categoryContainer: {
     marginBottom: spacing.md,
@@ -285,14 +285,14 @@ const styles = StyleSheet.create({
   categoryLabel: {
     marginLeft: spacing.xs,
     fontSize: typography.size.sm,
-    fontFamily: typography.fontFamily.medium,
+    fontWeight: typography.weight.medium,
   },
   recentSection: {
     marginBottom: spacing.md,
   },
   sectionTitle: {
     fontSize: typography.size.sm,
-    fontFamily: typography.fontFamily.medium,
+    fontWeight: typography.weight.medium,
     marginBottom: spacing.sm,
   },
   scrollView: {
