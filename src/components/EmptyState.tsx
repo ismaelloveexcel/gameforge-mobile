@@ -54,7 +54,7 @@ const VARIANT_CONFIG = {
   },
 };
 
-export default function EmptyState({
+const EmptyState = React.memo(function EmptyState({
   title,
   message,
   actionLabel,
@@ -188,7 +188,9 @@ export default function EmptyState({
       )}
     </View>
   );
-}
+});
+
+export default EmptyState;
 
 function getDefaultDodoMessage(variant: string): string {
   switch (variant) {

@@ -15,10 +15,18 @@ import MarketingDashboardScreen from '../screens/MarketingDashboardScreen';
 import VREditorScreen from '../screens/VREditorScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 import PublishScreen from '../screens/PublishScreen';
+import OnboardingScreen from '../screens/OnboardingScreen';
 // GiftForge screens
 import GiftForgeWizardScreen from '../screens/GiftForgeWizardScreen';
 import GiftForgeResultScreen from '../screens/GiftForgeResultScreen';
 import GiftForgeGameScreen from '../screens/GiftForgeGameScreen';
+// Agent screens (from PR #5)
+import { AgentDashboardScreen } from '../screens/AgentDashboardScreen';
+// Command Centre (admin dashboard)
+import CommandCentreScreen from '../screens/CommandCentreScreen';
+// Instant Gift & Gift Memories
+import InstantGiftScreen from '../screens/InstantGiftScreen';
+import GiftMemoriesScreen from '../screens/GiftMemoriesScreen';
 
 import { useTheme } from '../contexts/ThemeContext';
 import { RootStackParamList } from '../types';
@@ -101,6 +109,11 @@ export default function AppNavigator() {
       }}
     >
       <Stack.Screen 
+        name="Onboarding" 
+        component={OnboardingScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen 
         name="MainTabs" 
         component={MainTabs} 
         options={{ headerShown: false }}
@@ -154,6 +167,30 @@ export default function AppNavigator() {
       <Stack.Screen 
         name="GiftForgeGame" 
         component={GiftForgeGameScreen}
+        options={{ headerShown: false }}
+      />
+      {/* Agent screens */}
+      <Stack.Screen 
+        name="AgentDashboard" 
+        component={AgentDashboardScreen}
+        options={{ headerShown: false }}
+      />
+      {/* Command Centre (admin) */}
+      <Stack.Screen 
+        name="CommandCentre" 
+        component={CommandCentreScreen}
+        options={{ headerShown: false }}
+      />
+      {/* Instant Gift flow */}
+      <Stack.Screen 
+        name="InstantGift" 
+        component={InstantGiftScreen}
+        options={{ headerShown: false, presentation: 'modal' }}
+      />
+      {/* Gift Memories */}
+      <Stack.Screen 
+        name="GiftMemories" 
+        component={GiftMemoriesScreen}
         options={{ headerShown: false }}
       />
     </Stack.Navigator>

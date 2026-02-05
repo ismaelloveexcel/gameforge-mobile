@@ -8,7 +8,7 @@
  * 
  * Supports: Valentine's, Winter Majlis, and all seasonal themes
  */
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useRef, useMemo } from 'react';
 import {
   View,
   Text,
@@ -44,6 +44,11 @@ import {
   ParticleField,
 } from '../components';
 import { spacing, typography, radii } from '../design-tokens/theme';
+import { 
+  featuredGamesService, 
+  FeaturedGame, 
+  SeasonalDrop 
+} from '../services/FeaturedGamesService';
 
 type NavigationProp = StackNavigationProp<RootStackParamList>;
 const { height: SCREEN_HEIGHT, width: SCREEN_WIDTH } = Dimensions.get('window');
@@ -94,6 +99,14 @@ export default function HomeScreen() {
   const [dodoMood, setDodoMood] = useState<'idle' | 'waving' | 'excited' | 'curious'>('waving');
   const [showThemePicker, setShowThemePicker] = useState(false);
   const greeting = getThemeGreeting(seasonalTheme.id);
+  
+  // Use ref to track timeout for cleanup
+  const dodoTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  
+  // Featured games from agents
+  const [seasonalDrop, setSeasonalDrop] = useState<SeasonalDrop | null>(null);
+  const [trendingGames, setTrendingGames] = useState<FeaturedGame[]>([]);
+  const [isLoadingGames, setIsLoadingGames] = useState(true);
   
   // Dynamic colors from current seasonal theme
   const themeColors = seasonalTheme.colors;
@@ -147,6 +160,35 @@ export default function HomeScreen() {
     return () => clearTimeout(timeout);
   }, [glow, heroFloat, pulseScale, shimmer]);
   
+  // Load featured games from agents
+  useEffect(() => {
+    const loadGames = async () => {
+      setIsLoadingGames(true);
+      try {
+        const [drop, trending] = await Promise.all([
+          featuredGamesService.getCurrentSeasonalDrop(),
+          featuredGamesService.getTrendingGames(4),
+        ]);
+        setSeasonalDrop(drop);
+        setTrendingGames(trending);
+      } catch (e) {
+        console.log('Failed to load featured games');
+      } finally {
+        setIsLoadingGames(false);
+      }
+    };
+    loadGames();
+  }, []);
+  
+  // Cleanup dodo timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (dodoTimeoutRef.current) {
+        clearTimeout(dodoTimeoutRef.current);
+      }
+    };
+  }, []);
+  
   const glowStyle = useAnimatedStyle(() => ({
     opacity: glow.value,
   }));
@@ -160,16 +202,21 @@ export default function HomeScreen() {
   }));
 
   const handleDodoPress = useCallback(() => {
+    // Clear any existing timeout
+    if (dodoTimeoutRef.current) {
+      clearTimeout(dodoTimeoutRef.current);
+    }
+    
     setDodoMood('excited');
-    setTimeout(() => setDodoMood('idle'), 2000);
+    dodoTimeoutRef.current = setTimeout(() => setDodoMood('idle'), 2000);
   }, []);
 
   const handleCreateGift = useCallback(() => {
     navigation.navigate('GiftForgeWizard');
   }, [navigation]);
 
-  // Secondary actions - hidden below fold
-  const secondaryActions = [
+  // Secondary actions - memoized to prevent recreation on every render
+  const secondaryActions = useMemo(() => [
     {
       icon: 'folder-heart-outline',
       title: 'My Creations',
@@ -183,15 +230,12 @@ export default function HomeScreen() {
       color: themeColors.primary,
     },
     {
-      icon: 'bird',
-      title: 'Dodo Helper',
-      onPress: () => {
-        setDodoMood('excited');
-        navigation.navigate('Genie');
-      },
+      icon: 'heart-multiple-outline',
+      title: 'Gift Memories',
+      onPress: () => navigation.navigate('GiftMemories'),
       color: themeColors.accent,
     },
-  ];
+  ], [navigation, themeColors.secondary, themeColors.primary, themeColors.accent]);
 
   return (
     <View style={[styles.container, { backgroundColor: themeColors.background }]}>
@@ -311,9 +355,137 @@ export default function HomeScreen() {
             </TouchableOpacity>
           </Animated.View>
 
+          {/* Seasonal Drop (if active) */}
+          {seasonalDrop && (
+            <Animated.View 
+              entering={FadeInUp.delay(500)}
+              style={styles.seasonalSection}
+            >
+              <View style={[
+                styles.seasonalBanner,
+                { backgroundColor: themeColors.accent + '15', borderColor: themeColors.accent + '40' }
+              ]}>
+                <View style={styles.seasonalHeader}>
+                  <View>
+                    <Text style={[styles.seasonalTitle, { color: themeColors.accent }]}>
+                      {seasonalDrop.banner.title}
+                    </Text>
+                    <Text style={[styles.seasonalTagline, { color: themeColors.muted }]}>
+                      {seasonalDrop.tagline}
+                    </Text>
+                  </View>
+                  <View style={[styles.limitedBadge, { backgroundColor: themeColors.accent }]}>
+                    <Text style={[styles.limitedText, { color: themeColors.background }]}>
+                      Limited Time
+                    </Text>
+                  </View>
+                </View>
+                
+                <ScrollView 
+                  horizontal 
+                  showsHorizontalScrollIndicator={false}
+                  style={styles.seasonalGames}
+                  contentContainerStyle={styles.seasonalGamesContent}
+                >
+                  {seasonalDrop.games.map((game, idx) => (
+                    <TouchableOpacity
+                      key={game.id}
+                      style={[
+                        styles.seasonalGameCard,
+                        { backgroundColor: themeColors.surface, borderColor: themeColors.accent + '30' }
+                      ]}
+                      onPress={() => {
+                        // Navigate to instant gift flow with game data
+                        navigation.navigate('InstantGift', { game });
+                      }}
+                    >
+                      <View style={[styles.gameIconCircle, { backgroundColor: themeColors.accent + '20' }]}>
+                        <Icon 
+                          name={idx === 0 ? 'heart' : idx === 1 ? 'puzzle' : 'run'} 
+                          size={24} 
+                          color={themeColors.accent} 
+                        />
+                      </View>
+                      <Text style={[styles.gameCardName, { color: themeColors.text }]}>
+                        {game.name}
+                      </Text>
+                      <Text style={[styles.gameCardStats, { color: themeColors.muted }]}>
+                        {game.stats.gifted} sent
+                      </Text>
+                      {game.priceAED === 0 ? (
+                        <Text style={[styles.gameCardPrice, { color: '#10B981' }]}>
+                          Free
+                        </Text>
+                      ) : (
+                        <Text style={[styles.gameCardPrice, { color: themeColors.accent }]}>
+                          AED {game.priceAED}
+                        </Text>
+                      )}
+                    </TouchableOpacity>
+                  ))}
+                </ScrollView>
+              </View>
+            </Animated.View>
+          )}
+
+          {/* Trending Games */}
+          {trendingGames.length > 0 && (
+            <Animated.View 
+              entering={FadeInUp.delay(650)}
+              style={styles.trendingSection}
+            >
+              <View style={styles.sectionHeader}>
+                <Text style={[styles.sectionTitle, { color: themeColors.text }]}>
+                  Trending This Week
+                </Text>
+                <TouchableOpacity>
+                  <Text style={[styles.seeAllText, { color: themeColors.accent }]}>
+                    See All
+                  </Text>
+                </TouchableOpacity>
+              </View>
+              
+              <ScrollView 
+                horizontal 
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={styles.trendingContent}
+              >
+                {trendingGames.map((game) => (
+                  <TouchableOpacity
+                    key={game.id}
+                    style={[
+                      styles.trendingCard,
+                      { backgroundColor: themeColors.surface, borderColor: themeColors.muted + '20' }
+                    ]}
+                    onPress={() => navigation.navigate('InstantGift', { game })}
+                  >
+                    <View style={[styles.trendingIcon, { backgroundColor: themeColors.accent + '15' }]}>
+                      <Icon 
+                        name={
+                          game.occasion === 'birthday' ? 'cake-variant' :
+                          game.occasion === 'graduation' ? 'school' :
+                          game.occasion === 'farewell' ? 'hand-wave' :
+                          'gamepad-variant'
+                        } 
+                        size={28} 
+                        color={themeColors.accent} 
+                      />
+                    </View>
+                    <Text style={[styles.trendingName, { color: themeColors.text }]} numberOfLines={1}>
+                      {game.name}
+                    </Text>
+                    <Text style={[styles.trendingStats, { color: themeColors.muted }]}>
+                      {game.stats.gifted} this week
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
+            </Animated.View>
+          )}
+
           {/* Divider with label */}
           <Animated.View 
-            entering={FadeIn.delay(600)}
+            entering={FadeIn.delay(700)}
             style={styles.dividerSection}
           >
             <View style={[styles.dividerLine, { backgroundColor: themeColors.muted + '30' }]} />
@@ -730,5 +902,125 @@ const styles = StyleSheet.create({
   themeOptionDesc: {
     fontSize: typography.size.sm,
     marginTop: 2,
+  },
+  
+  // Seasonal Drop Section
+  seasonalSection: {
+    paddingHorizontal: spacing.lg,
+    paddingTop: spacing.lg,
+  },
+  seasonalBanner: {
+    borderRadius: radii.xl,
+    borderWidth: 1,
+    padding: spacing.md,
+    overflow: 'hidden',
+  },
+  seasonalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: spacing.md,
+  },
+  seasonalTitle: {
+    fontSize: typography.size.lg,
+    fontWeight: typography.weight.bold,
+  },
+  seasonalTagline: {
+    fontSize: typography.size.sm,
+    marginTop: 2,
+  },
+  limitedBadge: {
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xxs,
+    borderRadius: radii.sm,
+  },
+  limitedText: {
+    fontSize: typography.size.xs,
+    fontWeight: typography.weight.bold,
+  },
+  seasonalGames: {
+    marginHorizontal: -spacing.md,
+  },
+  seasonalGamesContent: {
+    paddingHorizontal: spacing.md,
+    gap: spacing.sm,
+  },
+  seasonalGameCard: {
+    width: 120,
+    borderRadius: radii.lg,
+    borderWidth: 1,
+    padding: spacing.md,
+    alignItems: 'center',
+  },
+  gameIconCircle: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: spacing.sm,
+  },
+  gameCardName: {
+    fontSize: typography.size.sm,
+    fontWeight: typography.weight.semibold,
+    textAlign: 'center',
+    marginBottom: 2,
+  },
+  gameCardStats: {
+    fontSize: typography.size.xs,
+    marginBottom: spacing.xs,
+  },
+  gameCardPrice: {
+    fontSize: typography.size.sm,
+    fontWeight: typography.weight.bold,
+  },
+  
+  // Trending Section
+  trendingSection: {
+    paddingTop: spacing.lg,
+  },
+  sectionHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: spacing.lg,
+    marginBottom: spacing.md,
+  },
+  sectionTitle: {
+    fontSize: typography.size.md,
+    fontWeight: typography.weight.bold,
+  },
+  seeAllText: {
+    fontSize: typography.size.sm,
+    fontWeight: typography.weight.medium,
+  },
+  trendingContent: {
+    paddingHorizontal: spacing.lg,
+    gap: spacing.sm,
+  },
+  trendingCard: {
+    width: 100,
+    borderRadius: radii.lg,
+    borderWidth: 1,
+    padding: spacing.md,
+    alignItems: 'center',
+  },
+  trendingIcon: {
+    width: 52,
+    height: 52,
+    borderRadius: 26,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: spacing.sm,
+  },
+  trendingName: {
+    fontSize: typography.size.xs,
+    fontWeight: typography.weight.semibold,
+    textAlign: 'center',
+    marginBottom: 2,
+  },
+  trendingStats: {
+    fontSize: 10,
+    textAlign: 'center',
   },
 });
