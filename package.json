@@ -33,7 +33,8 @@
     "marketing:schedule": "node scripts/auto-schedule-posts.js",
     "marketing:auto": "node scripts/auto-generate-marketing.js",
     "viral:analyze": "node scripts/viral-content-analyzer.js",
-    "viral:generate-teaser": "node scripts/viral-content-analyzer.js && node scripts/generate-viral-teaser.js"
+    "viral:generate-teaser": "node scripts/viral-content-analyzer.js && node scripts/generate-viral-teaser.js",
+    "viral:generate-with-egg": "node scripts/viral-content-analyzer.js && node scripts/generate-viral-teaser.js --include-egg"
   },
   "keywords": [
     "game",
