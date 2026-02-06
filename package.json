@@ -38,6 +38,8 @@
     "rebrand:playgift": "node scripts/rebrand-to-playgift.js",
     "repo:cleanup": "node scripts/cleanup-repo.js",
     "repo:auto-cleanup": "node scripts/cleanup-repo.js --auto",
+    "agents:brainstorm": "node scripts/agent-creative-session.js",
+    "agents:test": "node scripts/agent-creative-session.js",
     "rebrand:playgift": "node scripts/rebrand-to-playgift.js",
     "repo:cleanup": "node scripts/cleanup-repo.js",
     "dashboard:build": "node scripts/build-control-dashboard.js"
