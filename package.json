@@ -23,7 +23,10 @@
     "eas:preview": "eas build --platform android --profile preview",
     "setup": "node scripts/setup-wizard.js",
     "validate-config": "node scripts/validate-config.js",
-    "check-config": "node scripts/validate-config.js"
+    "check-config": "node scripts/validate-config.js",
+    "generate:dodo-marketing": "node scripts/generate-dodo-marketing-assets.js",
+    "generate:valentine-assets": "node scripts/generate-dodo-marketing-assets.js --theme valentine",
+    "generate:ramadan-assets": "node scripts/generate-dodo-marketing-assets.js --theme ramadan"
   },
   "keywords": [
     "game",
