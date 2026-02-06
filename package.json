@@ -17,9 +17,13 @@
     "deploy:vercel": "npm run build:web && vercel --prod",
     "deploy:netlify": "npm run build:web && netlify deploy --prod --dir=web-build",
     "deploy:firebase": "npm run build:web && firebase deploy",
+    "deploy:firebase-rules": "node scripts/deploy-firebase-rules.js",
     "eas:build:android": "eas build --platform android --profile production",
     "eas:build:ios": "eas build --platform ios --profile production",
-    "eas:preview": "eas build --platform android --profile preview"
+    "eas:preview": "eas build --platform android --profile preview",
+    "setup": "node scripts/setup-wizard.js",
+    "validate-config": "node scripts/validate-config.js",
+    "check-config": "node scripts/validate-config.js"
   },
   "keywords": [
     "game",

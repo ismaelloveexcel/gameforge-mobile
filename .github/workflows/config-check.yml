@@ -1,0 +1,88 @@
+name: Configuration Check
+
+on:
+  push:
+    branches: [ main, develop, cursor/** ]
+  pull_request:
+    branches: [ main, develop ]
+  workflow_dispatch:
+
+jobs:
+  validate-config:
+    name: Validate Configuration
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Create .env from secrets
+        run: |
+          echo "Creating .env file from GitHub secrets..."
+          cat > .env << EOF
+          # Firebase
+          EXPO_PUBLIC_FIREBASE_API_KEY=${{ secrets.EXPO_PUBLIC_FIREBASE_API_KEY }}
+          EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN=${{ secrets.EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN }}
+          EXPO_PUBLIC_FIREBASE_PROJECT_ID=${{ secrets.EXPO_PUBLIC_FIREBASE_PROJECT_ID }}
+          EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET=${{ secrets.EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET }}
+          EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=${{ secrets.EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID }}
+          EXPO_PUBLIC_FIREBASE_APP_ID=${{ secrets.EXPO_PUBLIC_FIREBASE_APP_ID }}
+          
+          # PayTabs (if configured)
+          EXPO_PUBLIC_PAYTABS_PROFILE_ID=${{ secrets.EXPO_PUBLIC_PAYTABS_PROFILE_ID }}
+          EXPO_PUBLIC_PAYTABS_SERVER_KEY=${{ secrets.EXPO_PUBLIC_PAYTABS_SERVER_KEY }}
+          EXPO_PUBLIC_PAYTABS_CLIENT_KEY=${{ secrets.EXPO_PUBLIC_PAYTABS_CLIENT_KEY }}
+          
+          # Stripe (if configured)
+          EXPO_PUBLIC_STRIPE_PUBLISHABLE_KEY=${{ secrets.EXPO_PUBLIC_STRIPE_PUBLISHABLE_KEY }}
+          
+          # OpenAI (if configured)
+          EXPO_PUBLIC_OPENAI_API_KEY=${{ secrets.EXPO_PUBLIC_OPENAI_API_KEY }}
+          
+          # Grok (if configured)
+          EXPO_PUBLIC_GROK_API_KEY=${{ secrets.EXPO_PUBLIC_GROK_API_KEY }}
+          EOF
+      
+      - name: Validate configuration
+        run: npm run validate-config
+      
+      - name: Check TypeScript compilation
+        run: npx tsc --noEmit
+      
+      - name: Run tests
+        run: npm test
+        continue-on-error: true
+      
+      - name: Configuration Report
+        run: |
+          echo "## Configuration Status" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          if [ -n "${{ secrets.EXPO_PUBLIC_FIREBASE_API_KEY }}" ]; then
+            echo "✅ Firebase configured" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "⚠️ Firebase NOT configured" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          if [ -n "${{ secrets.EXPO_PUBLIC_PAYTABS_PROFILE_ID }}" ]; then
+            echo "✅ PayTabs configured" >> $GITHUB_STEP_SUMMARY
+          elif [ -n "${{ secrets.EXPO_PUBLIC_STRIPE_PUBLISHABLE_KEY }}" ]; then
+            echo "✅ Stripe configured" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "⚠️ Payment provider NOT configured (Demo mode)" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          if [ -n "${{ secrets.EXPO_PUBLIC_OPENAI_API_KEY }}" ] || [ -n "${{ secrets.EXPO_PUBLIC_GROK_API_KEY }}" ]; then
+            echo "✅ AI service configured" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "⚠️ AI service NOT configured (Fallback mode)" >> $GITHUB_STEP_SUMMARY
+          fi
