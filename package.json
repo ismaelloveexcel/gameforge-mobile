@@ -1,7 +1,7 @@
 {
-  "name": "gameforge-mobile",
+  "name": "playgift-mobile",
   "version": "1.0.0",
-  "description": "AI-powered game creation platform - Create professional mobile games, VR experiences, and educational content with zero coding",
+  "description": "PlayGift - AI-powered gift game creator. 60-second magic. Create Pixar-quality personalized games with Dodo the Alchemist. Magic egg hatching, couples games, UAE-first.",
   "main": "index.js",
   "scripts": {
     "start": "expo start",
