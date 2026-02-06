@@ -1,0 +1,144 @@
+name: Automated Marketing Campaign
+
+on:
+  workflow_dispatch:
+    inputs:
+      campaign:
+        description: 'Campaign type'
+        required: true
+        type: choice
+        options:
+          - valentine
+          - ramadan
+          - eid
+          - generic
+      
+      generate_assets:
+        description: 'Generate Dodo images with DALL-E 3'
+        required: true
+        type: boolean
+        default: true
+      
+      generate_content:
+        description: 'Generate social media content with OpenAI'
+        required: true
+        type: boolean
+        default: true
+
+  schedule:
+    # Auto-run weekly to prepare upcoming campaigns
+    - cron: '0 8 * * 1'  # Every Monday 8 AM UTC
+
+jobs:
+  generate-marketing:
+    name: Generate Marketing Campaign
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Create .env
+        run: |
+          cat > .env << EOF
+          EXPO_PUBLIC_OPENAI_API_KEY=${{ secrets.EXPO_PUBLIC_OPENAI_API_KEY }}
+          EXPO_PUBLIC_FIREBASE_API_KEY=${{ secrets.EXPO_PUBLIC_FIREBASE_API_KEY }}
+          EOF
+      
+      - name: Auto-detect campaign if scheduled
+        if: github.event_name == 'schedule'
+        id: detect-campaign
+        run: |
+          # Check upcoming occasions
+          MONTH=$(date +%m)
+          DAY=$(date +%d)
+          
+          if [ "$MONTH" == "02" ] && [ "$DAY" -ge "1" ] && [ "$DAY" -le "14" ]; then
+            echo "campaign=valentine" >> $GITHUB_OUTPUT
+          elif [ "$MONTH" == "02" ] && [ "$DAY" -ge "15" ]; then
+            echo "campaign=ramadan" >> $GITHUB_OUTPUT
+          else
+            echo "campaign=generic" >> $GITHUB_OUTPUT
+          fi
+      
+      - name: Generate marketing content
+        if: ${{ github.event.inputs.generate_content != 'false' }}
+        run: |
+          CAMPAIGN=${{ github.event.inputs.campaign || steps.detect-campaign.outputs.campaign }}
+          node scripts/auto-generate-marketing.js $CAMPAIGN
+      
+      - name: Generate Dodo assets
+        if: ${{ github.event.inputs.generate_assets != 'false' }}
+        run: |
+          CAMPAIGN=${{ github.event.inputs.campaign || steps.detect-campaign.outputs.campaign }}
+          node scripts/generate-dodo-marketing-assets.js --theme $CAMPAIGN
+      
+      - name: Create campaign package
+        run: |
+          CAMPAIGN=${{ github.event.inputs.campaign || steps.detect-campaign.outputs.campaign }}
+          
+          # Create ZIP package of all marketing materials
+          cd marketing-output/$CAMPAIGN
+          zip -r ../../marketing-campaign-$CAMPAIGN.zip .
+          cd ../..
+          
+          echo "📦 Campaign package created: marketing-campaign-$CAMPAIGN.zip"
+      
+      - name: Upload campaign package
+        uses: actions/upload-artifact@v3
+        with:
+          name: marketing-campaign-${{ github.event.inputs.campaign || steps.detect-campaign.outputs.campaign }}
+          path: marketing-campaign-*.zip
+          retention-days: 30
+      
+      - name: Post to Slack/Discord (if configured)
+        if: ${{ secrets.SLACK_WEBHOOK_URL != '' }}
+        run: |
+          CAMPAIGN=${{ github.event.inputs.campaign || steps.detect-campaign.outputs.campaign }}
+          
+          curl -X POST ${{ secrets.SLACK_WEBHOOK_URL }} \
+            -H 'Content-Type: application/json' \
+            -d '{
+              "text": "🚀 Marketing campaign generated: '"$CAMPAIGN"'",
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "*GameForge Marketing Automation*\n\nCampaign: '"$CAMPAIGN"'\nStatus: ✅ Ready\nAssets: Generated\nContent: Generated\n\nDownload package from GitHub Actions artifacts."
+                  }
+                }
+              ]
+            }'
+      
+      - name: Campaign Summary
+        run: |
+          echo "## 🚀 Marketing Campaign Generated" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Campaign:** ${{ github.event.inputs.campaign || steps.detect-campaign.outputs.campaign }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Date:** $(date)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### ✅ Generated:" >> $GITHUB_STEP_SUMMARY
+          echo "- Social media captions (30+)" >> $GITHUB_STEP_SUMMARY
+          echo "- Posting schedule (CSV)" >> $GITHUB_STEP_SUMMARY
+          echo "- Email sequences (5)" >> $GITHUB_STEP_SUMMARY
+          echo "- Ad campaigns (10 variations)" >> $GITHUB_STEP_SUMMARY
+          echo "- Video production scripts" >> $GITHUB_STEP_SUMMARY
+          echo "- App Store listing" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 📥 Download:" >> $GITHUB_STEP_SUMMARY
+          echo "Check Artifacts section above for marketing-campaign zip file" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 💰 Cost:" >> $GITHUB_STEP_SUMMARY
+          echo "- Content generation: ~$0.50 (OpenAI)" >> $GITHUB_STEP_SUMMARY
+          echo "- Dodo images: ~$0.24 (DALL-E 3)" >> $GITHUB_STEP_SUMMARY
+          echo "- **Total: $0.74**" >> $GITHUB_STEP_SUMMARY

@@ -26,7 +26,12 @@
     "check-config": "node scripts/validate-config.js",
     "generate:dodo-marketing": "node scripts/generate-dodo-marketing-assets.js",
     "generate:valentine-assets": "node scripts/generate-dodo-marketing-assets.js --theme valentine",
-    "generate:ramadan-assets": "node scripts/generate-dodo-marketing-assets.js --theme ramadan"
+    "generate:ramadan-assets": "node scripts/generate-dodo-marketing-assets.js --theme ramadan",
+    "marketing:generate-all": "node scripts/generate-all-marketing-content.js",
+    "marketing:valentine": "node scripts/generate-all-marketing-content.js valentine && node scripts/generate-dodo-marketing-assets.js --theme valentine",
+    "marketing:ramadan": "node scripts/generate-all-marketing-content.js ramadan && node scripts/generate-dodo-marketing-assets.js --theme ramadan",
+    "marketing:schedule": "node scripts/auto-schedule-posts.js",
+    "marketing:auto": "node scripts/auto-generate-marketing.js"
   },
   "keywords": [
     "game",
