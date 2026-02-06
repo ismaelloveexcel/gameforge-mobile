@@ -31,7 +31,9 @@
     "marketing:valentine": "node scripts/generate-all-marketing-content.js valentine && node scripts/generate-dodo-marketing-assets.js --theme valentine",
     "marketing:ramadan": "node scripts/generate-all-marketing-content.js ramadan && node scripts/generate-dodo-marketing-assets.js --theme ramadan",
     "marketing:schedule": "node scripts/auto-schedule-posts.js",
-    "marketing:auto": "node scripts/auto-generate-marketing.js"
+    "marketing:auto": "node scripts/auto-generate-marketing.js",
+    "viral:analyze": "node scripts/viral-content-analyzer.js",
+    "viral:generate-teaser": "node scripts/viral-content-analyzer.js && node scripts/generate-viral-teaser.js"
   },
   "keywords": [
     "game",
