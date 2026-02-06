@@ -34,7 +34,13 @@
     "marketing:auto": "node scripts/auto-generate-marketing.js",
     "viral:analyze": "node scripts/viral-content-analyzer.js",
     "viral:generate-teaser": "node scripts/viral-content-analyzer.js && node scripts/generate-viral-teaser.js",
-    "viral:generate-with-egg": "node scripts/viral-content-analyzer.js && node scripts/generate-viral-teaser.js --include-egg"
+    "viral:generate-with-egg": "node scripts/viral-content-analyzer.js && node scripts/generate-viral-teaser.js --include-egg",
+    "rebrand:playgift": "node scripts/rebrand-to-playgift.js",
+    "repo:cleanup": "node scripts/cleanup-repo.js",
+    "repo:auto-cleanup": "node scripts/cleanup-repo.js --auto",
+    "rebrand:playgift": "node scripts/rebrand-to-playgift.js",
+    "repo:cleanup": "node scripts/cleanup-repo.js",
+    "dashboard:build": "node scripts/build-control-dashboard.js"
   },
   "keywords": [
     "game",

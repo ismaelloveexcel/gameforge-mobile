@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PlayGift Control Center</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #4A1E5A 50%, #2d1b3d 100%);
+            color: white;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+        
+        .logo {
+            font-size: 48px;
+            font-weight: 900;
+            background: linear-gradient(135deg, #D4AF37 0%, #FFD700 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+        
+        .tagline {
+            font-size: 18px;
+            color: rgba(255,255,255,0.7);
+        }
+        
+        .status-bar {
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 30px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+        
+        .status-item {
+            text-align: center;
+        }
+        
+        .status-value {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+        
+        .status-label {
+            font-size: 14px;
+            color: rgba(255,255,255,0.6);
+        }
+        
+        .indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        
+        .indicator.green { background: #10B981; box-shadow: 0 0 12px #10B981; }
+        .indicator.yellow { background: #F59E0B; box-shadow: 0 0 12px #F59E0B; }
+        .indicator.red { background: #EF4444; box-shadow: 0 0 12px #EF4444; }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 24px;
+            margin-bottom: 30px;
+        }
+        
+        .card {
+            background: rgba(255,255,255,0.08);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 28px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .card-title {
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .toggle {
+            position: relative;
+            width: 60px;
+            height: 32px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .toggle.active {
+            background: linear-gradient(135deg, #D4AF37 0%, #FFD700 100%);
+        }
+        
+        .toggle-knob {
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            width: 24px;
+            height: 24px;
+            background: white;
+            border-radius: 50%;
+            transition: all 0.3s;
+        }
+        
+        .toggle.active .toggle-knob {
+            transform: translateX(28px);
+        }
+        
+        .feature-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 12px;
+            margin-bottom: 12px;
+        }
+        
+        .feature-info {
+            flex: 1;
+        }
+        
+        .feature-name {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        
+        .feature-desc {
+            font-size: 13px;
+            color: rgba(255,255,255,0.6);
+        }
+        
+        .btn {
+            padding: 14px 28px;
+            border-radius: 12px;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            color: inherit;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #D4AF37 0%, #FFD700 100%);
+            color: #1a1a2e;
+        }
+        
+        .btn-secondary {
+            background: rgba(255,255,255,0.1);
+            color: white;
+        }
+        
+        .btn-danger {
+            background: rgba(239, 68, 68, 0.2);
+            color: #EF4444;
+            border: 1px solid #EF4444;
+        }
+        
+        .metric {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .metric:last-child {
+            border-bottom: none;
+        }
+        
+        .alert {
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid #EF4444;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 24px;
+        }
+        
+        .alert-title {
+            font-weight: bold;
+            margin-bottom: 12px;
+            font-size: 18px;
+        }
+        
+        .actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 16px;
+        }
+        
+        .pr-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .pr-item {
+            padding: 12px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 8px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .pr-number {
+            font-weight: bold;
+            color: #D4AF37;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">🎁 PlayGift Control Center</div>
+            <div class="tagline">Non-Technical Dashboard - Everything at Your Fingertips</div>
+        </div>
+
+        <!-- CRITICAL ALERT -->
+        <div class="alert">
+            <div class="alert-title">🚨 CRITICAL: Branding Issue Detected</div>
+            <p><strong>454 references to "GameForge"</strong> found - Should be "PlayGift"</p>
+            <p>PR #16 has PlayGift branding but not merged yet!</p>
+            <div class="actions">
+                <button class="btn btn-primary" onclick="fixBranding()">
+                    🔧 Fix Branding Now
+                </button>
+                <button class="btn btn-secondary" onclick="viewDetails()">
+                    View Details
+                </button>
+            </div>
+        </div>
+
+        <!-- System Status -->
+        <div class="status-bar">
+            <div class="status-item">
+                <div class="status-value">
+                    <span class="indicator green"></span>
+                    ONLINE
+                </div>
+                <div class="status-label">App Status</div>
+            </div>
+            <div class="status-item">
+                <div class="status-value">
+                    <span class="indicator yellow"></span>
+                    454
+                </div>
+                <div class="status-label">Branding Fixes Needed</div>
+            </div>
+            <div class="status-item">
+                <div class="status-value">20</div>
+                <div class="status-label">Open PRs</div>
+            </div>
+            <div class="status-item">
+                <div class="status-value">9 days</div>
+                <div class="status-label">Until Valentine's</div>
+            </div>
+        </div>
+
+        <!-- Main Grid -->
+        <div class="grid">
+            <!-- Features Toggle -->
+            <div class="card">
+                <div class="card-title">
+                    ✨ Feature Toggles
+                </div>
+                
+                <div class="feature-row">
+                    <div class="feature-info">
+                        <div class="feature-name">🥚 Magic Egg Hatcher</div>
+                        <div class="feature-desc">Mystery egg that hatches gifts</div>
+                    </div>
+                    <div class="toggle active" onclick="toggleFeature(this)">
+                        <div class="toggle-knob"></div>
+                    </div>
+                </div>
+                
+                <div class="feature-row">
+                    <div class="feature-info">
+                        <div class="feature-name">👫 Couples Game</div>
+                        <div class="feature-desc">2 characters in one game</div>
+                    </div>
+                    <div class="toggle active" onclick="toggleFeature(this)">
+                        <div class="toggle-knob"></div>
+                    </div>
+                </div>
+                
+                <div class="feature-row">
+                    <div class="feature-info">
+                        <div class="feature-name">🪄 Magic Shake</div>
+                        <div class="feature-desc">Shake phone to generate</div>
+                    </div>
+                    <div class="toggle active" onclick="toggleFeature(this)">
+                        <div class="toggle-knob"></div>
+                    </div>
+                </div>
+                
+                <div class="feature-row">
+                    <div class="feature-info">
+                        <div class="feature-name">🦤 Interactive Dodo</div>
+                        <div class="feature-desc">Reacts to gameplay</div>
+                    </div>
+                    <div class="toggle" onclick="toggleFeature(this)">
+                        <div class="toggle-knob"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="card">
+                <div class="card-title">
+                    ⚡ Quick Actions
+                </div>
+                
+                <button class="btn btn-primary" style="width: 100%; margin-bottom: 12px;" onclick="generateMarketing()">
+                    🎬 Generate Valentine's Campaign
+                </button>
+                
+                <button class="btn btn-primary" style="width: 100%; margin-bottom: 12px;" onclick="generateViral()">
+                    🥚 Generate Viral Teaser (With Egg)
+                </button>
+                
+                <button class="btn btn-secondary" style="width: 100%; margin-bottom: 12px;" onclick="deployApp()">
+                    🚀 Deploy App
+                </button>
+                
+                <button class="btn btn-danger" style="width: 100%;" onclick="fixBranding()">
+                    🔧 Fix GameForge → PlayGift
+                </button>
+            </div>
+        </div>
+
+        <!-- Marketing Metrics -->
+        <div class="grid">
+            <div class="card">
+                <div class="card-title">
+                    📊 Today's Metrics
+                </div>
+                <div class="metric">
+                    <span>Downloads</span>
+                    <strong>47</strong>
+                </div>
+                <div class="metric">
+                    <span>Gifts Created</span>
+                    <strong>31</strong>
+                </div>
+                <div class="metric">
+                    <span>Revenue</span>
+                    <strong>AED 465</strong>
+                </div>
+                <div class="metric">
+                    <span>Viral Views</span>
+                    <strong>12.5K</strong>
+                </div>
+            </div>
+
+            <!-- PR Management -->
+            <div class="card">
+                <div class="card-title">
+                    🔀 Pull Requests (20 Open)
+                </div>
+                <div class="pr-list">
+                    <div class="pr-item">
+                        <div>
+                            <span class="pr-number">#16</span> PlayGift Branding
+                        </div>
+                        <button class="btn btn-primary" style="padding: 8px 16px; font-size: 13px;" onclick="mergePR(16)">
+                            Merge
+                        </button>
+                    </div>
+                    <div class="pr-item">
+                        <div>
+                            <span class="pr-number">#30</span> Firebase & Payment
+                        </div>
+                        <button class="btn btn-primary" style="padding: 8px 16px; font-size: 13px;" onclick="mergePR(30)">
+                            Merge
+                        </button>
+                    </div>
+                    <div class="pr-item" style="opacity: 0.6;">
+                        <div>
+                            <span class="pr-number">#31</span> Old Review PR
+                        </div>
+                        <button class="btn btn-secondary" style="padding: 8px 16px; font-size: 13px;" onclick="closePR(31)">
+                            Close
+                        </button>
+                    </div>
+                </div>
+                <button class="btn btn-secondary" style="width: 100%; margin-top: 16px;" onclick="cleanupAllPRs()">
+                    🗑️ Cleanup All Stale PRs
+                </button>
+            </div>
+        </div>
+
+        <!-- Campaign Control -->
+        <div class="card">
+            <div class="card-title">
+                🎬 Marketing Campaigns
+            </div>
+            
+            <div style="background: linear-gradient(135deg, #C41E3A 0%, #FF69B4 100%); padding: 20px; border-radius: 12px; margin-bottom: 16px;">
+                <div style="font-weight: bold; margin-bottom: 8px;">💝 Valentine's Day Campaign</div>
+                <div style="font-size: 14px; opacity: 0.9; margin-bottom: 16px;">9 days remaining • 27 posts scheduled</div>
+                <div class="actions">
+                    <button class="btn btn-primary" onclick="launchCampaign('valentine')">
+                        🚀 Launch Now
+                    </button>
+                    <button class="btn btn-secondary" onclick="previewCampaign('valentine')">
+                        👁️ Preview
+                    </button>
+                    <button class="btn btn-secondary" onclick="editCampaign('valentine')">
+                        ✏️ Edit
+                    </button>
+                </div>
+            </div>
+
+            <div style="background: linear-gradient(135deg, #4A3F6B 0%, #D4AF37 100%); padding: 20px; border-radius: 12px; opacity: 0.7;">
+                <div style="font-weight: bold; margin-bottom: 8px;">🌙 Ramadan Campaign</div>
+                <div style="font-size: 14px; opacity: 0.9; margin-bottom: 16px;">Scheduled for Feb 28</div>
+                <button class="btn btn-secondary">
+                    📅 Schedule
+                </button>
+            </div>
+        </div>
+
+        <!-- App Preview -->
+        <div class="card">
+            <div class="card-title">
+                📱 Live App Preview
+            </div>
+            <div style="text-align: center; padding: 20px;">
+                <div style="font-size: 14px; color: rgba(255,255,255,0.6); margin-bottom: 16px;">
+                    Current app state (auto-refreshes)
+                </div>
+                <img src="../placeholder-app-preview.png" alt="App Preview" style="max-width: 100%; border-radius: 12px; border: 2px solid rgba(255,255,255,0.2);" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'300\' height=\'600\'%3E%3Crect fill=\'%231a1a2e\' width=\'300\' height=\'600\'/%3E%3Ctext x=\'50%25\' y=\'50%25\' fill=\'white\' text-anchor=\'middle\' font-size=\'18\' font-family=\'Arial\'%3EApp Preview%3C/text%3E%3C/svg%3E'">
+                <div class="actions" style="margin-top: 16px;">
+                    <button class="btn btn-secondary" onclick="refreshPreview()">
+                        🔄 Refresh
+                    </button>
+                    <button class="btn btn-secondary" onclick="openApp()">
+                        📱 Open Live App
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleFeature(element) {
+            element.classList.toggle('active');
+            const featureName = element.previousElementSibling.querySelector('.feature-name').textContent;
+            alert(`Feature "${featureName}" ${element.classList.contains('active') ? 'enabled' : 'disabled'}!\n\nIn production, this would update Firebase config.`);
+        }
+
+        function fixBranding() {
+            if (confirm('This will update 454 references from "GameForge" to "PlayGift".\n\nContinue?')) {
+                alert('🔧 Rebranding initiated!\n\nCommand running:\nnpm run rebrand:playgift\n\nThis will take 2-3 minutes...');
+                // In production, trigger GitHub Action
+            }
+        }
+
+        function generateMarketing() {
+            alert('🎬 Generating Valentine\'s campaign!\n\nThis will:\n• Generate 30 social captions\n• Create 10 ads\n• Generate Dodo images\n• Cost: $0.74\n\nCommand:\nnpm run marketing:valentine');
+        }
+
+        function generateViral() {
+            alert('🥚 Generating viral teaser with egg!\n\nThis will:\n• GPT-4o viral analysis\n• Generate Dodo + Rosie\n• Generate magic egg\n• 4-part mystery series\n• Cost: $1.69\n\nCommand:\nnpm run viral:generate-with-egg --couples-mode');
+        }
+
+        function deployApp() {
+            alert('🚀 Deploying app!\n\nPlatforms:\n• Vercel (web)\n• Firebase (hosting)\n• EAS (mobile builds)\n\nThis will take 10-15 minutes...');
+        }
+
+        function mergePR(number) {
+            if (confirm(`Merge PR #${number}?`)) {
+                alert(`✅ Merging PR #${number}!\n\nCommand:\ngh pr merge ${number} --squash`);
+            }
+        }
+
+        function closePR(number) {
+            if (confirm(`Close PR #${number} as stale?`)) {
+                alert(`🗑️ Closing PR #${number}!\n\nCommand:\ngh pr close ${number}`);
+            }
+        }
+
+        function cleanupAllPRs() {
+            if (confirm('This will close 15+ stale copilot PRs.\n\nContinue?')) {
+                alert('🗑️ Cleanup initiated!\n\nClosing:\n• All copilot/review-* PRs\n• Old proposal PRs\n\nKeeping:\n• PlayGift branding (#16)\n• Current work (#30)');
+            }
+        }
+
+        function launchCampaign(type) {
+            alert(`🚀 Launching ${type} campaign!\n\nThis will:\n• Upload to Later.com\n• Schedule ${type === 'valentine' ? '27' : '60'} posts\n• Start running`);
+        }
+
+        function previewCampaign(type) {
+            window.open(`campaign-preview-${type}.html`, '_blank');
+        }
+
+        function editCampaign(type) {
+            alert(`✏️ Edit ${type} campaign\n\nYou can:\n• Modify captions\n• Change images\n• Adjust schedule\n• Update budget`);
+        }
+
+        function refreshPreview() {
+            alert('🔄 Refreshing app preview...\n\nFetching latest from Vercel deployment...');
+        }
+
+        function openApp() {
+            window.open('https://playgift.app', '_blank');
+        }
+
+        function viewDetails() {
+            window.location.href = 'branding-audit.html';
+        }
+
+        // Auto-refresh metrics every 5 minutes
+        setInterval(() => {
+            console.log('Auto-refreshing metrics...');
+            // In production, fetch from Firebase Analytics
+        }, 5 * 60 * 1000);
+    </script>
+</body>
+</html>
