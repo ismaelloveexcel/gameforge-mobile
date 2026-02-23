@@ -1,0 +1,1005 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PlayGift - Live Visual Dashboard</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0a0a1e 0%, #1a1a2e 50%, #2d1b3d 100%);
+            color: white;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            padding: 40px 20px;
+            background: linear-gradient(135deg, rgba(212,175,55,0.1) 0%, rgba(196,30,58,0.1) 100%);
+            border-radius: 24px;
+            margin-bottom: 30px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .logo {
+            font-size: 56px;
+            font-weight: 900;
+            background: linear-gradient(135deg, #D4AF37 0%, #FFD700 50%, #FFA500 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 12px;
+            animation: shimmer 3s infinite;
+        }
+        
+        @keyframes shimmer {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+        
+        .tagline {
+            font-size: 20px;
+            color: rgba(255,255,255,0.8);
+            margin-bottom: 8px;
+        }
+        
+        .status-banner {
+            display: inline-block;
+            padding: 8px 24px;
+            background: rgba(16, 185, 129, 0.2);
+            border: 2px solid #10B981;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+            margin-top: 12px;
+        }
+        
+        .status-banner.working {
+            background: rgba(245, 158, 11, 0.2);
+            border-color: #F59E0B;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(1.05); }
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 24px;
+            margin-bottom: 30px;
+        }
+        
+        .card {
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 28px;
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: all 0.3s;
+        }
+        
+        .card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(212,175,55,0.5);
+            box-shadow: 0 12px 40px rgba(212,175,55,0.2);
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+        
+        .card-title {
+            font-size: 22px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .agent-status {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        
+        .agent {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 12px;
+            border-left: 4px solid transparent;
+            transition: all 0.3s;
+        }
+        
+        .agent.active {
+            border-left-color: #F59E0B;
+            background: rgba(245, 158, 11, 0.1);
+        }
+        
+        .agent.complete {
+            border-left-color: #10B981;
+            background: rgba(16, 185, 129, 0.1);
+        }
+        
+        .agent-info {
+            flex: 1;
+        }
+        
+        .agent-name {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        
+        .agent-task {
+            font-size: 13px;
+            color: rgba(255,255,255,0.6);
+        }
+        
+        .agent-progress {
+            width: 80px;
+            height: 80px;
+            position: relative;
+        }
+        
+        .progress-ring {
+            transform: rotate(-90deg);
+        }
+        
+        .progress-circle {
+            fill: none;
+            stroke: rgba(255,255,255,0.1);
+            stroke-width: 8;
+        }
+        
+        .progress-circle.active {
+            stroke: #D4AF37;
+            stroke-linecap: round;
+            animation: progress 2s ease-in-out infinite;
+        }
+        
+        @keyframes progress {
+            0% { stroke-dashoffset: 200; }
+            100% { stroke-dashoffset: 0; }
+        }
+        
+        .progress-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 18px;
+            font-weight: bold;
+        }
+        
+        .concept-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+        
+        .concept-card {
+            background: rgba(255,255,255,0.03);
+            border-radius: 16px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+        
+        .concept-card:hover {
+            transform: scale(1.05);
+            border-color: #D4AF37;
+            box-shadow: 0 8px 32px rgba(212,175,55,0.3);
+        }
+        
+        .concept-image {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(135deg, #4A1E5A 0%, #C41E3A 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 64px;
+            position: relative;
+        }
+        
+        .concept-image.loading {
+            animation: shimmer 2s infinite;
+        }
+        
+        .concept-info {
+            padding: 16px;
+        }
+        
+        .concept-title {
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+        
+        .concept-tagline {
+            font-size: 13px;
+            color: rgba(255,255,255,0.7);
+            margin-bottom: 12px;
+        }
+        
+        .concept-score {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+        }
+        
+        .score-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .btn {
+            padding: 16px 32px;
+            border-radius: 12px;
+            border: none;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #D4AF37 0%, #FFD700 100%);
+            color: #1a1a2e;
+        }
+        
+        .btn-secondary {
+            background: rgba(255,255,255,0.1);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .upload-zone {
+            border: 3px dashed rgba(212,175,55,0.5);
+            border-radius: 16px;
+            padding: 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: rgba(255,255,255,0.02);
+        }
+        
+        .upload-zone:hover {
+            border-color: #D4AF37;
+            background: rgba(212,175,55,0.05);
+        }
+        
+        .upload-zone.has-image {
+            border-style: solid;
+            border-color: #10B981;
+        }
+        
+        .preview-image {
+            width: 100%;
+            max-width: 200px;
+            height: 200px;
+            border-radius: 12px;
+            object-fit: cover;
+            margin: 12px auto;
+            display: block;
+        }
+        
+        .timeline {
+            position: relative;
+            padding: 20px 0;
+        }
+        
+        .timeline-item {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 24px;
+            position: relative;
+        }
+        
+        .timeline-dot {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border: 4px solid;
+            flex-shrink: 0;
+            z-index: 1;
+        }
+        
+        .timeline-dot.pending {
+            border-color: rgba(255,255,255,0.3);
+            background: transparent;
+        }
+        
+        .timeline-dot.active {
+            border-color: #F59E0B;
+            background: #F59E0B;
+            animation: pulse 1.5s infinite;
+        }
+        
+        .timeline-dot.complete {
+            border-color: #10B981;
+            background: #10B981;
+        }
+        
+        .timeline-content {
+            flex: 1;
+            padding-bottom: 20px;
+        }
+        
+        .timeline-title {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        
+        .timeline-desc {
+            font-size: 14px;
+            color: rgba(255,255,255,0.6);
+        }
+        
+        .live-feed {
+            background: rgba(0,0,0,0.3);
+            border-radius: 12px;
+            padding: 16px;
+            max-height: 300px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+        }
+        
+        .log-item {
+            padding: 8px;
+            border-left: 3px solid transparent;
+            margin-bottom: 4px;
+        }
+        
+        .log-item.info { border-color: #3B82F6; }
+        .log-item.success { border-color: #10B981; }
+        .log-item.warning { border-color: #F59E0B; }
+        .log-item.error { border-color: #EF4444; }
+        
+        .metric-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 16px;
+            margin-top: 20px;
+        }
+        
+        .metric {
+            text-align: center;
+            padding: 20px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 12px;
+        }
+        
+        .metric-value {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, #D4AF37 0%, #FFD700 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .metric-label {
+            font-size: 13px;
+            color: rgba(255,255,255,0.6);
+        }
+        
+        .photo-preview-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .floating-action {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 1000;
+        }
+        
+        .fab {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #D4AF37 0%, #FFD700 100%);
+            color: #1a1a2e;
+            border: none;
+            font-size: 32px;
+            cursor: pointer;
+            box-shadow: 0 8px 32px rgba(212,175,55,0.4);
+            transition: all 0.3s;
+        }
+        
+        .fab:hover {
+            transform: scale(1.1) rotate(90deg);
+            box-shadow: 0 12px 48px rgba(212,175,55,0.6);
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(10px);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: linear-gradient(135deg, #1a1a2e 0%, #2d1b3d 100%);
+            border-radius: 24px;
+            padding: 40px;
+            max-width: 90%;
+            max-height: 90%;
+            overflow-y: auto;
+            border: 2px solid rgba(212,175,55,0.3);
+        }
+        
+        .close-btn {
+            float: right;
+            font-size: 32px;
+            cursor: pointer;
+            color: rgba(255,255,255,0.6);
+            transition: color 0.2s;
+        }
+        
+        .close-btn:hover {
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">🎁 PlayGift Live Dashboard</div>
+            <div class="tagline">Watch Your Premium Snake & Ladders Come to Life</div>
+            <div class="status-banner" id="mainStatus">
+                🟢 All Systems Ready
+            </div>
+        </div>
+
+        <!-- Agent Progress -->
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">🤖 Agents Working</div>
+                <button class="btn btn-primary" onclick="startAgents()">
+                    ▶️ Start Agent Brainstorm
+                </button>
+            </div>
+
+            <div class="agent-status">
+                <div class="agent" id="agent-aesthetics">
+                    <div class="agent-info">
+                        <div class="agent-name">🎨 Aesthetics Agent</div>
+                        <div class="agent-task">Designing premium visual concepts...</div>
+                    </div>
+                    <div class="agent-progress">
+                        <svg class="progress-ring" width="80" height="80">
+                            <circle class="progress-circle" cx="40" cy="40" r="32"></circle>
+                            <circle class="progress-circle active" cx="40" cy="40" r="32" 
+                                    stroke-dasharray="200" stroke-dashoffset="200" id="progress-aesthetics"></circle>
+                        </svg>
+                        <div class="progress-text" id="percent-aesthetics">0%</div>
+                    </div>
+                </div>
+
+                <div class="agent pending" id="agent-content">
+                    <div class="agent-info">
+                        <div class="agent-name">📊 Content Pipeline Agent</div>
+                        <div class="agent-task">Creating viral gameplay mechanics...</div>
+                    </div>
+                    <div class="agent-progress">
+                        <svg class="progress-ring" width="80" height="80">
+                            <circle class="progress-circle" cx="40" cy="40" r="32"></circle>
+                            <circle class="progress-circle" cx="40" cy="40" r="32" 
+                                    stroke-dasharray="200" stroke-dashoffset="200" id="progress-content"></circle>
+                        </svg>
+                        <div class="progress-text" id="percent-content">0%</div>
+                    </div>
+                </div>
+
+                <div class="agent pending" id="agent-gpt4">
+                    <div class="agent-info">
+                        <div class="agent-name">🧠 GPT-4o Creative Engine</div>
+                        <div class="agent-task">Generating 5 out-of-box concepts...</div>
+                    </div>
+                    <div class="agent-progress">
+                        <svg class="progress-ring" width="80" height="80">
+                            <circle class="progress-circle" cx="40" cy="40" r="32"></circle>
+                            <circle class="progress-circle" cx="40" cy="40" r="32" 
+                                    stroke-dasharray="200" stroke-dashoffset="200" id="progress-gpt4"></circle>
+                        </svg>
+                        <div class="progress-text" id="percent-gpt4">0%</div>
+                    </div>
+                </div>
+
+                <div class="agent pending" id="agent-dalle">
+                    <div class="agent-info">
+                        <div class="agent-name">🎨 DALL-E 3 Asset Generator</div>
+                        <div class="agent-task">Creating high-res animated snakes...</div>
+                    </div>
+                    <div class="agent-progress">
+                        <svg class="progress-ring" width="80" height="80">
+                            <circle class="progress-circle" cx="40" cy="40" r="32"></circle>
+                            <circle class="progress-circle" cx="40" cy="40" r="32" 
+                                    stroke-dasharray="200" stroke-dashoffset="200" id="progress-dalle"></circle>
+                        </svg>
+                        <div class="progress-text" id="percent-dalle">0%</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Live Progress Timeline -->
+        <div class="grid">
+            <div class="card">
+                <div class="card-title">⏱️ Live Progress</div>
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-dot pending" id="dot-1"></div>
+                        <div class="timeline-content">
+                            <div class="timeline-title">Analyzing Snake & Ladders pattern</div>
+                            <div class="timeline-desc" id="status-1">Waiting to start...</div>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-dot pending" id="dot-2"></div>
+                        <div class="timeline-content">
+                            <div class="timeline-title">Generating 5 premium concepts</div>
+                            <div class="timeline-desc" id="status-2">Queued...</div>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-dot pending" id="dot-3"></div>
+                        <div class="timeline-content">
+                            <div class="timeline-title">Creating high-res snake animations</div>
+                            <div class="timeline-desc" id="status-3">Queued...</div>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-dot pending" id="dot-4"></div>
+                        <div class="timeline-content">
+                            <div class="timeline-title">Processing your 2 photos</div>
+                            <div class="timeline-desc" id="status-4">Upload photos to begin</div>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-dot pending" id="dot-5"></div>
+                        <div class="timeline-content">
+                            <div class="timeline-title">Building final premium game</div>
+                            <div class="timeline-desc" id="status-5">Waiting...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Live Logs -->
+            <div class="card">
+                <div class="card-title">📡 Live Feed</div>
+                <div class="live-feed" id="liveFeed">
+                    <div class="log-item info">🤖 Dashboard loaded - Ready to start</div>
+                    <div class="log-item info">💡 Tip: Upload your 2 photos below to test with real images</div>
+                    <div class="log-item info">🎯 Click "Start Agent Brainstorm" to generate premium concepts</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Concept Gallery -->
+        <div class="card">
+            <div class="card-title">✨ Generated Concepts (0/5)</div>
+            <div class="concept-gallery" id="conceptGallery">
+                <div class="concept-card">
+                    <div class="concept-image loading">
+                        <div style="font-size: 20px; text-align: center;">
+                            Concepts will appear here<br/>after agents finish
+                        </div>
+                    </div>
+                    <div class="concept-info">
+                        <div class="concept-title">Waiting for agents...</div>
+                        <div class="concept-tagline">Click "Start Agent Brainstorm" above</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Photo Upload Section -->
+        <div class="card">
+            <div class="card-title">📸 Upload Your 2 Photos</div>
+            <div class="photo-preview-grid">
+                <div>
+                    <div class="upload-zone" onclick="document.getElementById('photo1').click()">
+                        <div style="font-size: 48px; margin-bottom: 12px;">📸</div>
+                        <div>Photo 1 (You/Player 1)</div>
+                        <div style="font-size: 13px; color: rgba(255,255,255,0.5); margin-top: 8px;">
+                            Click to upload
+                        </div>
+                    </div>
+                    <input type="file" id="photo1" accept="image/*" style="display:none;" onchange="handlePhotoUpload(1, this)">
+                    <div id="preview1"></div>
+                </div>
+                
+                <div>
+                    <div class="upload-zone" onclick="document.getElementById('photo2').click()">
+                        <div style="font-size: 48px; margin-bottom: 12px;">📸</div>
+                        <div>Photo 2 (Partner/Player 2)</div>
+                        <div style="font-size: 13px; color: rgba(255,255,255,0.5); margin-top: 8px;">
+                            Click to upload
+                        </div>
+                    </div>
+                    <input type="file" id="photo2" accept="image/*" style="display:none;" onchange="handlePhotoUpload(2, this)">
+                    <div id="preview2"></div>
+                </div>
+            </div>
+
+            <div style="text-align: center; margin-top: 24px;">
+                <button class="btn btn-primary" onclick="processPhotos()" id="processBtn" disabled style="opacity: 0.5;">
+                    🪄 Process Photos with AI
+                </button>
+            </div>
+        </div>
+
+        <!-- Cost Tracker -->
+        <div class="card">
+            <div class="card-title">💰 Live Cost Tracker</div>
+            <div class="metric-grid">
+                <div class="metric">
+                    <div class="metric-value" id="cost-concepts">$0.00</div>
+                    <div class="metric-label">Concept Generation</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-value" id="cost-assets">$0.00</div>
+                    <div class="metric-label">Asset Creation</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-value" id="cost-photos">$0.00</div>
+                    <div class="metric-label">Photo Processing</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-value" id="cost-total">$0.00</div>
+                    <div class="metric-label">Total Cost</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Action Button -->
+    <div class="floating-action">
+        <button class="fab" onclick="showQuickActions()" title="Quick Actions">
+            ⚡
+        </button>
+    </div>
+
+    <!-- Concept Detail Modal -->
+    <div class="modal" id="conceptModal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal()">&times;</span>
+            <div id="modalContent"></div>
+        </div>
+    </div>
+
+    <script>
+        let photos = { photo1: null, photo2: null };
+        let agents = {
+            aesthetics: { progress: 0, status: 'pending' },
+            content: { progress: 0, status: 'pending' },
+            gpt4: { progress: 0, status: 'pending' },
+            dalle: { progress: 0, status: 'pending' }
+        };
+
+        function log(message, type = 'info') {
+            const feed = document.getElementById('liveFeed');
+            const time = new Date().toLocaleTimeString();
+            const logItem = document.createElement('div');
+            logItem.className = `log-item ${type}`;
+            logItem.textContent = `[${time}] ${message}`;
+            feed.insertBefore(logItem, feed.firstChild);
+            
+            // Keep only last 20 logs
+            while (feed.children.length > 20) {
+                feed.removeChild(feed.lastChild);
+            }
+        }
+
+        function startAgents() {
+            log('🚀 Starting multi-agent creative session...', 'info');
+            document.getElementById('mainStatus').className = 'status-banner working';
+            document.getElementById('mainStatus').textContent = '⚙️ Agents Working...';
+            
+            // Simulate agent progress
+            simulateAgentWork('aesthetics', 'Aesthetics Agent analyzing premium patterns...');
+            
+            setTimeout(() => {
+                simulateAgentWork('content', 'Content Agent exploring viral mechanics...');
+            }, 2000);
+            
+            setTimeout(() => {
+                simulateAgentWork('gpt4', 'GPT-4o generating creative concepts...');
+            }, 5000);
+            
+            setTimeout(() => {
+                log('✅ 5 premium concepts generated!', 'success');
+                showGeneratedConcepts();
+            }, 15000);
+        }
+
+        function simulateAgentWork(agentId, message) {
+            log(message, 'info');
+            document.getElementById(`agent-${agentId}`).classList.add('active');
+            document.getElementById(`dot-${getStepForAgent(agentId)}`).classList.add('active');
+            
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += Math.random() * 15;
+                if (progress >= 100) {
+                    progress = 100;
+                    clearInterval(interval);
+                    document.getElementById(`agent-${agentId}`).classList.remove('active');
+                    document.getElementById(`agent-${agentId}`).classList.add('complete');
+                    document.getElementById(`dot-${getStepForAgent(agentId)}`).classList.remove('active');
+                    document.getElementById(`dot-${getStepForAgent(agentId)}`).classList.add('complete');
+                    log(`✅ ${agentId.toUpperCase()} agent complete!`, 'success');
+                }
+                
+                document.getElementById(`percent-${agentId}`).textContent = Math.round(progress) + '%';
+                const circle = document.getElementById(`progress-${agentId}`);
+                const offset = 200 - (progress / 100) * 200;
+                circle.style.strokeDashoffset = offset;
+            }, 500);
+        }
+
+        function getStepForAgent(agent) {
+            const map = { aesthetics: 1, content: 1, gpt4: 2, dalle: 3 };
+            return map[agent] || 1;
+        }
+
+        function showGeneratedConcepts() {
+            const concepts = [
+                {
+                    title: "Journey of Love",
+                    tagline: "Your relationship as a literal adventure",
+                    emoji: "💕",
+                    viralScore: 94,
+                    premiumScore: 92
+                },
+                {
+                    title: "Quantum Snakes",
+                    tagline: "Photos react and animate to gameplay",
+                    emoji: "🌀",
+                    viralScore: 97,
+                    premiumScore: 96
+                },
+                {
+                    title: "Memory Maze 3D",
+                    tagline: "Isometric floating islands of your story",
+                    emoji: "🏝️",
+                    viralScore: 91,
+                    premiumScore: 94
+                },
+                {
+                    title: "Double Helix",
+                    tagline: "DNA spiral symbolizing intertwined lives",
+                    emoji: "🧬",
+                    viralScore: 88,
+                    premiumScore: 98
+                },
+                {
+                    title: "The Ascent",
+                    tagline: "Epic vertical climb with cinematic camera",
+                    emoji: "⛰️",
+                    viralScore: 93,
+                    premiumScore: 95
+                }
+            ];
+
+            const gallery = document.getElementById('conceptGallery');
+            gallery.innerHTML = '';
+
+            concepts.forEach((concept, i) => {
+                const card = document.createElement('div');
+                card.className = 'concept-card';
+                card.onclick = () => showConceptDetail(concept);
+                card.innerHTML = `
+                    <div class="concept-image" style="background: linear-gradient(135deg, #4A1E5A ${i*10}%, #C41E3A ${100-i*10}%);">
+                        <div style="font-size: 80px;">${concept.emoji}</div>
+                    </div>
+                    <div class="concept-info">
+                        <div class="concept-title">${concept.title}</div>
+                        <div class="concept-tagline">${concept.tagline}</div>
+                        <div class="concept-score">
+                            <div class="score-item">
+                                🎨 Premium: ${concept.premiumScore}/100
+                            </div>
+                            <div class="score-item">
+                                📈 Viral: ${concept.viralScore}/100
+                            </div>
+                        </div>
+                    </div>
+                `;
+                gallery.appendChild(card);
+            });
+
+            document.querySelector('.card-title').textContent = '✨ Generated Concepts (5/5)';
+            document.getElementById('mainStatus').className = 'status-banner';
+            document.getElementById('mainStatus').textContent = '✅ Concepts Ready!';
+            
+            updateCost('concepts', 0.80);
+        }
+
+        function handlePhotoUpload(photoNum, input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    photos[`photo${photoNum}`] = e.target.result;
+                    const preview = document.getElementById(`preview${photoNum}`);
+                    preview.innerHTML = `<img src="${e.target.result}" class="preview-image">`;
+                    document.querySelectorAll('.upload-zone')[photoNum-1].classList.add('has-image');
+                    log(`✅ Photo ${photoNum} uploaded`, 'success');
+                    
+                    if (photos.photo1 && photos.photo2) {
+                        document.getElementById('processBtn').disabled = false;
+                        document.getElementById('processBtn').style.opacity = 1;
+                        log('🎉 Both photos ready! Click "Process Photos" to continue', 'success');
+                    }
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function processPhotos() {
+            log('🪄 Processing photos with DALL-E 3...', 'info');
+            document.getElementById('dot-4').classList.add('active');
+            document.getElementById('agent-dalle').classList.add('active');
+            
+            simulatePhotoProcessing();
+        }
+
+        function simulatePhotoProcessing() {
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += Math.random() * 10;
+                if (progress >= 100) {
+                    progress = 100;
+                    clearInterval(interval);
+                    log('✅ Photos converted to Pixar-quality characters!', 'success');
+                    document.getElementById('dot-4').classList.remove('active');
+                    document.getElementById('dot-4').classList.add('complete');
+                    document.getElementById('agent-dalle').classList.remove('active');
+                    document.getElementById('agent-dalle').classList.add('complete');
+                    document.getElementById('dot-5').classList.add('active');
+                    log('🎮 Building final game...', 'info');
+                    
+                    setTimeout(() => {
+                        document.getElementById('dot-5').classList.remove('active');
+                        document.getElementById('dot-5').classList.add('complete');
+                        log('🎉 GAME READY! Opening preview...', 'success');
+                        updateCost('photos', 0.24);
+                        updateCost('assets', 1.68);
+                        showGameReady();
+                    }, 5000);
+                }
+                
+                document.getElementById('percent-dalle').textContent = Math.round(progress) + '%';
+                const circle = document.getElementById('progress-dalle');
+                const offset = 200 - (progress / 100) * 200;
+                circle.style.strokeDashoffset = offset;
+            }, 300);
+        }
+
+        function updateCost(category, amount) {
+            const current = parseFloat(document.getElementById(`cost-${category}`).textContent.replace('$', ''));
+            const newCost = current + amount;
+            document.getElementById(`cost-${category}`).textContent = '$' + newCost.toFixed(2);
+            
+            // Update total
+            const concepts = parseFloat(document.getElementById('cost-concepts').textContent.replace('$', ''));
+            const assets = parseFloat(document.getElementById('cost-assets').textContent.replace('$', ''));
+            const photos = parseFloat(document.getElementById('cost-photos').textContent.replace('$', ''));
+            const total = concepts + assets + photos;
+            document.getElementById('cost-total').textContent = '$' + total.toFixed(2);
+        }
+
+        function showConceptDetail(concept) {
+            const modal = document.getElementById('conceptModal');
+            const content = document.getElementById('modalContent');
+            
+            content.innerHTML = `
+                <h2 style="font-size: 36px; margin-bottom: 16px;">${concept.emoji} ${concept.title}</h2>
+                <p style="font-size: 18px; color: rgba(255,255,255,0.8); margin-bottom: 32px;">${concept.tagline}</p>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+                    <div>
+                        <h3>🎨 Premium Score</h3>
+                        <div style="font-size: 48px; font-weight: bold; color: #D4AF37;">${concept.premiumScore}/100</div>
+                    </div>
+                    <div>
+                        <h3>📈 Viral Score</h3>
+                        <div style="font-size: 48px; font-weight: bold; color: #10B981;">${concept.viralScore}/100</div>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 32px; text-align: center;">
+                    <button class="btn btn-primary" onclick="selectConcept('${concept.title}')">
+                        ✅ Choose This Concept
+                    </button>
+                    <button class="btn btn-secondary" onclick="closeModal()">
+                        Back to Gallery
+                    </button>
+                </div>
+            `;
+            
+            modal.classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('conceptModal').classList.remove('active');
+        }
+
+        function selectConcept(title) {
+            log(`✅ Selected: ${title}`, 'success');
+            log('🎨 Generating high-res assets for this concept...', 'info');
+            closeModal();
+            alert(`Perfect choice! "${title}" selected.\n\nNext: Upload your 2 photos to see them in this concept!`);
+        }
+
+        function showGameReady() {
+            alert('🎉 YOUR PREMIUM SNAKE & LADDERS IS READY!\n\nFeatures:\n• Your 2 photos as characters\n• 4K high-res graphics\n• Animated snakes\n• Premium visual execution\n• Ready to play & share!\n\nOpening game...');
+        }
+
+        function showQuickActions() {
+            const actions = `Quick Actions:
+
+1. Start Agent Brainstorm
+2. Upload Photos
+3. Process with AI
+4. Generate Marketing
+5. Deploy to Production
+
+Which action?`;
+            const choice = prompt(actions);
+            if (choice === '1') startAgents();
+        }
+
+        // Auto-refresh every 30 seconds
+        setInterval(() => {
+            const time = new Date().toLocaleTimeString();
+            document.querySelector('.tagline').textContent = `Live Dashboard • Updated ${time}`;
+        }, 30000);
+    </script>
+</body>
+</html>
