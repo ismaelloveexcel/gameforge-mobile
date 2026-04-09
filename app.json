@@ -1,8 +1,8 @@
 {
   "expo": {
-    "name": "GameForge Mobile",
-    "slug": "gameforge-mobile",
-    "version": "1.0.0",
+    "name": "GiftVerse",
+    "slug": "giftverse",
+    "version": "2.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",
@@ -16,32 +16,35 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.gameforge.mobile"
+      "bundleIdentifier": "com.giftverse.app"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#1a1a2e"
       },
-      "package": "com.gameforge.mobile"
+      "package": "com.giftverse.app",
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "autoVerify": true,
+          "data": [{ "scheme": "https", "host": "*.giftverse.app", "pathPrefix": "/gift/" }],
+          "category": ["BROWSABLE", "DEFAULT"]
+        }
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png",
       "bundler": "metro"
     },
+    "scheme": "giftverse",
     "plugins": [
-      [
-        "expo-build-properties",
-        {
-          "android": {
-            "usesCleartextTraffic": true
-          }
-        }
-      ]
+      "expo-haptics",
+      "expo-linking"
     ],
     "extra": {
-      "openaiApiKey": "${EXPO_PUBLIC_OPENAI_API_KEY}",
-      "grokApiKey": "${EXPO_PUBLIC_GROK_API_KEY}"
+      "supabaseUrl": "${EXPO_PUBLIC_SUPABASE_URL}",
+      "supabaseAnonKey": "${EXPO_PUBLIC_SUPABASE_ANON_KEY}"
     }
   }
 }
