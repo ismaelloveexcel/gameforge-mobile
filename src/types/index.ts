@@ -1,4 +1,4 @@
-// ─── GiftVerse Navigation Types ────────────────────────────────
+// ─── GiftVerse Navigation Types ──────────────────────────────────────────────
 export type RootStackParamList = {
   Onboarding: undefined;
   MainTabs: undefined;
@@ -10,7 +10,7 @@ export type RootStackParamList = {
   GiftView: { giftId: string };
 };
 
-// ─── Gift Types ────────────────────────────────────────────
+// ─── Gift Types ──────────────────────────────────────────────────
 export type GiftType = 'gift_game' | 'birthday_card' | 'invitation';
 
 export type GiftOccasion =
@@ -30,7 +30,7 @@ export type VisualStyle =
 
 export type PaymentStatus = 'free' | 'pending' | 'paid' | 'failed';
 
-// ─── Content Blocks ────────────────────────────────────────
+// ─── Content Blocks ──────────────────────────────────────────────
 export type ContentBlockType = 'text' | 'media' | 'cta' | 'rsvp' | 'quiz_game' | 'countdown';
 
 export interface ContentBlock {
@@ -81,7 +81,7 @@ export interface CountdownBlockData {
   label: string;
 }
 
-// ─── GiftExperience (unified model) ─────────────────────────
+// ─── GiftExperience (unified model) ─────────────────────
 export interface GiftExperience {
   id: string;
   giftType: GiftType;
@@ -106,7 +106,7 @@ export interface GiftAsset {
   uri: string;
 }
 
-// ─── Wizard State ──────────────────────────────────────────
+// ─── Wizard State ────────────────────────────────────────────────
 export type WizardStep = 'gift_type' | 'occasion' | 'recipient' | 'tone_style' | 'content' | 'confirmation';
 
 export interface WizardState {
@@ -117,7 +117,7 @@ export interface WizardState {
   error?: string;
 }
 
-// ─── Display Labels ────────────────────────────────────────
+// ─── Display Labels ──────────────────────────────────────────────
 export const GIFT_TYPE_LABELS: Record<GiftType, { label: string; icon: string; description: string }> = {
   gift_game: { label: 'Gift Game', icon: 'gamepad-variant', description: 'An interactive mini-game gift' },
   birthday_card: { label: 'Birthday Card', icon: 'card-text', description: 'A beautiful digital birthday card' },
