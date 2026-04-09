@@ -90,6 +90,7 @@ export default function GiftWizardScreen() {
     }
   };
 
+  // ─── Renderers ─────────────────────────────────────────────────
   const renderGiftType = () => (
     <Animated.View entering={FadeInUp.duration(400)}>
       <Text style={[s.heading, { color: theme.colors.text }]}>What are you creating?</Text>
@@ -247,7 +248,7 @@ export default function GiftWizardScreen() {
           {isGenerating ? (
             <ActivityIndicator color="#fff" />
           ) : (
-            <Text style={s.createBtnText}>Create Gift \u2728</Text>
+            <Text style={s.createBtnText}>Create Gift ✨</Text>
           )}
         </TouchableOpacity>
       </Animated.View>
@@ -325,24 +326,31 @@ const s = StyleSheet.create({
   scroll: { padding: 24, paddingBottom: 120 },
   heading: { fontSize: 26, fontWeight: '700', marginBottom: 20 },
   subheading: { fontSize: 15, fontWeight: '600', marginBottom: 12 },
+  // Gift type cards
   typeCard: { flexDirection: 'row', alignItems: 'center', padding: 20, borderRadius: 16, borderWidth: 2, marginBottom: 12 },
   typeLabel: { fontSize: 17, fontWeight: '600' },
   typeSub: { fontSize: 13, marginTop: 2 },
+  // Pills
   pillGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
   pill: { paddingHorizontal: 16, paddingVertical: 10, borderRadius: 20, borderWidth: 1 },
   pillText: { fontSize: 14, fontWeight: '500' },
+  // Inputs
   label: { fontSize: 13, fontWeight: '600', marginBottom: 6, marginTop: 16 },
   input: { borderWidth: 1, borderRadius: 12, padding: 14, fontSize: 16 },
   multiline: { minHeight: 100, textAlignVertical: 'top' },
+  // Style cards
   styleCard: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 16, borderRadius: 12, borderWidth: 2, marginBottom: 10 },
   styleLabel: { fontSize: 15, fontWeight: '500' },
+  // Info card
   infoCard: { alignItems: 'center', padding: 32, borderRadius: 20, gap: 16 },
   infoText: { fontSize: 16, textAlign: 'center', lineHeight: 24 },
+  // Summary
   summaryCard: { padding: 20, borderRadius: 16 },
   divider: { height: 1, backgroundColor: '#eee', marginVertical: 8 },
   error: { color: '#EF4444', textAlign: 'center', marginTop: 12, fontSize: 14 },
   createBtn: { marginTop: 24, padding: 18, borderRadius: 16, alignItems: 'center' },
   createBtnText: { color: '#fff', fontSize: 18, fontWeight: '700' },
+  // Footer
   footer: { padding: 16, paddingBottom: 32, borderTopWidth: 1 },
   nextBtn: { padding: 16, borderRadius: 14, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8 },
   nextBtnText: { fontSize: 16, fontWeight: '600' },
