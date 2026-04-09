@@ -14,7 +14,6 @@ import Animated, {
   FadeInUp,
 } from 'react-native-reanimated';
 import { useTheme } from '../contexts/ThemeContext';
-import DodoCompanion from './DodoCompanion';
 import { spacing, typography, radii, forgeColors } from '../design-tokens/theme';
 
 interface EmptyStateProps {
@@ -151,16 +150,6 @@ const EmptyState = React.memo(function EmptyState({
             />
           ))}
         </View>
-      </Animated.View>
-      
-      {/* Dodo companion */}
-      <Animated.View entering={FadeInUp.duration(600).delay(300)}>
-        <DodoCompanion
-          mood={config.dodoMood}
-          size="medium"
-          message={dodoMessage || getDefaultDodoMessage(variant)}
-          showBubble
-        />
       </Animated.View>
       
       {/* Text content */}
