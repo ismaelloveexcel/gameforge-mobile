@@ -8,7 +8,7 @@ const CORS_HEADERS = {
     "authorization, x-client-info, apikey, content-type",
 };
 
-// ── Allowed enum values ──────────────────────────────────────────────
+// ── Allowed enum values ───────────────────────────────────────────────────
 const GIFT_TYPES = ["gift_game", "birthday_card", "invitation"] as const;
 const TONES = [
   "playful",
@@ -36,7 +36,7 @@ interface GenerateGiftRequest {
   personalMessage?: string;
 }
 
-// ── Validation helpers ───────────────────────────────────────────────
+// ── Validation helpers ─────────────────────────────────────────────────
 function sanitize(input: string, maxLen = 500): string {
   return input.replace(/[<>]/g, "").trim().slice(0, maxLen);
 }
@@ -66,7 +66,7 @@ function validate(body: GenerateGiftRequest): string | null {
   return null;
 }
 
-// ── System prompts by gift type ──────────────────────────────────────
+// ── System prompts by gift type ────────────────────────────────────────
 function buildSystemPrompt(giftType: string): string {
   const base =
     "You are a creative gift content generator for an app called GiftVerse. " +
