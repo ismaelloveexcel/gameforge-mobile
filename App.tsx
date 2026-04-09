@@ -6,7 +6,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import AppNavigator from './src/navigation/AppNavigator';
 import { ThemeProvider } from './src/contexts/ThemeContext';
 
-// ─── Error Boundary ────────────────────────────────────────
+// ─── Error Boundary ──────────────────────────────────────────────────
 class ErrorBoundary extends React.Component<
   { children: React.ReactNode },
   { hasError: boolean; error?: Error }
@@ -40,7 +40,7 @@ const ebStyles = StyleSheet.create({
   message: { fontSize: 14, color: '#aaa', textAlign: 'center' },
 });
 
-// ─── Linking config for deep links ──────────────────────
+// ─── Linking config for deep links ──────────────────────────
 const linking = {
   prefixes: ['giftverse://', 'https://giftverse.app'],
   config: {
@@ -51,7 +51,7 @@ const linking = {
   },
 };
 
-// ─── Root Component ────────────────────────────────────────
+// ─── Root Component ──────────────────────────────────────────────────
 export default function App() {
   const [initialRoute, setInitialRoute] = useState<string | null>(null);
 
