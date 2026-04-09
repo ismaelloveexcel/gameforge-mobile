@@ -39,7 +39,7 @@ export default function OnboardingScreen() {
     }
   };
 
-  // \u2500\u2500\u2500 Step 1: Welcome
+  // ─── Step 1: Welcome ──────────────────────────────────────────
   const renderWelcome = () => (
     <Animated.View entering={FadeInUp.duration(500)} style={styles.stepContainer}>
       <View style={[styles.heroIcon, { backgroundColor: theme.colors.primary + '18' }]}>
@@ -61,7 +61,7 @@ export default function OnboardingScreen() {
     </Animated.View>
   );
 
-  // \u2500\u2500\u2500 Step 2: Choose Gift Type
+  // ─── Step 2: Choose Gift Type ─────────────────────────────────
   const renderChoose = () => (
     <Animated.View entering={FadeInUp.duration(500)} style={styles.stepContainer}>
       <Text style={[styles.heading, { color: theme.colors.text }]}>
@@ -122,14 +122,14 @@ export default function OnboardingScreen() {
     </Animated.View>
   );
 
-  // \u2500\u2500\u2500 Step 3: All Set
+  // ─── Step 3: All Set ──────────────────────────────────────────
   const renderAllSet = () => (
     <Animated.View entering={FadeInUp.duration(500)} style={styles.stepContainer}>
       <View style={[styles.heroIcon, { backgroundColor: theme.colors.success + '18' }]}>
         <Icon name="party-popper" size={56} color={theme.colors.success} />
       </View>
       <Text style={[styles.heading, { color: theme.colors.text }]}>
-        You're all set! \uD83C\uDF89
+        You're all set! 🎉
       </Text>
       <Text style={[styles.subtitle, { color: theme.colors.textMuted }]}>
         Time to create something amazing for someone special
