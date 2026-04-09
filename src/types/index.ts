@@ -1,323 +1,145 @@
-// Navigation types
+// ─── GiftVerse Navigation Types ────────────────────────────────
 export type RootStackParamList = {
   Onboarding: undefined;
   MainTabs: undefined;
   Home: undefined;
-  Projects: undefined;
-  ProjectList: undefined;
-  ProjectEditor: { projectId: string };
-  Templates: undefined;
-  TemplateSelector: undefined;
-  TemplatePreview: { templateId: string };
-  Genie: undefined;
-  GenieAssistant: { projectId?: string };
-  AssetLibrary: { projectId?: string };
-  MarketingDashboard: { projectId: string };
-  VREditor: { projectId: string };
+  History: undefined;
   Settings: undefined;
-  Publish: { projectId: string };
-  // GiftForge routes
-  GiftForgeWizard: undefined;
-  GiftForgeGame: { gameId: string };
-  GiftForgeResult: { gameId: string };
-  // Agent routes
-  AgentDashboard: undefined;
-  // Admin routes
-  CommandCentre: undefined;
-  // Instant Gift flow
-  InstantGift: { game: import('../services/FeaturedGamesService').FeaturedGame };
-  // Gift Memories
-  GiftMemories: undefined;
+  GiftWizard: { giftType?: GiftType } | undefined;
+  GiftPreview: { giftId: string };
+  GiftView: { giftId: string };
 };
 
-// Project types
-export interface Project {
+// ─── Gift Types ────────────────────────────────────────────
+export type GiftType = 'gift_game' | 'birthday_card' | 'invitation';
+
+export type GiftOccasion =
+  | 'birthday' | 'anniversary' | 'valentines' | 'christmas'
+  | 'graduation' | 'thank_you' | 'get_well' | 'congratulations'
+  | 'just_because' | 'farewell' | 'eid_fitr' | 'eid_adha'
+  | 'uae_national_day' | 'mothers_day' | 'fathers_day'
+  | 'wedding' | 'baby_shower' | 'housewarming';
+
+export type Tone =
+  | 'heartfelt' | 'playful' | 'nostalgic' | 'encouraging'
+  | 'romantic' | 'humorous' | 'inspirational' | 'formal';
+
+export type VisualStyle =
+  | 'colorful_cartoon' | 'elegant_minimal' | 'retro_pixel'
+  | 'cozy_handdrawn' | 'magical_sparkle';
+
+export type PaymentStatus = 'free' | 'pending' | 'paid' | 'failed';
+
+// ─── Content Blocks ────────────────────────────────────────
+export type ContentBlockType = 'text' | 'media' | 'cta' | 'rsvp' | 'quiz_game' | 'countdown';
+
+export interface ContentBlock {
   id: string;
-  name: string;
-  description: string;
-  type: 'game' | 'vr' | 'educational';
-  engine: 'pixi' | 'babylon' | 'aframe';
-  template?: string;
-  artStyle?: ArtStyle;
-  createdAt: Date;
-  updatedAt: Date;
-  thumbnail?: string;
-  data: ProjectData;
+  type: ContentBlockType;
+  data: TextBlockData | MediaBlockData | CTABlockData | RSVPBlockData | QuizGameBlockData | CountdownBlockData;
 }
 
-export interface ProjectData {
-  scenes: Scene[];
-  assets: Asset[];
-  scripts: Script[];
-  settings: ProjectSettings;
+export interface TextBlockData {
+  heading?: string;
+  body: string;
+  alignment?: 'left' | 'center' | 'right';
 }
 
-export interface Scene {
+export interface MediaBlockData {
+  uri: string;
+  mediaType: 'image' | 'video' | 'audio';
+  caption?: string;
+}
+
+export interface CTABlockData {
+  label: string;
+  action: 'link' | 'share' | 'rsvp' | 'redeem';
+  url?: string;
+}
+
+export interface RSVPBlockData {
+  eventName: string;
+  eventDate: string;
+  eventLocation?: string;
+  options: string[];
+}
+
+export interface QuizGameBlockData {
+  questions: QuizQuestion[];
+  gameType: 'quiz' | 'story_choices' | 'puzzle' | 'runner';
+}
+
+export interface QuizQuestion {
+  question: string;
+  options: string[];
+  correctAnswer: number;
+  feedback: string;
+}
+
+export interface CountdownBlockData {
+  targetDate: string;
+  label: string;
+}
+
+// ─── GiftExperience (unified model) ─────────────────────────
+export interface GiftExperience {
   id: string;
-  name: string;
-  type: '2d' | '3d' | 'vr';
-  objects: GameObject[];
-  background?: string;
-  camera?: CameraSettings;
+  giftType: GiftType;
+  occasion: GiftOccasion;
+  sender: { name: string; email?: string };
+  recipient: { name: string; age?: string; interests?: string[]; personalities?: string[] };
+  tone: Tone;
+  visualStyle: VisualStyle;
+  contentBlocks: ContentBlock[];
+  assets: GiftAsset[];
+  paymentStatus: PaymentStatus;
+  shareSlug: string;
+  shareUrl?: string;
+  personalMessage: string;
+  createdAt: string;
+  metadata: Record<string, unknown>;
 }
 
-export interface GameObject {
+export interface GiftAsset {
   id: string;
-  name: string;
-  type: string;
-  position: { x: number; y: number; z?: number };
-  rotation?: { x: number; y: number; z: number };
-  scale?: { x: number; y: number; z?: number };
-  properties: Record<string, any>;
-  components: Component[];
+  type: 'image' | 'video' | 'audio' | 'lottie';
+  uri: string;
 }
 
-export interface Component {
-  type: string;
-  enabled: boolean;
-  properties: Record<string, any>;
+// ─── Wizard State ──────────────────────────────────────────
+export type WizardStep = 'gift_type' | 'occasion' | 'recipient' | 'tone_style' | 'content' | 'confirmation';
+
+export interface WizardState {
+  currentStep: WizardStep;
+  stepIndex: number;
+  draft: Partial<GiftExperience>;
+  isGenerating: boolean;
+  error?: string;
 }
 
-export interface Asset {
-  id: string;
-  name: string;
-  type: 'image' | 'audio' | 'video' | '3dmodel' | 'font' | 'script';
-  url: string;
-  size: number;
-  metadata?: Record<string, any>;
-}
+// ─── Display Labels ────────────────────────────────────────
+export const GIFT_TYPE_LABELS: Record<GiftType, { label: string; icon: string; description: string }> = {
+  gift_game: { label: 'Gift Game', icon: 'gamepad-variant', description: 'An interactive mini-game gift' },
+  birthday_card: { label: 'Birthday Card', icon: 'card-text', description: 'A beautiful digital birthday card' },
+  invitation: { label: 'Invitation', icon: 'email-heart-outline', description: 'An event invitation with RSVP' },
+};
 
-export interface Script {
-  id: string;
-  name: string;
-  code: string;
-  language: 'javascript' | 'typescript';
-}
+export const OCCASION_LABELS: Record<GiftOccasion, string> = {
+  birthday: 'Birthday', anniversary: 'Anniversary', valentines: "Valentine's Day",
+  christmas: 'Christmas', graduation: 'Graduation', thank_you: 'Thank You',
+  get_well: 'Get Well Soon', congratulations: 'Congratulations', just_because: 'Just Because',
+  farewell: 'Farewell', eid_fitr: 'Eid al-Fitr', eid_adha: 'Eid al-Adha',
+  uae_national_day: 'UAE National Day', mothers_day: "Mother's Day", fathers_day: "Father's Day",
+  wedding: 'Wedding', baby_shower: 'Baby Shower', housewarming: 'Housewarming',
+};
 
-export interface ProjectSettings {
-  resolution: { width: number; height: number };
-  orientation: 'portrait' | 'landscape' | 'auto';
-  physics?: PhysicsSettings;
-  audio?: AudioSettings;
-}
+export const TONE_LABELS: Record<Tone, string> = {
+  heartfelt: 'Heartfelt', playful: 'Playful', nostalgic: 'Nostalgic',
+  encouraging: 'Encouraging', romantic: 'Romantic', humorous: 'Humorous',
+  inspirational: 'Inspirational', formal: 'Formal',
+};
 
-export interface PhysicsSettings {
-  enabled: boolean;
-  gravity: { x: number; y: number; z: number };
-  engine: 'matter' | 'cannon' | 'ammo';
-}
-
-export interface AudioSettings {
-  masterVolume: number;
-  musicVolume: number;
-  sfxVolume: number;
-}
-
-export interface CameraSettings {
-  type: 'orthographic' | 'perspective';
-  position: { x: number; y: number; z: number };
-  target?: { x: number; y: number; z: number };
-  fov?: number;
-}
-
-// Genie (creative companion) types
-export type GeniePersonality = 'creative' | 'technical' | 'marketing' | 'educator' | 'gift-guide';
-
-export interface GenieMessage {
-  id: string;
-  personality: GeniePersonality;
-  role: 'user' | 'assistant';
-  content: string;
-  timestamp: Date;
-  suggestions?: string[];
-  codeSnippet?: string;
-}
-
-export interface GenieContext {
-  projectId?: string;
-  currentScene?: string;
-  recentActions: string[];
-  userPreferences: Record<string, any>;
-}
-
-// Agent types
-export type AgentRole =
-  | 'market-researcher'
-  | 'idea-generator'
-  | 'game-creator'
-  | 'game-tester'
-  | 'perfecter'
-  | 'content-creator'
-  | 'scheduler'
-  | 'engager'
-  | 'outreach';
-
-// Gift Game types
-export interface GiftQuestionnaire {
-  id: string;
-  occasion: string;
-  recipientName: string;
-  relationship: string;
-  recipientTraits: string[];
-  interests: string[];
-  emotionalTone: string;
-  gameStyle: string;
-  senderName: string;
-  customMessage?: string;
-  memories?: string[];
-  photos?: string[];
-  gameDuration: string;
-  difficultyLevel: string;
-  createdAt: Date;
-  status: 'draft' | 'generating' | 'ready' | 'delivered';
-}
-
-export interface GiftGame {
-  id: string;
-  questionnaireId: string;
-  shareableUrl: string;
-  recipientName: string;
-  senderName: string;
-  gameType: string;
-  templateId: string;
-  gameData: any;
-  createdAt: Date;
-  expiresAt?: Date;
-  views: number;
-  completed: boolean;
-}
-
-// Template types
-export interface GameTemplate {
-  id: string;
-  name: string;
-  description: string;
-  category: TemplateCategory;
-  thumbnail: string;
-  difficulty: 'beginner' | 'intermediate' | 'advanced';
-  features: string[];
-  engine: 'pixi' | 'babylon' | 'aframe';
-  data: ProjectData;
-  documentation: string;
-}
-
-export type TemplateCategory = 
-  | 'puzzle'
-  | 'action'
-  | 'strategy'
-  | 'racing'
-  | 'educational'
-  | 'vr'
-  | 'ar'
-  | 'idle'
-  | 'rhythm'
-  | 'story';
-
-// Art Style types
-export type ArtStyle = 
-  | 'pixel'
-  | 'lowpoly'
-  | 'handdrawn'
-  | 'cyberpunk'
-  | 'watercolor'
-  | 'valentine-iridescent'
-  | 'ramadan-lantern-glow';
-
-export interface ArtStyleConfig {
-  id: ArtStyle;
-  name: string;
-  description: string;
-  colors: ColorPalette;
-  shaders?: ShaderConfig[];
-  filters?: FilterConfig[];
-}
-
-export interface ColorPalette {
-  primary: string;
-  secondary: string;
-  accent: string;
-  background: string;
-  text: string;
-  custom: string[];
-}
-
-export interface ShaderConfig {
-  name: string;
-  vertexShader: string;
-  fragmentShader: string;
-  uniforms: Record<string, any>;
-}
-
-export interface FilterConfig {
-  type: string;
-  parameters: Record<string, any>;
-}
-
-// Marketing types
-export interface MarketingCampaign {
-  id: string;
-  projectId: string;
-  name: string;
-  type: 'social' | 'email' | 'push' | 'inapp';
-  status: 'draft' | 'scheduled' | 'active' | 'completed';
-  startDate?: Date;
-  endDate?: Date;
-  content: CampaignContent;
-  analytics: CampaignAnalytics;
-}
-
-export interface CampaignContent {
-  title: string;
-  description: string;
-  media: string[];
-  cta: string;
-  hashtags?: string[];
-}
-
-export interface CampaignAnalytics {
-  impressions: number;
-  clicks: number;
-  conversions: number;
-  engagement: number;
-}
-
-export interface AnalyticsDashboard {
-  overview: {
-    users: number;
-    sessions: number;
-    revenue: number;
-    retention: number;
-  };
-  charts: ChartData[];
-  metrics: MetricCard[];
-}
-
-export interface ChartData {
-  type: 'line' | 'bar' | 'pie';
-  title: string;
-  data: any[];
-  labels: string[];
-}
-
-export interface MetricCard {
-  title: string;
-  value: string | number;
-  change: number;
-  trend: 'up' | 'down' | 'neutral';
-}
-
-// VR types
-export interface VRSettings {
-  platform: 'quest' | 'psvr' | 'webxr';
-  locomotion: 'teleport' | 'smooth' | 'both';
-  handTracking: boolean;
-  controllerSupport: boolean;
-  spatialAudio: boolean;
-}
-
-export interface VRController {
-  hand: 'left' | 'right';
-  position: { x: number; y: number; z: number };
-  rotation: { x: number; y: number; z: number };
-  buttons: Record<string, boolean>;
-}
+export const VISUAL_STYLE_LABELS: Record<VisualStyle, string> = {
+  colorful_cartoon: 'Colorful Cartoon', elegant_minimal: 'Elegant & Minimal',
+  retro_pixel: 'Retro Pixel', cozy_handdrawn: 'Cozy Hand-Drawn', magical_sparkle: 'Magical Sparkle',
+};
