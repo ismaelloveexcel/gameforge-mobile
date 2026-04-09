@@ -71,7 +71,7 @@ export default function GiftHistoryScreen() {
               To {item.recipient.name}
             </Text>
             <Text style={[styles.meta, { color: theme.colors.textMuted }]} numberOfLines={1}>
-              {typeInfo?.label} \u00b7 {OCCASION_LABELS[item.occasion]}
+              {typeInfo?.label} · {OCCASION_LABELS[item.occasion]}
             </Text>
             <Text style={[styles.date, { color: theme.colors.textMuted }]}>
               {formatDate(item.createdAt)}
