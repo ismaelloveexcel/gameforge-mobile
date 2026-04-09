@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import {
   View,
   Text,
@@ -6,560 +6,469 @@ import {
   ScrollView,
   TouchableOpacity,
   Share,
-  Alert,
+  StatusBar,
 } from 'react-native';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { RootStackParamList, GiftGame } from '../types';
-import { giftGameService } from '../services/GiftGameService';
-import { LinearGradient } from 'expo-linear-gradient';
+import Animated, { FadeInUp, FadeInDown } from 'react-native-reanimated';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import {
+  RootStackParamList,
+  GiftExperience,
+  GiftType,
+  ContentBlock,
+  GIFT_TYPE_LABELS,
+  OCCASION_LABELS,
+  TextBlockData,
+  RSVPBlockData,
+  QuizGameBlockData,
+} from '../types';
+import { useGiftStore } from '../stores/giftStore';
+import { useTheme } from '../contexts/ThemeContext';
+import { forgeColors, spacing } from '../design-tokens/theme';
 
-type GiftPreviewScreenNavigationProp = StackNavigationProp<RootStackParamList, 'GiftPreview'>;
-type GiftPreviewScreenRouteProp = RouteProp<RootStackParamList, 'GiftPreview'>;
+type PreviewRoute = RouteProp<RootStackParamList, 'GiftPreview'>;
+type NavProp = StackNavigationProp<RootStackParamList>;
 
-export const GiftPreviewScreen: React.FC = () => {
-  const navigation = useNavigation<GiftPreviewScreenNavigationProp>();
-  const route = useRoute<GiftPreviewScreenRouteProp>();
+export default function GiftPreviewScreen() {
+  const { theme, isDark } = useTheme();
+  const navigation = useNavigation<NavProp>();
+  const route = useRoute<PreviewRoute>();
+  const { giftId } = route.params;
+  const gift = useGiftStore((s) => s.gifts.find((g) => g.id === giftId));
 
-  const [giftGame, setGiftGame] = useState<GiftGame | null>(null);
-  const [copied, setCopied] = useState(false);
-
-  useEffect(() => {
-    if (route.params?.giftGameId) {
-      const game = giftGameService.getGiftGame(route.params.giftGameId);
-      if (game) {
-        setGiftGame(game);
-      } else {
-        Alert.alert('Error', 'Gift game not found');
-        navigation.goBack();
-      }
-    }
-  }, [route.params?.giftGameId]);
-
-  const handleCopyLink = () => {
-    if (giftGame) {
-      // In React Native, use a clipboard library like @react-native-clipboard/clipboard
-      // For now, just show feedback
-      setCopied(true);
-      Alert.alert('Copied!', 'Link copied to clipboard');
-      setTimeout(() => setCopied(false), 2000);
-    }
-  };
-
-  const handleShare = async () => {
-    if (!giftGame) return;
-
-    try {
-      await Share.share({
-        message: `🎁 ${giftGame.senderName} made you a special gift! Play your personalized game: ${giftGame.shareableUrl}`,
-        title: `Gift for ${giftGame.recipientName}`,
-      });
-    } catch (error) {
-      console.error('Error sharing:', error);
-    }
-  };
-
-  const handlePlayDemo = () => {
-    Alert.alert(
-      'Demo Mode',
-      'This would launch the game in demo/test mode. Full game engine integration coming soon!'
-    );
-  };
-
-  const handleCreateAnother = () => {
-    navigation.navigate('GiftQuestionnaire', {});
-  };
-
-  if (!giftGame) {
+  if (!gift) {
     return (
-      <View style={styles.loadingContainer}>
-        <Text>Loading...</Text>
+      <View style={[styles.center, { backgroundColor: theme.colors.background }]}>
+        <Icon name="gift-off-outline" size={64} color={theme.colors.textMuted} />
+        <Text style={[styles.notFoundText, { color: theme.colors.text }]}>Gift not found</Text>
+        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backLink}>
+          <Text style={{ color: theme.colors.primary }}>Go back</Text>
+        </TouchableOpacity>
       </View>
     );
   }
 
-  const { recipientName, senderName, gameType, shareableUrl, gameData } = giftGame;
-  const params = gameData?.params;
+  const typeInfo = GIFT_TYPE_LABELS[gift.giftType];
+  const occasionLabel = OCCASION_LABELS[gift.occasion];
+
+  const handleShare = async () => {
+    try {
+      await Share.share({
+        title: `${typeInfo.label} for ${gift.recipient.name}`,
+        message: `Check out this gift! giftverse.app/gift/${gift.shareSlug}`,
+        url: gift.shareUrl,
+      });
+    } catch {}
+  };
+
+  const handleViewAsRecipient = () => {
+    navigation.navigate('GiftView', { giftId: gift.id });
+  };
+
+  const paymentBadge = () => {
+    switch (gift.paymentStatus) {
+      case 'free':
+        return { label: 'Free', color: forgeColors.moss[500], icon: 'check-circle' };
+      case 'paid':
+        return { label: 'Paid', color: forgeColors.moss[500], icon: 'check-decagram' };
+      case 'pending':
+        return { label: 'Pending', color: forgeColors.gold[500], icon: 'clock-outline' };
+      case 'failed':
+        return { label: 'Failed', color: forgeColors.ember[500], icon: 'alert-circle' };
+      default:
+        return { label: 'Unknown', color: theme.colors.textMuted, icon: 'help-circle' };
+    }
+  };
+
+  const payment = paymentBadge();
+
+  const firstTextBlock = gift.contentBlocks.find((b) => b.type === 'text');
+  const firstTextData = firstTextBlock?.data as TextBlockData | undefined;
+
+  const rsvpBlock = gift.contentBlocks.find((b) => b.type === 'rsvp');
+  const rsvpData = rsvpBlock?.data as RSVPBlockData | undefined;
+
+  const quizBlock = gift.contentBlocks.find((b) => b.type === 'quiz_game');
+  const quizData = quizBlock?.data as QuizGameBlockData | undefined;
+
+  const renderCardContent = () => {
+    switch (gift.giftType) {
+      case 'birthday_card':
+        return (
+          <View style={styles.cardInner}>
+            {firstTextData?.heading && (
+              <Text style={[styles.cardHeading, { color: theme.colors.text }]}>
+                {firstTextData.heading}
+              </Text>
+            )}
+            <Text style={[styles.cardMessage, { color: theme.colors.textMuted }]}>
+              {gift.personalMessage || firstTextData?.body || 'A heartfelt message awaits...'}
+            </Text>
+            <View style={[styles.styleBadge, { backgroundColor: theme.colors.primary + '20' }]}>
+              <Icon name="palette-outline" size={14} color={theme.colors.primary} />
+              <Text style={[styles.styleBadgeText, { color: theme.colors.primary }]}>
+                {gift.visualStyle.replace(/_/g, ' ')}
+              </Text>
+            </View>
+          </View>
+        );
+
+      case 'invitation':
+        return (
+          <View style={styles.cardInner}>
+            {rsvpData ? (
+              <>
+                <Text style={[styles.cardHeading, { color: theme.colors.text }]}>
+                  {rsvpData.eventName}
+                </Text>
+                <View style={styles.infoRow}>
+                  <Icon name="calendar" size={16} color={theme.colors.accent} />
+                  <Text style={[styles.infoText, { color: theme.colors.textMuted }]}>
+                    {rsvpData.eventDate}
+                  </Text>
+                </View>
+                {rsvpData.eventLocation && (
+                  <View style={styles.infoRow}>
+                    <Icon name="map-marker" size={16} color={theme.colors.accent} />
+                    <Text style={[styles.infoText, { color: theme.colors.textMuted }]}>
+                      {rsvpData.eventLocation}
+                    </Text>
+                  </View>
+                )}
+                <View style={[styles.rsvpArea, { borderColor: theme.colors.border }]}>
+                  <Icon name="email-check-outline" size={18} color={theme.colors.primary} />
+                  <Text style={[styles.rsvpText, { color: theme.colors.primary }]}>
+                    RSVP awaiting response
+                  </Text>
+                </View>
+              </>
+            ) : (
+              <Text style={[styles.cardMessage, { color: theme.colors.textMuted }]}>
+                {gift.personalMessage || 'Invitation details inside'}
+              </Text>
+            )}
+          </View>
+        );
+
+      case 'gift_game':
+        return (
+          <View style={styles.cardInner}>
+            <View style={styles.gameHeader}>
+              <Icon name="gamepad-variant" size={28} color={theme.colors.accent} />
+              <Text style={[styles.cardHeading, { color: theme.colors.text, marginLeft: spacing.xs }]}>
+                Interactive Quiz
+              </Text>
+            </View>
+            {quizData && (
+              <Text style={[styles.cardMessage, { color: theme.colors.textMuted }]}>
+                {quizData.questions.length} question{quizData.questions.length !== 1 ? 's' : ''} to explore
+              </Text>
+            )}
+            <View style={[styles.gameBadge, { backgroundColor: forgeColors.forge[500] + '20' }]}>
+              <Icon name="star-four-points" size={14} color={forgeColors.forge[500]} />
+              <Text style={[styles.gameBadgeText, { color: forgeColors.forge[500] }]}>
+                Interactive Quiz
+              </Text>
+            </View>
+          </View>
+        );
+    }
+  };
 
   return (
-    <LinearGradient colors={['#667EEA', '#764BA2']} style={styles.container}>
-      <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
-        {/* Success Header */}
-        <View style={styles.header}>
-          <Text style={styles.successEmoji}>🎉</Text>
-          <Text style={styles.headerTitle}>Your Gift is Ready!</Text>
-          <Text style={styles.headerSubtitle}>
-            A personalized game for {recipientName}
-          </Text>
-        </View>
+    <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} />
 
-        {/* Preview Card */}
-        <View style={styles.previewCard}>
-          <View style={styles.gameInfoSection}>
-            <View style={styles.gameIcon}>
-              <Text style={styles.gameIconText}>
-                {gameType === 'runner'
-                  ? '🏃‍♀️'
-                  : gameType === 'story-choice'
-                  ? '📖'
-                  : gameType === 'puzzle'
-                  ? '🧩'
-                  : gameType === 'mini-quest'
-                  ? '⚔️'
-                  : '🎮'}
-              </Text>
-            </View>
+      {/* Header */}
+      <Animated.View entering={FadeInDown.duration(400)} style={styles.header}>
+        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
+          <Icon name="arrow-left" size={24} color={theme.colors.text} />
+        </TouchableOpacity>
+        <Text style={[styles.headerTitle, { color: theme.colors.text }]}>Gift Preview</Text>
+        <View style={{ width: 40 }} />
+      </Animated.View>
 
-            <View style={styles.gameInfo}>
-              <Text style={styles.gameTitle}>
-                {gameType === 'runner'
-                  ? 'Heartfelt Runner'
-                  : gameType === 'story-choice'
-                  ? 'Personal Adventure'
-                  : gameType === 'puzzle'
-                  ? 'Memory Puzzle'
-                  : gameType === 'mini-quest'
-                  ? 'Birthday Quest'
-                  : 'Custom Game'}
-              </Text>
-              <Text style={styles.gameSubtitle}>
-                From {senderName} with love ❤️
-              </Text>
-            </View>
-          </View>
-
-          {params && (
-            <View style={styles.detailsSection}>
-              <View style={styles.detailRow}>
-                <Text style={styles.detailLabel}>Emotional Tone:</Text>
-                <Text style={styles.detailValue}>
-                  {params.occasion.charAt(0).toUpperCase() + params.occasion.slice(1)}
-                </Text>
-              </View>
-
-              <View style={styles.detailRow}>
-                <Text style={styles.detailLabel}>Duration:</Text>
-                <Text style={styles.detailValue}>
-                  ~{Math.floor(params.gameplay.duration / 60)} minutes
-                </Text>
-              </View>
-
-              <View style={styles.detailRow}>
-                <Text style={styles.detailLabel}>Difficulty:</Text>
-                <Text style={styles.detailValue}>
-                  {params.gameplay.difficulty === 1
-                    ? 'Easy'
-                    : params.gameplay.difficulty === 3
-                    ? 'Medium'
-                    : 'Challenging'}
-                </Text>
-              </View>
-            </View>
-          )}
-
-          {params?.customMessages && (
-            <View style={styles.messagePreview}>
-              <Text style={styles.messageLabel}>Your Message:</Text>
-              <Text style={styles.messageText}>{params.customMessages.intro}</Text>
-            </View>
-          )}
-
-          {/* Demo Button */}
-          <TouchableOpacity style={styles.demoButton} onPress={handlePlayDemo}>
-            <Text style={styles.demoButtonText}>▶️ Play Demo</Text>
-          </TouchableOpacity>
-        </View>
-
-        {/* Share Section */}
-        <View style={styles.shareSection}>
-          <Text style={styles.shareSectionTitle}>Share Your Gift</Text>
-          <Text style={styles.shareSectionSubtitle}>
-            Send this unique link to {recipientName}
-          </Text>
-
-          <View style={styles.urlContainer}>
-            <Text style={styles.urlText} numberOfLines={1}>
-              {shareableUrl}
+      <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+        {/* Gift Type Badge */}
+        <Animated.View entering={FadeInUp.duration(400).delay(100)} style={styles.typeBadgeRow}>
+          <View style={[styles.typeBadge, { backgroundColor: theme.colors.primary + '15' }]}>
+            <Icon name={typeInfo.icon} size={18} color={theme.colors.primary} />
+            <Text style={[styles.typeBadgeLabel, { color: theme.colors.primary }]}>
+              {typeInfo.label}
             </Text>
           </View>
-
-          <View style={styles.shareButtons}>
-            <TouchableOpacity
-              style={[styles.shareButton, styles.copyButton]}
-              onPress={handleCopyLink}
-            >
-              <Text style={styles.shareButtonText}>
-                {copied ? '✓ Copied!' : '📋 Copy Link'}
-              </Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={[styles.shareButton, styles.shareNativeButton]}
-              onPress={handleShare}
-            >
-              <Text style={styles.shareButtonText}>📤 Share</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-
-        {/* Stats */}
-        <View style={styles.statsSection}>
-          <View style={styles.statCard}>
-            <Text style={styles.statValue}>{giftGame.views}</Text>
-            <Text style={styles.statLabel}>Views</Text>
-          </View>
-
-          <View style={styles.statCard}>
-            <Text style={styles.statValue}>
-              {giftGame.completed ? '✓' : '⏳'}
-            </Text>
-            <Text style={styles.statLabel}>
-              {giftGame.completed ? 'Completed!' : 'Pending'}
-            </Text>
-          </View>
-
-          <View style={styles.statCard}>
-            <Text style={styles.statValue}>
-              {giftGame.expiresAt
-                ? Math.ceil(
-                    (giftGame.expiresAt.getTime() - Date.now()) /
-                      (1000 * 60 * 60 * 24)
-                  )
-                : '365'}
-            </Text>
-            <Text style={styles.statLabel}>Days Left</Text>
-          </View>
-        </View>
-
-        {/* Tips */}
-        <View style={styles.tipsSection}>
-          <Text style={styles.tipsTitle}>💡 Gift Tips</Text>
-          <Text style={styles.tipText}>
-            • Personalize the message with inside jokes or special memories
+          <Text style={[styles.occasionText, { color: theme.colors.textMuted }]}>
+            {occasionLabel}
           </Text>
-          <Text style={styles.tipText}>
-            • Send it at a meaningful time (morning of their birthday, etc.)
-          </Text>
-          <Text style={styles.tipText}>
-            • Watch their reaction and share the moment!
-          </Text>
-          <Text style={styles.tipText}>
-            • Games expire in 1 year, so they have plenty of time to play
-          </Text>
-        </View>
+        </Animated.View>
 
-        {/* Action Buttons */}
-        <View style={styles.actionButtons}>
+        {/* Main Gift Card */}
+        <Animated.View
+          entering={FadeInUp.duration(500).delay(200)}
+          style={[
+            styles.card,
+            {
+              backgroundColor: theme.colors.card,
+              borderColor: theme.colors.border,
+            },
+          ]}
+        >
+          {renderCardContent()}
+        </Animated.View>
+
+        {/* Recipient & Sender */}
+        <Animated.View entering={FadeInUp.duration(400).delay(300)} style={styles.peopleRow}>
+          <View style={[styles.personCard, { backgroundColor: theme.colors.card, borderColor: theme.colors.border }]}>
+            <Icon name="account-arrow-right" size={20} color={theme.colors.accent} />
+            <View style={styles.personInfo}>
+              <Text style={[styles.personLabel, { color: theme.colors.textMuted }]}>To</Text>
+              <Text style={[styles.personName, { color: theme.colors.text }]}>{gift.recipient.name}</Text>
+            </View>
+          </View>
+          <View style={[styles.personCard, { backgroundColor: theme.colors.card, borderColor: theme.colors.border }]}>
+            <Icon name="account" size={20} color={theme.colors.primary} />
+            <View style={styles.personInfo}>
+              <Text style={[styles.personLabel, { color: theme.colors.textMuted }]}>From</Text>
+              <Text style={[styles.personName, { color: theme.colors.text }]}>{gift.sender.name}</Text>
+            </View>
+          </View>
+        </Animated.View>
+
+        {/* Payment Status */}
+        <Animated.View entering={FadeInUp.duration(400).delay(400)}>
+          <View style={[styles.paymentBadge, { backgroundColor: payment.color + '15' }]}>
+            <Icon name={payment.icon} size={18} color={payment.color} />
+            <Text style={[styles.paymentText, { color: payment.color }]}>{payment.label}</Text>
+          </View>
+        </Animated.View>
+
+        {/* Actions */}
+        <Animated.View entering={FadeInUp.duration(400).delay(500)} style={styles.actions}>
           <TouchableOpacity
-            style={styles.secondaryActionButton}
-            onPress={handleCreateAnother}
+            onPress={handleShare}
+            style={[styles.shareBtn, { backgroundColor: theme.colors.card, borderColor: theme.colors.border }]}
+            activeOpacity={0.7}
           >
-            <Text style={styles.secondaryActionButtonText}>
-              🎁 Create Another Gift
-            </Text>
+            <Icon name="share-variant" size={20} color={theme.colors.primary} />
+            <Text style={[styles.shareBtnText, { color: theme.colors.primary }]}>Share Gift</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
-            style={styles.primaryActionButton}
-            onPress={() => navigation.navigate('Home')}
+            onPress={handleViewAsRecipient}
+            style={[styles.viewBtn, { backgroundColor: theme.colors.primary }]}
+            activeOpacity={0.7}
           >
-            <Text style={styles.primaryActionButtonText}>Done</Text>
+            <Icon name="eye-outline" size={20} color="#FFF" />
+            <Text style={styles.viewBtnText}>View as Recipient</Text>
           </TouchableOpacity>
-        </View>
-
-        {/* Upgrade CTA (for future monetization) */}
-        <View style={styles.upgradeSection}>
-          <Text style={styles.upgradeTitle}>🌟 Unlock Premium Features</Text>
-          <Text style={styles.upgradeText}>
-            • Unlimited game duration
-          </Text>
-          <Text style={styles.upgradeText}>• Custom assets & photos</Text>
-          <Text style={styles.upgradeText}>• Advanced personalization</Text>
-          <Text style={styles.upgradeText}>• Priority support</Text>
-
-          <TouchableOpacity style={styles.upgradeButton}>
-            <Text style={styles.upgradeButtonText}>Coming Soon!</Text>
-          </TouchableOpacity>
-        </View>
+        </Animated.View>
       </ScrollView>
-    </LinearGradient>
+    </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  scrollView: {
-    flex: 1,
-  },
-  scrollContent: {
-    padding: 20,
-    paddingBottom: 40,
-  },
-  loadingContainer: {
+  center: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    gap: spacing.md,
+  },
+  notFoundText: {
+    fontSize: 18,
+    fontWeight: '600',
+    marginTop: spacing.sm,
+  },
+  backLink: {
+    marginTop: spacing.xs,
   },
   header: {
+    flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 20,
-    marginBottom: 30,
+    justifyContent: 'space-between',
+    paddingHorizontal: spacing.md,
+    paddingTop: spacing.xxl,
+    paddingBottom: spacing.md,
   },
-  successEmoji: {
-    fontSize: 60,
-    marginBottom: 16,
+  backBtn: {
+    width: 40,
+    height: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   headerTitle: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: '#fff',
-    marginBottom: 8,
-  },
-  headerSubtitle: {
-    fontSize: 16,
-    color: '#fff',
-    opacity: 0.9,
-  },
-  previewCard: {
-    backgroundColor: '#fff',
-    borderRadius: 20,
-    padding: 24,
-    marginBottom: 20,
-  },
-  gameInfoSection: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 24,
-  },
-  gameIcon: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    backgroundColor: '#EEF2FF',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: 16,
-  },
-  gameIconText: {
-    fontSize: 32,
-  },
-  gameInfo: {
-    flex: 1,
-  },
-  gameTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#1a1a1a',
-    marginBottom: 4,
-  },
-  gameSubtitle: {
-    fontSize: 14,
-    color: '#666',
-  },
-  detailsSection: {
-    backgroundColor: '#f5f5f5',
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 16,
-  },
-  detailRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 8,
-  },
-  detailLabel: {
-    fontSize: 14,
-    color: '#666',
-  },
-  detailValue: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#333',
-  },
-  messagePreview: {
-    backgroundColor: '#EEF2FF',
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 16,
-    borderLeftWidth: 4,
-    borderLeftColor: '#667EEA',
-  },
-  messageLabel: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: '#667EEA',
-    marginBottom: 8,
-    textTransform: 'uppercase',
-  },
-  messageText: {
-    fontSize: 16,
-    color: '#333',
-    fontStyle: 'italic',
-    lineHeight: 24,
-  },
-  demoButton: {
-    backgroundColor: '#667EEA',
-    borderRadius: 12,
-    padding: 16,
-    alignItems: 'center',
-  },
-  demoButtonText: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: '700',
-    color: '#fff',
   },
-  shareSection: {
-    backgroundColor: '#fff',
+  scrollContent: {
+    paddingHorizontal: spacing.lg,
+    paddingBottom: spacing.xxxl,
+  },
+  typeBadgeRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: spacing.lg,
+  },
+  typeBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xxs + 2,
     borderRadius: 20,
-    padding: 24,
-    marginBottom: 20,
+    gap: spacing.xxs,
   },
-  shareSectionTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#1a1a1a',
-    marginBottom: 8,
-  },
-  shareSectionSubtitle: {
+  typeBadgeLabel: {
     fontSize: 14,
-    color: '#666',
-    marginBottom: 16,
+    fontWeight: '600',
   },
-  urlContainer: {
-    backgroundColor: '#f5f5f5',
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 16,
-  },
-  urlText: {
+  occasionText: {
     fontSize: 14,
-    color: '#667EEA',
     fontWeight: '500',
   },
-  shareButtons: {
-    flexDirection: 'row',
-    gap: 12,
+  card: {
+    borderRadius: 20,
+    borderWidth: 1,
+    padding: spacing.lg,
+    marginBottom: spacing.lg,
   },
-  shareButton: {
-    flex: 1,
-    borderRadius: 12,
-    padding: 16,
-    alignItems: 'center',
+  cardInner: {
+    gap: spacing.sm,
   },
-  copyButton: {
-    backgroundColor: '#EEF2FF',
-  },
-  shareNativeButton: {
-    backgroundColor: '#667EEA',
-  },
-  shareButtonText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#667EEA',
-  },
-  statsSection: {
-    flexDirection: 'row',
-    gap: 12,
-    marginBottom: 20,
-  },
-  statCard: {
-    flex: 1,
-    backgroundColor: '#fff',
-    borderRadius: 16,
-    padding: 16,
-    alignItems: 'center',
-  },
-  statValue: {
+  cardHeading: {
     fontSize: 24,
-    fontWeight: 'bold',
-    color: '#667EEA',
-    marginBottom: 4,
+    fontWeight: '800',
+    lineHeight: 30,
   },
-  statLabel: {
-    fontSize: 12,
-    color: '#666',
+  cardMessage: {
+    fontSize: 15,
+    lineHeight: 22,
   },
-  tipsSection: {
-    backgroundColor: 'rgba(255,255,255,0.2)',
-    borderRadius: 16,
-    padding: 20,
-    marginBottom: 20,
-  },
-  tipsTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#fff',
-    marginBottom: 12,
-  },
-  tipText: {
-    fontSize: 14,
-    color: '#fff',
-    marginBottom: 8,
-    lineHeight: 20,
-  },
-  actionButtons: {
+  styleBadge: {
     flexDirection: 'row',
-    gap: 12,
-    marginBottom: 20,
-  },
-  primaryActionButton: {
-    flex: 1,
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    padding: 18,
     alignItems: 'center',
-  },
-  primaryActionButtonText: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: '#667EEA',
-  },
-  secondaryActionButton: {
-    flex: 1,
-    backgroundColor: 'rgba(255,255,255,0.2)',
+    alignSelf: 'flex-start',
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xxs,
     borderRadius: 12,
-    padding: 18,
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#fff',
+    gap: spacing.xxs,
+    marginTop: spacing.xs,
   },
-  secondaryActionButtonText: {
-    fontSize: 16,
+  styleBadgeText: {
+    fontSize: 12,
     fontWeight: '600',
-    color: '#fff',
+    textTransform: 'capitalize',
   },
-  upgradeSection: {
-    backgroundColor: 'rgba(255,255,255,0.15)',
-    borderRadius: 16,
-    padding: 20,
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.3)',
-  },
-  upgradeTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#fff',
-    marginBottom: 12,
-    textAlign: 'center',
-  },
-  upgradeText: {
-    fontSize: 14,
-    color: '#fff',
-    marginBottom: 6,
-    opacity: 0.9,
-  },
-  upgradeButton: {
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    padding: 14,
+  infoRow: {
+    flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 16,
+    gap: spacing.xs,
   },
-  upgradeButtonText: {
+  infoText: {
+    fontSize: 14,
+  },
+  rsvpArea: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
+    borderTopWidth: 1,
+    paddingTop: spacing.sm,
+    marginTop: spacing.xs,
+  },
+  rsvpText: {
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  gameHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  gameBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignSelf: 'flex-start',
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xxs,
+    borderRadius: 12,
+    gap: spacing.xxs,
+    marginTop: spacing.xs,
+  },
+  gameBadgeText: {
+    fontSize: 12,
+    fontWeight: '700',
+  },
+  peopleRow: {
+    flexDirection: 'row',
+    gap: spacing.sm,
+    marginBottom: spacing.lg,
+  },
+  personCard: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
+    borderRadius: 14,
+    borderWidth: 1,
+    padding: spacing.sm,
+  },
+  personInfo: {
+    flex: 1,
+  },
+  personLabel: {
+    fontSize: 11,
+    fontWeight: '500',
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  },
+  personName: {
+    fontSize: 15,
+    fontWeight: '700',
+  },
+  paymentBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignSelf: 'flex-start',
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.xs,
+    borderRadius: 20,
+    gap: spacing.xs,
+    marginBottom: spacing.lg,
+  },
+  paymentText: {
+    fontSize: 14,
+    fontWeight: '700',
+  },
+  actions: {
+    gap: spacing.sm,
+  },
+  shareBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing.xs,
+    paddingVertical: spacing.md,
+    borderRadius: 16,
+    borderWidth: 1,
+  },
+  shareBtnText: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#667EEA',
+  },
+  viewBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing.xs,
+    paddingVertical: spacing.md,
+    borderRadius: 16,
+  },
+  viewBtnText: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#FFF',
   },
 });
