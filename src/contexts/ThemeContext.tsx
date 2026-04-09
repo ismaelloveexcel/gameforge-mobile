@@ -137,20 +137,20 @@ interface ThemeContextType {
   // Emotional theming
   emotionalState: EmotionalState | null;
   setEmotionalState: (state: EmotionalState | null) => void;
-  getEmotionalColors: () => typeof emotionalPalettes.celebration | null;
+  getEmotionalColors: () => (typeof emotionalPalettes)[keyof typeof emotionalPalettes] | null;
   // Personalization
   userPreferences: UserPreferences;
   setSignatureColor: (color: string) => void;
   setMakerMark: (mark: string) => void;
   // Time awareness
   timeOfDay: TimeOfDay;
-  getTimeGradient: () => string[];
+  getTimeGradient: () => readonly string[];
   // Seasonal theming (UAE)
   seasonalTheme: SeasonalTheme;
   themeChoice: ThemeChoice;
   setThemeChoice: (choice: ThemeChoice) => void;
   getSeasonalColors: () => SeasonalTheme['colors'];
-  getSeasonalGradient: () => string[];
+  getSeasonalGradient: () => readonly string[];
   // Utilities
   getContrastText: (backgroundColor: string) => string;
   applyGlow: (color?: string) => object;
@@ -365,4 +365,3 @@ export const useTheme = () => {
 
 // Re-export tokens for convenience
 export { spacing, typography, radii, shadows, motion, forgeColors };
-export type { ThemeChoice };
