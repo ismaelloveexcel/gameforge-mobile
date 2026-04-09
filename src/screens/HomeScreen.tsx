@@ -45,7 +45,7 @@ export default function HomeScreen() {
       {/* Greeting */}
       <Animated.View entering={FadeInUp.duration(500).delay(100)}>
         <Text style={[styles.greeting, { color: theme.colors.textMuted }]}>
-          {getGreeting()} \u2728
+          {getGreeting()} ✨
         </Text>
         <Text style={[styles.title, { color: theme.colors.text }]}>
           What will you create today?
@@ -134,7 +134,7 @@ export default function HomeScreen() {
                   To {gift.recipient.name}
                 </Text>
                 <Text style={[styles.giftMeta, { color: theme.colors.textMuted }]} numberOfLines={1}>
-                  {GIFT_TYPE_LABELS[gift.giftType]?.label} \u00b7 {OCCASION_LABELS[gift.occasion]}
+                  {GIFT_TYPE_LABELS[gift.giftType]?.label} · {OCCASION_LABELS[gift.occasion]}
                 </Text>
               </View>
               <Icon name="chevron-right" size={22} color={theme.colors.textMuted} />
