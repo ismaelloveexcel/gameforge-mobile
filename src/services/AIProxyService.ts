@@ -45,7 +45,7 @@ export async function generateGift(request: GenerateGiftRequest): Promise<Genera
   }
 }
 
-// ─── Fallback (offline / no-Supabase) ────────────────────
+// ─── Fallback (offline / no-Supabase) ────────────────────────
 function fallbackGenerate(req: GenerateGiftRequest): GenerateGiftResponse {
   const id = `gift_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
 
@@ -86,9 +86,9 @@ function fallbackGenerate(req: GenerateGiftRequest): GenerateGiftResponse {
 
 function getHeading(req: GenerateGiftRequest): string {
   switch (req.giftType) {
-    case 'birthday_card': return `Happy Birthday, ${req.recipientName}! \uD83C\uDF82`;
-    case 'invitation': return `You're Invited! \uD83C\uDF89`;
-    case 'gift_game': return `${req.recipientName}, a game awaits you! \uD83C\uDFAE`;
+    case 'birthday_card': return `Happy Birthday, ${req.recipientName}! 🎂`;
+    case 'invitation': return `You're Invited! 🎉`;
+    case 'gift_game': return `${req.recipientName}, a game awaits you! 🎮`;
   }
 }
 
@@ -122,12 +122,12 @@ function getTypeSpecificBlocks(req: GenerateGiftRequest): ContentBlock[] {
             gameType: 'quiz',
             questions: [
               { question: `How well do you know ${req.senderName}?`, options: ['Very well', 'A little', 'Not yet!'], correctAnswer: 0, feedback: 'Great start!' },
-              { question: 'What makes this occasion special?', options: ['Memories', 'The people', 'Everything!'], correctAnswer: 2, feedback: '\uD83C\uDF89' },
+              { question: 'What makes this occasion special?', options: ['Memories', 'The people', 'Everything!'], correctAnswer: 2, feedback: '🎉' },
               { question: 'Ready for your surprise?', options: ['Yes!', 'So ready!', 'YESSS!'], correctAnswer: 0, feedback: 'Here it comes!' },
             ],
           },
         },
-        { id: 'endmsg', type: 'text' as const, data: { heading: '\uD83C\uDF81', body: req.personalMessage || 'You are amazing!', alignment: 'center' as const } },
+        { id: 'endmsg', type: 'text' as const, data: { heading: '🎁', body: req.personalMessage || 'You are amazing!', alignment: 'center' as const } },
       ];
   }
 }

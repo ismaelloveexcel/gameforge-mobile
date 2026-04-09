@@ -7,7 +7,7 @@
 import { supabase } from './supabase';
 import type { GiftType, PaymentStatus } from '../types';
 
-// ─── Pricing Config ────────────────────────────────────────
+// ─── Pricing Config ──────────────────────────────────────────────
 export const PRICING: Record<GiftType, { amount: number; currency: string; label: string; isFree: boolean }> = {
   gift_game: { amount: 299, currency: 'usd', label: '$2.99', isFree: false },
   birthday_card: { amount: 0, currency: 'usd', label: 'Free', isFree: true },
