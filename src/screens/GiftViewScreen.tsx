@@ -113,7 +113,7 @@ export default function GiftViewScreen() {
       <View style={[styles.fullCenter, { backgroundColor: bg }]}>
         <StatusBar barStyle="light-content" />
         <Animated.View entering={FadeInUp.duration(600)} style={styles.completionContainer}>
-          <Text style={styles.completionEmoji}>\uD83C\uDF89</Text>
+          <Text style={styles.completionEmoji}>🎉</Text>
           <Text style={[styles.completionTitle, { color: theme.colors.text }]}>Gift Complete!</Text>
           <Text style={[styles.completionSender, { color: theme.colors.textMuted }]}>
             With love from {gift.sender.name}
