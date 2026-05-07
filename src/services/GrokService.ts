@@ -26,6 +26,14 @@ import {
   GameLevel,
   QuizQuestion,
   StoryBranch,
+  AgeRange,
+  PersonalityTrait,
+  Interest,
+  Relationship,
+  Tone,
+  GiftGameType,
+  GiftVisualStyle,
+  GiftOccasion,
 } from '../types/giftforge';
 
 // Unsafe content patterns to reject
@@ -783,3 +791,277 @@ Respond ONLY with the JSON, no additional text.`;
 }
 
 export const grokService = new GrokService();
+
+/**
+ * Simplified interface for generating gift game content
+ * Converts a simple input format into a full questionnaire
+ */
+export interface GiftGameContentParams {
+  occasion: string;
+  recipientDescription: string;
+  relationshipAndTone: string;
+  gameType: string;
+  visualStyle: string;
+  personalMessage: string;
+  personality?: string;
+}
+
+/**
+ * Helper function to generate gift game content with a simplified interface
+ * This is a convenience wrapper around grokService.generateGame()
+ */
+export async function generateGiftGameContent(params: GiftGameContentParams): Promise<string> {
+  // Parse the simplified parameters into a full questionnaire
+  const questionnaire: GiftForgeQuestionnaire = {
+    // Map occasion string to GiftOccasion type
+    occasion: mapOccasion(params.occasion),
+    
+    // Parse recipient description for age/personality/interests
+    // For simplicity, we'll extract age from common patterns and use defaults
+    recipientAge: parseAge(params.recipientDescription),
+    recipientPersonalities: parsePersonalities(params.recipientDescription),
+    recipientInterests: parseInterests(params.recipientDescription),
+    
+    // Parse relationship and tone
+    relationship: parseRelationship(params.relationshipAndTone),
+    tone: parseTone(params.relationshipAndTone),
+    
+    // Map game type
+    gameType: mapGameType(params.gameType),
+    gameLength: 'standard', // default
+    
+    // Map visual style
+    visualStyle: mapVisualStyle(params.visualStyle),
+    
+    // Extract names from description
+    recipientName: extractRecipientName(params.recipientDescription),
+    senderName: 'You', // default
+    
+    // Personal message
+    personalMessage: params.personalMessage,
+  };
+
+  const result = await grokService.generateGame(questionnaire);
+  
+  if (!result.success) {
+    throw new Error(result.error || 'Failed to generate game');
+  }
+  
+  return JSON.stringify(result.game, null, 2);
+}
+
+// Helper parsing functions
+
+// Maximum number of traits to extract from descriptions
+const MAX_PARSED_TRAITS = 3;
+
+function mapOccasion(occasion: string): GiftOccasion {
+  // Normalize: lowercase, remove apostrophes, replace spaces/hyphens with underscores
+  const normalized = occasion.toLowerCase().replace(/'/g, '').replace(/[\s-]+/g, '_');
+  
+  // Map common variations to valid GiftOccasion values
+  const occasionMap: Record<string, GiftOccasion> = {
+    'birthday': 'birthday',
+    'anniversary': 'anniversary',
+    'valentines': 'valentines',
+    'valentines_day': 'valentines',
+    'valentine': 'valentines',
+    'christmas': 'christmas',
+    'xmas': 'christmas',
+    'graduation': 'graduation',
+    'thank_you': 'thank_you',
+    'thanks': 'thank_you',
+    'get_well': 'get_well',
+    'get_well_soon': 'get_well',
+    'congratulations': 'congratulations',
+    'congrats': 'congratulations',
+    'just_because': 'just_because',
+    'farewell': 'farewell',
+    'goodbye': 'farewell',
+    'eid_fitr': 'eid_fitr',
+    'eid_adha': 'eid_adha',
+    'uae_national_day': 'uae_national_day',
+    'mothers_day': 'mothers_day',
+    'fathers_day': 'fathers_day',
+  };
+  
+  return occasionMap[normalized] || 'just_because';
+}
+
+function parseAge(description: string): AgeRange {
+  const ageMatch = description.match(/(\d+)\s*years?\s*old/i);
+  if (ageMatch) {
+    const age = parseInt(ageMatch[1], 10);
+    if (age <= 12) return 'child';
+    if (age <= 17) return 'teen';
+    if (age <= 25) return 'young_adult';
+    if (age <= 45) return 'adult';
+    if (age <= 65) return 'mature_adult';
+    return 'senior';
+  }
+  return 'adult'; // default
+}
+
+function parsePersonalities(description: string): PersonalityTrait[] {
+  const personalities: PersonalityTrait[] = [];
+  const lowerDesc = description.toLowerCase();
+  
+  const personalityMap: Record<string, PersonalityTrait> = {
+    'adventurous': 'adventurous',
+    'creative': 'creative',
+    'analytical': 'analytical',
+    'nurturing': 'nurturing',
+    'humorous': 'humorous',
+    'funny': 'humorous',
+    'romantic': 'romantic',
+    'competitive': 'competitive',
+    'laid back': 'laid_back',
+    'relaxed': 'laid_back',
+    'energetic': 'energetic',
+    'thoughtful': 'thoughtful',
+  };
+  
+  for (const [key, trait] of Object.entries(personalityMap)) {
+    if (lowerDesc.includes(key)) {
+      personalities.push(trait);
+      if (personalities.length >= MAX_PARSED_TRAITS) break;
+    }
+  }
+  
+  return personalities.length > 0 ? personalities : ['thoughtful'];
+}
+
+function parseInterests(description: string): Interest[] {
+  const interests: Interest[] = [];
+  const lowerDesc = description.toLowerCase();
+  
+  const interestMap: Record<string, Interest> = {
+    'gaming': 'gaming',
+    'games': 'gaming',
+    'music': 'music',
+    'sports': 'sports',
+    'cooking': 'cooking',
+    'travel': 'travel',
+    'reading': 'reading',
+    'books': 'reading',
+    'movies': 'movies',
+    'films': 'movies',
+    'nature': 'nature',
+    'technology': 'technology',
+    'tech': 'technology',
+    'art': 'art',
+    'fitness': 'fitness',
+    'animals': 'animals',
+    'cats': 'animals',
+    'dogs': 'animals',
+    'pets': 'animals',
+  };
+  
+  for (const [key, interest] of Object.entries(interestMap)) {
+    if (lowerDesc.includes(key)) {
+      interests.push(interest);
+      if (interests.length >= MAX_PARSED_TRAITS) break;
+    }
+  }
+  
+  return interests.length > 0 ? interests : ['gaming'];
+}
+
+function parseRelationship(relationshipAndTone: string): Relationship {
+  const lower = relationshipAndTone.toLowerCase();
+  
+  if (lower.includes('boyfriend') || lower.includes('girlfriend') || lower.includes('partner')) {
+    return 'partner';
+  }
+  if (lower.includes('spouse') || lower.includes('husband') || lower.includes('wife')) {
+    return 'spouse';
+  }
+  if (lower.includes('parent') || lower.includes('mom') || lower.includes('dad')) {
+    return 'parent';
+  }
+  if (lower.includes('child') || lower.includes('son') || lower.includes('daughter')) {
+    return 'child';
+  }
+  if (lower.includes('sibling') || lower.includes('brother') || lower.includes('sister')) {
+    return 'sibling';
+  }
+  if (lower.includes('friend')) {
+    return 'friend';
+  }
+  if (lower.includes('colleague') || lower.includes('coworker')) {
+    return 'colleague';
+  }
+  if (lower.includes('grandparent') || lower.includes('grandma') || lower.includes('grandpa')) {
+    return 'grandparent';
+  }
+  if (lower.includes('grandchild')) {
+    return 'grandchild';
+  }
+  
+  return 'friend'; // default
+}
+
+function parseTone(relationshipAndTone: string): Tone {
+  const lower = relationshipAndTone.toLowerCase();
+  
+  if (lower.includes('playful')) return 'playful';
+  if (lower.includes('romantic') || lower.includes('loving')) return 'romantic';
+  if (lower.includes('heartfelt') || lower.includes('sincere')) return 'heartfelt';
+  if (lower.includes('nostalgic')) return 'nostalgic';
+  if (lower.includes('encouraging') || lower.includes('supportive')) return 'encouraging';
+  if (lower.includes('humorous') || lower.includes('funny')) return 'humorous';
+  if (lower.includes('inspirational')) return 'inspirational';
+  
+  return 'heartfelt'; // default
+}
+
+function mapGameType(gameType: string): GiftGameType {
+  const lower = gameType.toLowerCase();
+  
+  if (lower.includes('runner')) return 'runner';
+  if (lower.includes('story') || lower.includes('choice')) return 'story_choices';
+  if (lower.includes('puzzle')) return 'puzzle_challenges';
+  if (lower.includes('adventure') || lower.includes('quest')) return 'adventure_quest';
+  if (lower.includes('educational')) return 'educational_playful';
+  
+  return 'story_choices'; // default
+}
+
+function mapVisualStyle(visualStyle: string): GiftVisualStyle {
+  const lower = visualStyle.toLowerCase();
+  
+  // Map to available visual styles
+  // Note: 'Neon Cyberpunk' maps to 'colorful_cartoon' as it's the closest available style
+  // with vibrant, energetic colors. Consider adding more specific styles in the future.
+  if (lower.includes('colorful') || lower.includes('cartoon') || lower.includes('neon') || lower.includes('cyberpunk')) return 'colorful_cartoon';
+  if (lower.includes('minimal') || lower.includes('modern') || lower.includes('elegant')) return 'elegant_minimal';
+  if (lower.includes('retro') || lower.includes('pixel') || lower.includes('vintage')) return 'retro_pixel';
+  if (lower.includes('cozy') || lower.includes('handdrawn') || lower.includes('hand drawn')) return 'cozy_handdrawn';
+  if (lower.includes('magical') || lower.includes('sparkle') || lower.includes('fantasy')) return 'magical_sparkle';
+  
+  return 'elegant_minimal'; // default
+}
+
+function extractRecipientName(description: string): string {
+  // Try to extract name from various patterns
+  // Pattern 1: "my [relationship], [Name]" - with comma
+  // Supports names with multiple capitals (McDonald, O'Brien), hyphens, apostrophes
+  let nameMatch = description.match(/my\s+\w+,\s*([A-Z][\w'-]*(?:\s+[A-Z][\w'-]*)*)/);
+  if (nameMatch) {
+    return nameMatch[1];
+  }
+  
+  // Pattern 2: "my [relationship] [Name]" - without comma
+  nameMatch = description.match(/my\s+\w+\s+([A-Z][\w'-]*(?:\s+[A-Z][\w'-]*)*)/);
+  if (nameMatch) {
+    return nameMatch[1];
+  }
+  
+  // Pattern 3: Look for any capitalized word that could be a name
+  const capitalizedMatch = description.match(/\b([A-Z][\w'-]+)\b/);
+  if (capitalizedMatch) {
+    return capitalizedMatch[1];
+  }
+  
+  return 'Friend'; // default
+}
