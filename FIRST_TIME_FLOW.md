@@ -39,8 +39,9 @@ If any step fails, the UI has failed.
 **THIS (Focused Experience):**
 ```
 ┌─────────────────────────────────┐
-│           [Winter Majlis]       │
-│    Deep burgundy + gold glow    │
+│    [Seasonal Theme Header]      │
+│    Current: Eternal Romance     │
+│     (Feb 1-14, 2026)            │
 │                                 │
 │  ╔═══════════════════════════╗  │
 │  ║                           ║  │
@@ -70,7 +71,7 @@ If any step fails, the UI has failed.
    - Large, unmissable CTA: "Create a Gift"
    - Compelling subtitle: "For someone you love"
    - Trust signal: "Takes 60 seconds"
-   - Seasonal visual treatment (Winter Majlis glow)
+   - Seasonal visual treatment (Auto-adapts: Eternal Romance in Feb, Winter Majlis in Dec-Jan, etc.)
 
 2. **Companion:** Dodo in corner, waving, contextual greeting
 
@@ -126,15 +127,23 @@ Q5: "Choose game style"
 
 ### Hero Copy Options
 
-**Warm (Winter Majlis):**
+**Romantic (Eternal Romance — Feb 1-14):**
+> "Create a gift they'll treasure forever"
+> "For the one who means everything"
+
+**Warm (Winter Majlis — Dec 4-Jan 31):**
 > "Create a gift they'll actually remember"
 > "Takes 60 seconds. Lasts forever."
 
-**Celebratory (Eid):**
+**Spiritual (Nocturnal Revival — Ramadan):**
+> "Share something meaningful this Ramadan"
+> "A gift from the heart, playable anytime"
+
+**Celebratory (Eid — Golden Reunion):**
 > "Make Eid unforgettable"
 > "A gift they can play, not just open"
 
-**Energetic (Summer):**
+**Energetic (Neon Dubai Summer — May-Aug):**
 > "Turn any moment into a game"
 > "Create something worth sharing"
 
