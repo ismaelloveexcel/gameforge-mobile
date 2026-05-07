@@ -20,6 +20,8 @@ import OnboardingScreen from '../screens/OnboardingScreen';
 import GiftForgeWizardScreen from '../screens/GiftForgeWizardScreen';
 import GiftForgeResultScreen from '../screens/GiftForgeResultScreen';
 import GiftForgeGameScreen from '../screens/GiftForgeGameScreen';
+import { GiftQuestionnaireScreen } from '../screens/GiftQuestionnaireScreen';
+import { GiftPreviewScreen } from '../screens/GiftPreviewScreen';
 // Agent screens (from PR #5)
 import { AgentDashboardScreen } from '../screens/AgentDashboardScreen';
 // Command Centre (admin dashboard)
@@ -167,6 +169,16 @@ export default function AppNavigator() {
       <Stack.Screen 
         name="GiftForgeGame" 
         component={GiftForgeGameScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen 
+        name="GiftQuestionnaire" 
+        component={GiftQuestionnaireScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen 
+        name="GiftPreview" 
+        component={GiftPreviewScreen}
         options={{ headerShown: false }}
       />
       {/* Agent screens */}

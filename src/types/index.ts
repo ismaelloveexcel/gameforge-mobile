@@ -20,6 +20,8 @@ export type RootStackParamList = {
   GiftForgeWizard: undefined;
   GiftForgeGame: { gameId: string };
   GiftForgeResult: { gameId: string };
+  GiftQuestionnaire: { questionnaireId?: string };
+  GiftPreview: { giftGameId: string };
   // Agent routes
   AgentDashboard: undefined;
   // Admin routes
@@ -155,19 +157,52 @@ export type AgentRole =
 // Gift Game types
 export interface GiftQuestionnaire {
   id: string;
-  occasion: string;
+  // Step 1: Occasion
+  occasion:
+    | 'birthday'
+    | 'anniversary'
+    | 'graduation'
+    | 'thank-you'
+    | 'just-because'
+    | 'valentines'
+    | 'friendship'
+    | 'ramadan';
+
+  // Step 2: Recipient Info
   recipientName: string;
-  relationship: string;
-  recipientTraits: string[];
-  interests: string[];
-  emotionalTone: string;
-  gameStyle: string;
+  recipientAge?: number;
+  relationship:
+    | 'partner'
+    | 'friend'
+    | 'parent'
+    | 'child'
+    | 'sibling'
+    | 'colleague'
+    | 'other';
+
+  // Step 3: Personality & Interests
+  recipientTraits: string[]; // e.g., 'adventurous', 'thoughtful', 'funny', 'creative'
+  interests: string[]; // e.g., 'cats', 'travel', 'music', 'sports'
+
+  // Step 4: Tone & Style
+  emotionalTone:
+    | 'warm-heartfelt'
+    | 'fun-playful'
+    | 'funny-silly'
+    | 'inspirational'
+    | 'nostalgic';
+  gameStyle: 'runner' | 'story-choice' | 'puzzle' | 'mini-quest' | 'educational';
+
+  // Step 5: Personalization
   senderName: string;
   customMessage?: string;
-  memories?: string[];
-  photos?: string[];
-  gameDuration: string;
-  difficultyLevel: string;
+  memories?: string[]; // Key memories or inside jokes
+  photos?: string[]; // Optional photo URLs
+
+  // Step 6: Preferences
+  gameDuration: '5-min' | '10-min' | '15-min';
+  difficultyLevel: 'easy' | 'medium' | 'challenging';
+
   createdAt: Date;
   status: 'draft' | 'generating' | 'ready' | 'delivered';
 }

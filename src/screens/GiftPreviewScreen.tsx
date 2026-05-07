@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   Share,
   Alert,
+  Clipboard,
 } from 'react-native';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -38,8 +39,7 @@ export const GiftPreviewScreen: React.FC = () => {
 
   const handleCopyLink = () => {
     if (giftGame) {
-      // In React Native, use a clipboard library like @react-native-clipboard/clipboard
-      // For now, just show feedback
+      Clipboard.setString(giftGame.shareableUrl);
       setCopied(true);
       Alert.alert('Copied!', 'Link copied to clipboard');
       setTimeout(() => setCopied(false), 2000);
@@ -131,7 +131,7 @@ export const GiftPreviewScreen: React.FC = () => {
           {params && (
             <View style={styles.detailsSection}>
               <View style={styles.detailRow}>
-                <Text style={styles.detailLabel}>Emotional Tone:</Text>
+                <Text style={styles.detailLabel}>Occasion:</Text>
                 <Text style={styles.detailValue}>
                   {params.occasion.charAt(0).toUpperCase() + params.occasion.slice(1)}
                 </Text>

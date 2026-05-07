@@ -13,7 +13,8 @@ export interface GiftQuestionnaire {
     | 'thank-you'
     | 'just-because'
     | 'valentines'
-    | 'friendship';
+    | 'friendship'
+    | 'ramadan';
 
   // Step 2: Recipient Info
   recipientName: string;
@@ -221,6 +222,7 @@ class GiftGameService {
       'just-because': `Just because, ${recipientName}! ✨\n\n${senderName} was thinking of you today.`,
       valentines: `Happy Valentine's Day, ${recipientName}! 💘\n\nLove, ${senderName}`,
       friendship: `To my amazing friend ${recipientName}! 👯‍♀️\n\n${senderName} values our friendship so much!`,
+      ramadan: `Ramadan Mubarak, ${recipientName}! 🌙✨\n\n${senderName} wishes you a blessed month of reflection and joy.`,
     };
 
     return {

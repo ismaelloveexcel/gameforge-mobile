@@ -16,14 +16,25 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.gameforge.mobile"
+      "bundleIdentifier": "com.gameforge.mobile",
+      "infoPlist": {
+        "NSPhotoLibraryUsageDescription": "GameForge needs access to your photo library to allow you to add photos to your personalized gift games.",
+        "NSCameraUsageDescription": "GameForge needs access to your camera to take photos for your personalized gift games.",
+        "NSMicrophoneUsageDescription": "GameForge needs access to your microphone to record audio messages for your personalized gift games."
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#1a1a2e"
       },
-      "package": "com.gameforge.mobile"
+      "package": "com.gameforge.mobile",
+      "permissions": [
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE",
+        "CAMERA",
+        "RECORD_AUDIO"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png",
