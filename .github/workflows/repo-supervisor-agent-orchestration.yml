@@ -1,0 +1,241 @@
+name: Repository Supervisor - Agent Orchestration
+
+on:
+  # Run when issues are labeled or commented
+  issues:
+    types: [labeled, opened]
+  issue_comment:
+    types: [created]
+  # Manual trigger for delegating tasks
+  workflow_dispatch:
+    inputs:
+      agent:
+        description: 'Agent to delegate to'
+        required: true
+        type: choice
+        options:
+          - aesthetics
+          - code-sentinel
+          - content-pipeline
+          - deployment-guardian
+      task_description:
+        description: 'Task description'
+        required: true
+        type: string
+      priority:
+        description: 'Priority level'
+        required: true
+        type: choice
+        options:
+          - urgent
+          - high
+          - normal
+          - low
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+jobs:
+  delegate-task:
+    name: Delegate Task to Specialized Agent
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        
+      - name: Determine delegation context
+        id: context
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          echo "Determining delegation context..."
+          
+          # Check if triggered by manual workflow
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "agent=${{ inputs.agent }}" >> $GITHUB_OUTPUT
+            echo "task=${{ inputs.task_description }}" >> $GITHUB_OUTPUT
+            echo "priority=${{ inputs.priority }}" >> $GITHUB_OUTPUT
+            echo "source=manual" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+          
+          # Check if triggered by issue label
+          if [ "${{ github.event_name }}" = "issues" ]; then
+            ISSUE_NUM=${{ github.event.issue.number }}
+            ISSUE_TITLE="${{ github.event.issue.title }}"
+            ISSUE_BODY="${{ github.event.issue.body }}"
+            LABELS="${{ toJSON(github.event.issue.labels.*.name) }}"
+            
+            # Determine agent based on labels
+            AGENT=""
+            if echo "$LABELS" | grep -q "ui\|ux\|design"; then
+              AGENT="aesthetics"
+            elif echo "$LABELS" | grep -q "bug\|quality\|testing"; then
+              AGENT="code-sentinel"
+            elif echo "$LABELS" | grep -q "content\|template\|game"; then
+              AGENT="content-pipeline"
+            elif echo "$LABELS" | grep -q "deployment\|ci\|cd"; then
+              AGENT="deployment-guardian"
+            fi
+            
+            if [ -n "$AGENT" ]; then
+              echo "agent=$AGENT" >> $GITHUB_OUTPUT
+              echo "task=$ISSUE_TITLE" >> $GITHUB_OUTPUT
+              echo "priority=normal" >> $GITHUB_OUTPUT
+              echo "source=issue" >> $GITHUB_OUTPUT
+              echo "issue_number=$ISSUE_NUM" >> $GITHUB_OUTPUT
+            else
+              echo "No matching agent found for labels"
+              exit 0
+            fi
+          fi
+          
+      - name: Create agent task branch
+        if: steps.context.outputs.agent != ''
+        run: |
+          AGENT=${{ steps.context.outputs.agent }}
+          TIMESTAMP=$(date +%Y%m%d-%H%M%S)
+          BRANCH_NAME="agent/${AGENT}/${TIMESTAMP}"
+          
+          git config --local user.email "supervisor@gameforge.app"
+          git config --local user.name "Repository Supervisor"
+          
+          git checkout -b "$BRANCH_NAME"
+          echo "branch_name=$BRANCH_NAME" >> $GITHUB_OUTPUT
+          
+      - name: Create delegation manifest
+        if: steps.context.outputs.agent != ''
+        run: |
+          AGENT=${{ steps.context.outputs.agent }}
+          TASK="${{ steps.context.outputs.task }}"
+          PRIORITY=${{ steps.context.outputs.priority }}
+          
+          mkdir -p .github/agent-tasks
+          
+          cat > .github/agent-tasks/delegation-manifest.json << EOF
+          {
+            "agent": "$AGENT",
+            "task": "$TASK",
+            "priority": "$PRIORITY",
+            "delegated_at": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+            "delegated_by": "repo-supervisor",
+            "source": "${{ steps.context.outputs.source }}",
+            "issue_number": "${{ steps.context.outputs.issue_number }}",
+            "expected_completion": "$(date -u -d '+24 hours' +%Y-%m-%dT%H:%M:%SZ)"
+          }
+          EOF
+          
+          echo "Created delegation manifest for $AGENT"
+          cat .github/agent-tasks/delegation-manifest.json
+          
+      - name: Comment on issue with delegation
+        if: steps.context.outputs.issue_number != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          AGENT=${{ steps.context.outputs.agent }}
+          ISSUE_NUM=${{ steps.context.outputs.issue_number }}
+          
+          # Get agent expertise from config
+          AGENT_NAME=""
+          AGENT_EXPERTISE=""
+          case "$AGENT" in
+            aesthetics)
+              AGENT_NAME="FORGE-CHIEF (Aesthetics)"
+              AGENT_EXPERTISE="Product, UX, and First-Time Experience"
+              ;;
+            code-sentinel)
+              AGENT_NAME="CODE-SENTINEL"
+              AGENT_EXPERTISE="Code quality, TypeScript, and Testing"
+              ;;
+            content-pipeline)
+              AGENT_NAME="CONTENT-PIPELINE"
+              AGENT_EXPERTISE="Game templates and Content automation"
+              ;;
+            deployment-guardian)
+              AGENT_NAME="DEPLOYMENT-GUARDIAN"
+              AGENT_EXPERTISE="Deployment validation and CI/CD"
+              ;;
+          esac
+          
+          gh issue comment "$ISSUE_NUM" --body "## 🤖 Repository Supervisor: Task Delegated
+
+This task has been assigned to **@${AGENT_NAME}** for handling.
+
+**Agent Expertise:** ${AGENT_EXPERTISE}
+
+**Priority:** ${{ steps.context.outputs.priority }}
+
+**Expected Completion:** Within 24 hours
+
+The agent will:
+1. Analyze the task requirements
+2. Create necessary changes
+3. Run quality checks
+4. Submit for review
+
+You'll be notified when work is complete or if the agent needs additional information.
+
+---
+*Automated delegation by Repository Supervisor*"
+          
+  monitor-agent-progress:
+    name: Monitor Agent Task Progress
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        
+      - name: Check for overdue agent tasks
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          echo "Checking for overdue agent tasks..."
+          
+          # Check for delegation manifests older than 48 hours
+          if [ -d ".github/agent-tasks" ]; then
+            CURRENT_TIME=$(date +%s)
+            
+            for manifest in .github/agent-tasks/*.json; do
+              if [ -f "$manifest" ]; then
+                DELEGATED_AT=$(jq -r '.delegated_at' "$manifest")
+                AGENT=$(jq -r '.agent' "$manifest")
+                TASK=$(jq -r '.task' "$manifest")
+                
+                DELEGATED_TS=$(date -d "$DELEGATED_AT" +%s)
+                AGE_HOURS=$(( (CURRENT_TIME - DELEGATED_TS) / 3600 ))
+                
+                if [ $AGE_HOURS -gt 48 ]; then
+                  echo "⚠️ Agent task overdue: $AGENT - $TASK (${AGE_HOURS}h old)"
+                  
+                  # Create escalation issue
+                  gh issue create \
+                    --title "🚨 Overdue Agent Task: $AGENT" \
+                    --body "## Agent Task Overdue
+
+**Agent:** $AGENT
+**Task:** $TASK
+**Age:** ${AGE_HOURS} hours
+**Expected Completion:** 24 hours
+
+The agent has not completed this task within the expected timeframe. Manual intervention may be required.
+
+**Recommended Actions:**
+1. Review agent logs for blockers
+2. Check if task scope is too large
+3. Consider breaking into smaller tasks
+4. Assign to human developer if needed
+
+---
+*Automated escalation by Repository Supervisor*" \
+                    --label "agent-overdue,urgent"
+                fi
+              fi
+            done
+          else
+            echo "No agent tasks directory found"
+          fi
