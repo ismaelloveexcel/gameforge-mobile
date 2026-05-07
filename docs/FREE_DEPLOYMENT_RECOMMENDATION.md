@@ -1,6 +1,28 @@
 # Free Deployment Platform Recommendation for GameForge Mobile 🚀
 
-## Executive Summary
+## ⚡ **EASIEST OPTION: One-Click Deployment**
+
+**Perfect for non-technical users** - Deploy with zero configuration!
+
+```bash
+# Mac/Linux
+./deploy.sh
+
+# Windows
+deploy.bat
+```
+
+✨ This automated script:
+- Handles all setup automatically
+- Installs required tools
+- Configures everything for you
+- Deploys with one command
+
+📖 **[Complete One-Click Guide →](../DEPLOY.md)** | **[Quick Reference Card →](../DEPLOY_QUICKREF.md)**
+
+---
+
+## Executive Summary (Manual Deployment)
 
 After analyzing the GameForge Mobile repository, I recommend **Expo Application Services (EAS) with Vercel** as the optimal free deployment solution. This combination provides:
 

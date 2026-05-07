@@ -1,6 +1,28 @@
 # 🚀 Deployment Recommendation Summary
 
-## Quick Answer
+## ⚡ **NEW: One-Click Deployment** (Easiest Option)
+
+**For non-technical users** - Deploy with a single command!
+
+```bash
+# Mac/Linux
+./deploy.sh
+
+# Windows
+deploy.bat
+```
+
+✨ **Perfect for:**
+- Non-technical users
+- First-time deployments
+- Users who want minimal manual steps
+- Quick testing and iteration
+
+📖 **[Complete One-Click Guide →](../DEPLOY.md)**
+
+---
+
+## Quick Answer (Manual Deployment)
 
 **Best FREE deployment solution for GameForge Mobile:**
 
