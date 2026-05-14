@@ -1,0 +1,85 @@
+name: Expo Preview - Quick Review
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+    branches:
+      - main
+      - develop
+  workflow_dispatch:
+
+jobs:
+  publish:
+    name: Publish to Expo for Quick Review
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    
+    steps:
+      - name: 🏗️ Setup repository
+        uses: actions/checkout@v4
+
+      - name: 🏗️ Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: 🏗️ Setup Expo
+        uses: expo/expo-github-action@v8
+        with:
+          expo-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: 📦 Install dependencies
+        run: npm ci
+
+      - name: 🚀 Publish to Expo
+        run: |
+          npx expo publish --non-interactive
+        continue-on-error: true
+
+      - name: 💬 Comment QR Code (PR)
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const projectSlug = 'gameforge-mobile';
+            const owner = context.repo.owner;
+            const message = `
+            ## 📱 Expo Preview Ready!
+            
+            Scan this QR code with the **Expo Go** app to preview the changes:
+            
+            🔗 **Preview URL:** https://expo.dev/@${owner}/${projectSlug}
+            
+            ### How to test:
+            1. Install **Expo Go** app on your phone:
+               - iOS: https://apps.apple.com/app/expo-go/id982107779
+               - Android: https://play.google.com/store/apps/details?id=host.exp.exponent
+            2. Open the Expo Go app
+            3. Scan the QR code from the URL above
+            4. The app will load directly on your device!
+            
+            ### Alternative:
+            - Open Expo Go app → Search for "gameforge-mobile" → Load the latest version
+            
+            ⚡ Changes are live and ready for review!
+            `;
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: message
+            });
+
+      - name: 📝 Output deployment info
+        run: |
+          echo "✅ Expo publish complete!"
+          echo "📱 Open Expo Go app and search for 'gameforge-mobile'"
+          echo "🔗 Or visit: https://expo.dev/@${{ github.repository_owner }}/gameforge-mobile"

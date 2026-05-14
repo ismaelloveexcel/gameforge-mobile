@@ -9,6 +9,28 @@
 [![Build Mobile](https://github.com/ismaelloveexcel/gameforge-mobile/actions/workflows/build-mobile.yml/badge.svg)](https://github.com/ismaelloveexcel/gameforge-mobile/actions/workflows/build-mobile.yml)
 [![CI](https://github.com/ismaelloveexcel/gameforge-mobile/actions/workflows/ci.yml/badge.svg)](https://github.com/ismaelloveexcel/gameforge-mobile/actions/workflows/ci.yml)
 
+## 🚨 Need to Review the App NOW?
+
+**Want to test the app on your phone in 2 minutes?** Use our quick review script:
+
+```bash
+# On Mac/Linux:
+./quick-review.sh
+
+# On Windows:
+quick-review.bat
+```
+
+This will:
+1. ✅ Start the development server
+2. ✅ Show a QR code
+3. ✅ You scan with Expo Go app
+4. ✅ App loads instantly on your phone!
+
+**📖 Full urgent deployment guide:** [URGENT_DEPLOY.md](URGENT_DEPLOY.md)
+
+---
+
 ## 🌟 Features
 
 ### 🎁 GiftForge – Personalized Gift Mini-Games
