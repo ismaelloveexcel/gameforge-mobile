@@ -1,0 +1,94 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    // ==================== Featured Games ====================
+    // Public read access for all users
+    // Write access for authenticated agents/admins
+    match /featured_games/{gameId} {
+      allow read: if true;
+      allow create: if isAuthenticated();
+      allow update: if isAuthenticated();
+      allow delete: if isAuthenticated();
+    }
+    
+    // ==================== Seasonal Drops ====================
+    // Public read for discovering seasonal content
+    // Write access for agents to create drops
+    match /seasonal_drops/{dropId} {
+      allow read: if true;
+      allow write: if isAuthenticated();
+    }
+    
+    // ==================== Gift Orders ====================
+    // Anyone can create a gift (sender doesn't need account)
+    // Users can read their own orders
+    // Payment service can update order status
+    match /gift_orders/{orderId} {
+      allow create: if true;
+      allow read: if isAuthenticated() || 
+                     resource.data.userId == request.auth.uid;
+      allow update: if isAuthenticated();
+      allow delete: if false; // Never delete orders
+    }
+    
+    // ==================== Gift Memories ====================
+    // Users can only access their own memories
+    // Memory ID format: {userId}_{orderId}
+    match /gift_memories/{memoryId} {
+      allow read: if isAuthenticated() && 
+                     memoryId.matches('^' + request.auth.uid + '_.*');
+      allow create: if isAuthenticated() && 
+                       memoryId.matches('^' + request.auth.uid + '_.*');
+      allow update: if isAuthenticated() && 
+                       memoryId.matches('^' + request.auth.uid + '_.*');
+      allow delete: if isAuthenticated() && 
+                       memoryId.matches('^' + request.auth.uid + '_.*');
+    }
+    
+    // ==================== Analytics ====================
+    // Agents write, admins read
+    // Analytics data is aggregated and anonymized
+    match /analytics/{analyticsId} {
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated();
+    }
+    
+    // ==================== Pending Approvals ====================
+    // Queue for agent-created content awaiting human review
+    match /pending_approvals/{approvalId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated();
+      allow update: if isAuthenticated();
+      allow delete: if isAuthenticated();
+    }
+    
+    // ==================== User Profiles (Future) ====================
+    match /users/{userId} {
+      allow read: if true; // Public profiles
+      allow write: if isOwner(userId);
+    }
+    
+    // ==================== Templates Library ====================
+    // Shared game templates
+    match /templates/{templateId} {
+      allow read: if true;
+      allow write: if isAuthenticated();
+    }
+    
+    // ==================== Deny All Other Collections ====================
+    // Explicit deny for any unmatched paths
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

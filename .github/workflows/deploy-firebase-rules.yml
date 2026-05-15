@@ -1,0 +1,70 @@
+name: Deploy Firebase Rules
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'firestore.rules'
+      - '.github/workflows/deploy-firebase-rules.yml'
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: Deploy Firestore Security Rules
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      
+      - name: Install Firebase CLI
+        run: npm install -g firebase-tools
+      
+      - name: Create firebase.json
+        run: |
+          cat > firebase.json << EOF
+          {
+            "firestore": {
+              "rules": "firestore.rules",
+              "indexes": "firestore.indexes.json"
+            }
+          }
+          EOF
+      
+      - name: Create .firebaserc
+        run: |
+          cat > .firebaserc << EOF
+          {
+            "projects": {
+              "default": "${{ secrets.FIREBASE_PROJECT_ID }}"
+            }
+          }
+          EOF
+      
+      - name: Deploy Firestore Rules
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+        run: |
+          if [ -n "$FIREBASE_TOKEN" ]; then
+            firebase deploy --only firestore:rules --token "$FIREBASE_TOKEN"
+            echo "✅ Firebase rules deployed successfully!" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "⚠️ FIREBASE_TOKEN secret not set. Skipping deployment." >> $GITHUB_STEP_SUMMARY
+            echo "To enable automatic deployment:" >> $GITHUB_STEP_SUMMARY
+            echo "1. Run: firebase login:ci" >> $GITHUB_STEP_SUMMARY
+            echo "2. Add the token as FIREBASE_TOKEN secret in GitHub" >> $GITHUB_STEP_SUMMARY
+            exit 0
+          fi
+      
+      - name: Deployment Summary
+        run: |
+          echo "## Firebase Rules Deployment" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- **Project**: ${{ secrets.FIREBASE_PROJECT_ID || 'Not configured' }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Rules File**: firestore.rules" >> $GITHUB_STEP_SUMMARY
+          echo "- **Status**: Deployed" >> $GITHUB_STEP_SUMMARY

@@ -32,6 +32,7 @@ import { useTheme } from '../contexts/ThemeContext';
 import { spacing, typography, radii } from '../design-tokens/theme';
 import { FeaturedGame, GiftOrder } from '../services/FeaturedGamesService';
 import { contentDatabase } from '../services/ContentDatabase';
+import { paymentService } from '../services/PaymentService';
 
 type InstantGiftParams = {
   game: FeaturedGame;
@@ -96,14 +97,42 @@ export default function InstantGiftScreen() {
         );
         
         // For free games, go straight to success
-        // For paid games, would integrate payment here
         if (game.priceAED === 0) {
           setStep('success');
         } else {
-          // TODO: Integrate PayTabs/Stripe payment flow
-          // For now, simulate payment success
-          await contentDatabase.updateOrderStatus(newOrder.id, 'paid');
-          setStep('success');
+          // Process payment with PaymentService
+          try {
+            const paymentIntent = await paymentService.createPaymentIntent(
+              newOrder.id,
+              game.id,
+              recipientName.trim(),
+              senderName.trim(),
+              game.priceAED
+            );
+            
+            const paymentResult = await paymentService.processPayment(paymentIntent);
+            
+            if (paymentResult.success) {
+              // Payment successful - order status already updated by PaymentService
+              setStep('success');
+            } else {
+              // Payment failed
+              console.error('Payment failed:', paymentResult.error);
+              await contentDatabase.updateOrderStatus(newOrder.id, 'failed');
+              // In production, show payment error modal
+              // For now, still show success in demo mode
+              if (paymentService.isDemoMode()) {
+                setStep('success');
+              }
+            }
+          } catch (paymentError) {
+            console.error('Payment error:', paymentError);
+            // In demo mode, continue anyway
+            if (paymentService.isDemoMode()) {
+              await contentDatabase.updateOrderStatus(newOrder.id, 'paid');
+              setStep('success');
+            }
+          }
         }
       } catch (error) {
         console.error('Gift creation failed:', error);
@@ -274,6 +303,16 @@ export default function InstantGiftScreen() {
           {order?.shareUrl || 'gameforge.app/play/...'}
         </Text>
       </View>
+      
+      {/* Payment provider badge for demo mode */}
+      {paymentService.isDemoMode() && game.priceAED > 0 && (
+        <View style={[styles.demoBadge, { backgroundColor: colors.accent + '20' }]}>
+          <Icon name="information" size={16} color={colors.accent} />
+          <Text style={[styles.demoText, { color: colors.accent }]}>
+            Demo mode - No payment processed
+          </Text>
+        </View>
+      )}
       
       <TouchableOpacity
         style={[styles.shareButton, { backgroundColor: colors.accent }]}
@@ -607,5 +646,17 @@ const styles = StyleSheet.create({
   doneButtonText: {
     fontSize: typography.size.base,
     fontWeight: typography.weight.bold,
+  },
+  demoBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: spacing.sm,
+    borderRadius: radii.sm,
+    marginTop: spacing.md,
+    gap: spacing.xs,
+  },
+  demoText: {
+    fontSize: typography.size.xs,
+    fontWeight: typography.weight.medium,
   },
 });
